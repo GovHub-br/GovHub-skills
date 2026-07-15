@@ -1,0 +1,33 @@
+{
+  "skill_name": "govhub-pipeline-guide",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Preciso resolver a issue #320. A issue diz: 'Escrever testes unitarios para airflow_lappis/plugins/cliente_transferegov_emendas.py. Mockar o retorno de dados de emendas e transferencias especiais do governo federal.' O repositório é GovHub-br/data-application-gov-hub.",
+      "expected_output": "Testes unitários completos para cliente_transferegov_emendas.py usando mocking, no diretório tests/, cobrindo os métodos principais do cliente.",
+      "files": ["airflow_lappis/plugins/cliente_transferegov_emendas.py"],
+      "assertions": [
+        {
+          "text": "Lê ou referencia o arquivo cliente_transferegov_emendas.py antes de gerar os testes",
+          "type": "qualitative"
+        },
+        {
+          "text": "Usa mocking (unittest.mock ou pytest-mock) para simular as chamadas de API",
+          "type": "qualitative"
+        },
+        {
+          "text": "Propõe salvar os testes no diretório tests/ seguindo o padrão do projeto",
+          "type": "qualitative"
+        },
+        {
+          "text": "Cobre pelo menos 2 métodos específicos do cliente (não apenas um teste genérico)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Reconhece que é uma task de testes e adapta o fluxo — não força o guia de ingestão nova desnecessariamente",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

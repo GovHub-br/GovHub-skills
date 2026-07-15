@@ -1,0 +1,62 @@
+/* ============================================================
+   GovHub — Design Tokens (identidade visual oficial)
+   Fonte: CSS de https://gov-hub.io
+   Cole este bloco no <head> (dentro de <style>) ou no topo do
+   seu arquivo CSS. Depois use as variáveis com var(--nome).
+   ============================================================ */
+
+/* Fonte principal da marca */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ---------- Cores primárias da marca ---------- */
+  --primary-purple:   #7A34F3; /* ROXO PRINCIPAL — cor-assinatura / destaque primário */
+  --secondary-purple: #8B5CF6; /* roxo secundário — apoio, gradientes */
+  --accent-orange:    #F97316; /* laranja de acento — CTA / destaque pontual */
+  --accent-orange-hover: #EA580C; /* hover do laranja */
+  --text-white:       #FFFFFF;
+
+  /* ---------- Roxos de apoio / estados ---------- */
+  --purple-400: #9249CA; /* roxo médio */
+  --purple-600: #7C3AAD; /* estado hover/foco do primário */
+  --purple-700: #5B21B6; /* estado active/pressionado (mais escuro) */
+
+  /* ---------- Neutros / texto ---------- */
+  --text-strong: #202020; /* títulos, texto forte */
+  --text-body:   #2D3748; /* corpo de texto */
+  --text-muted:  #666666; /* texto secundário / legendas */
+
+  /* ---------- Fundos ---------- */
+  --bg-white:  #FFFFFF;
+  --bg-light:  #F7F7F7; /* fundo neutro claro */
+  --bg-subtle: #F8F9FA; /* fundo alternado (zebra, seções) */
+
+  /* ---------- Cores de estado / semânticas ---------- */
+  --color-success:   #10B981; /* verde — sucesso */
+  --color-highlight: #FFD700; /* amarelo — destaque */
+  --color-warm:      #F19F42; /* laranja suave — destaque secundário */
+
+  /* ---------- Tipografia ---------- */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* ---------- Sombras ---------- */
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 8px 30px rgba(0, 0, 0, 0.15);
+
+  /* ---------- Transição padrão ---------- */
+  --transition-normal: all 0.3s ease;
+
+  /* ---------- Raios / espaçamento base ---------- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --grid-gutter: 20px; /* alinhado ao Bootstrap 5.3.2 do site */
+}
+
+/* Base recomendada — aplique no body do artefato */
+body {
+  font-family: var(--font-family-base);
+  color: var(--text-body);
+  background: var(--bg-light);
+}

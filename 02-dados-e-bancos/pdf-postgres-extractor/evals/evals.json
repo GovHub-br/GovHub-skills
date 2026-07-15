@@ -1,0 +1,23 @@
+{
+  "skill_name": "pdf-postgres-extractor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tenho uma nota fiscal em PDF que preciso salvar no meu banco de dados PostgreSQL. O arquivo é /home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_simples.pdf. Ainda não tenho nenhuma tabela criada para isso. Pode extrair os dados e me propor um schema? A string de conexão é postgresql://usuario:senha@localhost:5432/nfe_db (não precisa conectar de verdade, só me mostra o que você extraiu e o SQL que usaria).",
+      "expected_output": "Extração dos campos: número NF (000456), data emissão (10/04/2024), CNPJ emitente (12.345.678/0001-90), razão social emitente (Tech Solutions Ltda), CNPJ destinatário (98.765.432/0001-11), valor total (7.150,00). Dois itens: Notebook Dell (qtd 2, unit 3200, total 6400) e Mouse Logitech (qtd 5, unit 120, total 600). Schema proposto com tabelas notas_fiscais e itens_nf. SQL de INSERT correto.",
+      "files": ["/home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_simples.pdf"]
+    },
+    {
+      "id": 2,
+      "prompt": "Preciso processar essa NF e inserir no banco. O PDF está em /home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_multiplos_itens.pdf. Já tenho as tabelas criadas:\n\nCREATE TABLE notas_fiscais (id SERIAL PRIMARY KEY, numero_nf VARCHAR(20), data_emissao DATE, cnpj_emitente VARCHAR(20), razao_social_emitente TEXT, cnpj_destinatario VARCHAR(20), razao_social_destinatario TEXT, valor_total NUMERIC(12,2), valor_icms NUMERIC(12,2), valor_ipi NUMERIC(12,2), arquivo_origem TEXT);\nCREATE TABLE itens_nf (id SERIAL PRIMARY KEY, nf_id INTEGER REFERENCES notas_fiscais(id), codigo VARCHAR(20), descricao TEXT, quantidade NUMERIC(10,3), valor_unitario NUMERIC(12,2), desconto NUMERIC(12,2), valor_total NUMERIC(12,2));\n\nMe mostra o Python completo para extrair e inserir, sem precisar executar de verdade.",
+      "expected_output": "Extração correta dos 6 itens (geladeira, fogão, micro-ondas, liquidificador, ferro, cafeteira) com quantidades e valores. Código Python completo com psycopg2, INSERT para notas_fiscais com número 001789, valor total 29817.42, ICMS 3339.12, IPI 1391.30. INSERT para todos os 6 itens em itens_nf usando execute_values.",
+      "files": ["/home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_multiplos_itens.pdf"]
+    },
+    {
+      "id": 3,
+      "prompt": "Esse PDF tem um layout diferente do padrão — é um DANFE. Me extrai os dados principais e gera o INSERT SQL. Arquivo: /home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_layout_alternativo.pdf. Pode assumir que a tabela já existe com o schema padrão (numero_nf, data_emissao, cnpj_emitente, razao_social_emitente, cnpj_destinatario, razao_social_destinatario, valor_total).",
+      "expected_output": "Extração correta mesmo com layout alternativo: número NF 000099, data 05/06/2024, CNPJ emitente 77.888.999/0001-55, razão social Alpha Comércio de Materiais de Construção EIRELI, CNPJ destinatário 33.444.555/0001-66, valor total 14350.00. SQL de INSERT válido.",
+      "files": ["/home/luiza-maluf/.claude/skills/pdf-postgres-extractor/evals/fixtures/nf_layout_alternativo.pdf"]
+    }
+  ]
+}
