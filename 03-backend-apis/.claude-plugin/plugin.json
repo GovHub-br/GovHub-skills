@@ -1,0 +1,27 @@
+{
+  "name": "govhub-backend",
+  "version": "1.0.0",
+  "description": "Python e FastAPI, design de APIs REST/GraphQL, documentação, integração com APIs de terceiros e segurança de APIs. (6 skills)",
+  "author": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "homepage": "https://github.com/GovHub-br/GovHub-skills",
+  "repository": "https://github.com/GovHub-br/GovHub-skills",
+  "keywords": [
+    "python",
+    "fastapi",
+    "api",
+    "rest",
+    "graphql",
+    "backend"
+  ],
+  "skills": [
+    "./api-design-principles",
+    "./api-documentation-generator",
+    "./api-integration-specialist",
+    "./api-security-best-practices",
+    "./fastapi-pro",
+    "./python-pro"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "govhub-infra",
+  "version": "1.0.0",
+  "description": "Docker, IaC, GitHub Actions, shell scripting e observabilidade com Prometheus e Grafana. (8 skills)",
+  "author": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "homepage": "https://github.com/GovHub-br/GovHub-skills",
+  "repository": "https://github.com/GovHub-br/GovHub-skills",
+  "keywords": [
+    "docker",
+    "devops",
+    "ci-cd",
+    "github-actions",
+    "prometheus",
+    "grafana",
+    "observability"
+  ],
+  "skills": [
+    "./bash-pro",
+    "./devops-iac-engineer",
+    "./docker-expert",
+    "./github-actions-creator",
+    "./grafana-dashboards",
+    "./linux-shell-scripting",
+    "./observability-engineer",
+    "./prometheus-configuration"
+  ]
+}

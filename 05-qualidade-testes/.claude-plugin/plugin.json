@@ -1,0 +1,41 @@
+{
+  "name": "govhub-qualidade",
+  "version": "1.0.0",
+  "description": "TDD, testes em Python, depuração sistemática, clean code, arquitetura (ADR, DDD, padrões), performance, segurança e gestão de segredos. (18 skills)",
+  "author": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "homepage": "https://github.com/GovHub-br/GovHub-skills",
+  "repository": "https://github.com/GovHub-br/GovHub-skills",
+  "keywords": [
+    "tdd",
+    "testes",
+    "clean-code",
+    "arquitetura",
+    "adr",
+    "ddd",
+    "seguranca",
+    "performance"
+  ],
+  "skills": [
+    "./architecture-decision-records",
+    "./architecture-patterns",
+    "./clean-code",
+    "./code-simplifier",
+    "./commit-smart",
+    "./dependency-updater",
+    "./domain-driven-design",
+    "./k6-load-testing",
+    "./lint-and-validate",
+    "./performance-profiling",
+    "./python-testing-patterns",
+    "./secrets-management",
+    "./security-best-practices",
+    "./security-compliance",
+    "./software-architecture",
+    "./systematic-debugging",
+    "./tdd",
+    "./test-fixing"
+  ]
+}

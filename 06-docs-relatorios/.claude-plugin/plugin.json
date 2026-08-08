@@ -1,0 +1,32 @@
+{
+  "name": "govhub-docs",
+  "version": "1.0.0",
+  "description": "Geração de documentos e relatórios: docx, xlsx, PDF, planilhas, README, changelog, diagramas Mermaid e conversão de web para Markdown. (10 skills)",
+  "author": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "homepage": "https://github.com/GovHub-br/GovHub-skills",
+  "repository": "https://github.com/GovHub-br/GovHub-skills",
+  "keywords": [
+    "documentacao",
+    "docx",
+    "xlsx",
+    "pdf",
+    "changelog",
+    "mermaid",
+    "readme"
+  ],
+  "skills": [
+    "./changelog-generator",
+    "./crafting-effective-readmes",
+    "./docx",
+    "./mermaid-diagram-specialist",
+    "./pdf-processing",
+    "./pdf-processing-pro",
+    "./spreadsheet",
+    "./to-issues",
+    "./web-to-markdown",
+    "./xlsx"
+  ]
+}

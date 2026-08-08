@@ -1,0 +1,54 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "govhub",
+  "version": "1.0.0",
+  "description": "Marketplace de skills do Claude Code do GovHub BR / lablivre — dados governamentais, pipelines, relatórios oficiais, backend, infra, qualidade e documentação.",
+  "owner": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "plugins": [
+    {
+      "name": "govhub-skills",
+      "source": "./",
+      "description": "Coleção completa — todas as 54 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
+      "category": "development"
+    },
+    {
+      "name": "govhub-core",
+      "source": "./01-govhub",
+      "description": "Específicas do GovHub — Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (3 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-dados",
+      "source": "./02-dados-e-bancos",
+      "description": "Dados & Bancos — Engenharia e ciência de dados, Postgres (schema, boas práticas, otimização), SQL, BigQuery, Jupyter e extração de PDF para banco. (9 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-backend",
+      "source": "./03-backend-apis",
+      "description": "Backend & APIs — Python e FastAPI, design de APIs REST/GraphQL, documentação, integração com APIs de terceiros e segurança de APIs. (6 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-infra",
+      "source": "./04-infra-devops",
+      "description": "Infra & DevOps — Docker, IaC, GitHub Actions, shell scripting e observabilidade com Prometheus e Grafana. (8 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-qualidade",
+      "source": "./05-qualidade-testes",
+      "description": "Qualidade, Testes & Arquitetura — TDD, testes em Python, depuração sistemática, clean code, arquitetura (ADR, DDD, padrões), performance, segurança e gestão de segredos. (18 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-docs",
+      "source": "./06-docs-relatorios",
+      "description": "Docs & Relatórios — Geração de documentos e relatórios: docx, xlsx, PDF, planilhas, README, changelog, diagramas Mermaid e conversão de web para Markdown. (10 skills)",
+      "category": "development"
+    }
+  ]
+}
