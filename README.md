@@ -2,6 +2,13 @@
 
 Coleção curada de **skills do Claude Code** úteis para o trabalho do **GovHub BR / lablivre** — engenharia de dados governamentais, relatórios oficiais e o stack de pipelines (Airflow + dbt + Postgres, containerizado), além de backend Python/API, infra, qualidade de código e documentação.
 
+O repositório é também um **marketplace de plugins do Claude Code**: instala com um comando e atualiza com outro, sem copiar arquivo.
+
+```bash
+claude plugin marketplace add GovHub-br/GovHub-skills
+claude plugin install govhub-skills@govhub
+```
+
 ## O que é uma skill?
 
 Uma **skill** é um pacote de conhecimento e instruções que o Claude carrega **sob demanda** para executar bem uma tarefa específica. Na prática, é uma pasta com um arquivo `SKILL.md` (e, opcionalmente, scripts, templates e arquivos de referência).
@@ -22,29 +29,64 @@ A vantagem é que o conhecimento fica fora do contexto até ser necessário: o C
 
 ## Como instalar
 
-As skills do Claude Code ficam em `~/.claude/skills/`. Cada skill é **autocontida** — basta copiar a pasta dela para lá.
+Este repositório é um **marketplace de plugins do Claude Code**. Você não precisa copiar pasta nenhuma: registra o marketplace uma vez e instala o que quiser por comando.
 
-**Uma skill específica:**
+**1. Registre o marketplace** (só na primeira vez):
+
+```bash
+claude plugin marketplace add GovHub-br/GovHub-skills
+```
+
+**2. Instale tudo de uma vez:**
+
+```bash
+claude plugin install govhub-skills@govhub
+```
+
+**Ou instale só as categorias que interessam:**
+
+```bash
+claude plugin install govhub-core@govhub
+```
+
+| Plugin | O que traz | Skills |
+|--------|-----------|--------|
+| `govhub-skills` | **Tudo** — as 51 skills de todas as categorias | 51 |
+| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
+| `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
+| `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
+| `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
+| `govhub-qualidade` | [05 · Qualidade & arquitetura](#05--qualidade-testes--arquitetura) — TDD, debug, clean code, ADR, segurança | 18 |
+| `govhub-docs` | [06 · Docs & relatórios](#06--documentação-relatórios--escritório) — planilhas, PDF, changelog, README, Mermaid | 7 |
+
+> Instale **o `govhub-skills` ou os plugins por categoria** — não os dois, senão as mesmas skills entram duas vezes.
+
+Dentro de uma sessão do Claude Code dá para fazer o mesmo pelo comando `/plugin`, que abre o navegador de marketplaces e mostra as skills de cada plugin antes de instalar.
+
+**Manter atualizado** — quando o repositório receber skills novas:
+
+```bash
+claude plugin marketplace update govhub
+```
+
+Depois de instalar, reinicie a sessão do Claude Code para ele reconhecer as skills novas. Para conferir o que entrou (e quanto custa de contexto):
+
+```bash
+claude plugin details govhub-skills@govhub
+```
+
+<details>
+<summary>Prefere não usar plugin? Dá para copiar as pastas na mão</summary>
+
+Cada skill é autocontida, então copiar a pasta dela para `~/.claude/skills/` também funciona:
 
 ```bash
 cp -r 02-dados-e-bancos/pdf-postgres-extractor ~/.claude/skills/
 ```
 
-**Uma categoria inteira** (as subpastas `NN-...` deste repo são só organização; o que o Claude Code lê são as pastas de skill dentro delas):
+O Claude Code procura as skills diretamente em `~/.claude/skills/<nome-da-skill>/`, sem os prefixos de categoria (`01-`, `02-`…) — por isso se copia a pasta da skill, e não a da categoria. A desvantagem em relação ao plugin é que a atualização passa a ser manual.
 
-```bash
-cp -r 02-dados-e-bancos/*/ ~/.claude/skills/
-```
-
-**Tudo de uma vez:**
-
-```bash
-cp -r */*/ ~/.claude/skills/
-```
-
-> **Observação:** o Claude Code procura as skills diretamente em `~/.claude/skills/<nome-da-skill>/`, sem os prefixos de categoria (`01-`, `02-`…). Por isso copiamos as pastas de skill, e não as pastas de categoria. Se preferir não duplicar arquivos, dá para criar um symlink em vez de copiar (`ln -s`).
-
-Depois de copiar, reinicie a sessão do Claude Code (ou rode `/doctor`) para ele reconhecer as skills novas.
+</details>
 
 ## Como usar (acionar) uma skill
 
@@ -59,6 +101,27 @@ Se quiser **forçar** o uso de uma skill, é só citá-la: *"use a skill `sql-pr
 ## Como criar ou editar uma skill
 
 Existe uma skill dedicada a isso — a `skill-creator` (disponível na coleção geral). Você também pode criar manualmente: basta uma pasta com um `SKILL.md` contendo o frontmatter (`name`, `description`) e as instruções no corpo. O ponto mais importante é escrever uma `description` clara e específica, listando os gatilhos ("use quando o usuário pedir X, Y, Z"), porque é ela que determina se a skill será acionada na hora certa.
+
+**Ao contribuir uma skill nova para este repositório**, três coisas precisam bater, senão ela não é carregada pelo plugin:
+
+1. O `name:` do frontmatter tem que ser **idêntico ao nome da pasta**, em `kebab-case` minúsculo (`postgres-schema-design`, não `Postgres Schema Design`).
+2. A pasta entra dentro de uma das categorias `NN-...`, e os manifestos precisam ser regerados para incluí-la (isso atualiza o `plugin.json` da categoria e o da raiz de uma vez):
+
+```bash
+./scripts/atualizar-manifestos.py
+```
+
+3. Rode o validador antes de abrir o PR — ele confere frontmatter, pastas e manifestos, e falha se alguma skill ficou de fora:
+
+```bash
+./scripts/validar-plugins.sh
+```
+
+**Se a skill veio de fora**, registre a procedência: `author:` e `license:` no frontmatter, o arquivo de licença original junto na pasta quando existir, e uma linha no [`NOTICE.md`](NOTICE.md). Skill de terceiro sem licença conhecida não deveria entrar — veja abaixo por quê.
+
+## Licenças
+
+Este repositório **reúne** skills de origens diferentes e por isso **não tem um `LICENSE` na raiz**: uma licença única seria o GovHub licenciando código que não é dele. O [`NOTICE.md`](NOTICE.md) registra o que se sabe sobre cada skill — hoje 8 têm licença ou autoria identificada e 43 ainda não. É uma dívida conhecida, não um descuido.
 
 ---
 
@@ -139,11 +202,15 @@ As skills abaixo estão organizadas em pastas por categoria.
 |-------|-----------|
 | [`crafting-effective-readmes`](06-docs-relatorios/crafting-effective-readmes/) | READMEs eficazes por tipo de projeto e audiência. |
 | [`mermaid-diagram-specialist`](06-docs-relatorios/mermaid-diagram-specialist/) | Diagramas Mermaid — fluxos, sequência, ERDs, arquitetura. |
-| [`docx`](06-docs-relatorios/docx/) | Criar/ler/editar documentos Word (.docx). |
-| [`xlsx`](06-docs-relatorios/xlsx/) | Criar/editar planilhas (.xlsx, .csv, .tsv). |
-| [`pdf-processing`](06-docs-relatorios/pdf-processing/) | Ler, extrair, mesclar e manipular PDFs. |
 | [`changelog-generator`](06-docs-relatorios/changelog-generator/) | Gera changelog a partir do histórico de commits. |
 | [`to-issues`](06-docs-relatorios/to-issues/) | Quebra um plano/PRD em issues no tracker do projeto. |
 | [`web-to-markdown`](06-docs-relatorios/web-to-markdown/) | Converte páginas web (URLs) em Markdown limpo — útil para extrair conteúdo de fontes gov. |
 | [`pdf-processing-pro`](06-docs-relatorios/pdf-processing-pro/) | PDF em produção — forms, tabelas, OCR, validação e operações em lote. |
 | [`spreadsheet`](06-docs-relatorios/spreadsheet/) | Criar/editar/analisar planilhas via Python (openpyxl, pandas) com fórmulas. |
+
+> **Word, Excel, PowerPoint e PDF:** as skills `docx`, `xlsx` e `pdf` não estão aqui — são proprietárias da Anthropic e não podem ser redistribuídas por terceiros (ver [`NOTICE.md`](NOTICE.md)). Elas vêm da fonte oficial:
+>
+> ```bash
+> claude plugin marketplace add anthropics/skills
+> claude plugin install document-skills@anthropic-agent-skills
+> ```
