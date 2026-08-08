@@ -51,13 +51,13 @@ claude plugin install govhub-core@govhub
 
 | Plugin | O que traz | Skills |
 |--------|-----------|--------|
-| `govhub-skills` | **Tudo** — as 54 skills de todas as categorias | 54 |
+| `govhub-skills` | **Tudo** — as 51 skills de todas as categorias | 51 |
 | `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
 | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
 | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
 | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
 | `govhub-qualidade` | [05 · Qualidade & arquitetura](#05--qualidade-testes--arquitetura) — TDD, debug, clean code, ADR, segurança | 18 |
-| `govhub-docs` | [06 · Docs & relatórios](#06--documentação-relatórios--escritório) — docx, xlsx, PDF, changelog, Mermaid | 10 |
+| `govhub-docs` | [06 · Docs & relatórios](#06--documentação-relatórios--escritório) — planilhas, PDF, changelog, README, Mermaid | 7 |
 
 > Instale **o `govhub-skills` ou os plugins por categoria** — não os dois, senão as mesmas skills entram duas vezes.
 
@@ -116,6 +116,12 @@ Existe uma skill dedicada a isso — a `skill-creator` (disponível na coleção
 ```bash
 ./scripts/validar-plugins.sh
 ```
+
+**Se a skill veio de fora**, registre a procedência: `author:` e `license:` no frontmatter, o arquivo de licença original junto na pasta quando existir, e uma linha no [`NOTICE.md`](NOTICE.md). Skill de terceiro sem licença conhecida não deveria entrar — veja abaixo por quê.
+
+## Licenças
+
+Este repositório **reúne** skills de origens diferentes e por isso **não tem um `LICENSE` na raiz**: uma licença única seria o GovHub licenciando código que não é dele. O [`NOTICE.md`](NOTICE.md) registra o que se sabe sobre cada skill — hoje 8 têm licença ou autoria identificada e 43 ainda não. É uma dívida conhecida, não um descuido.
 
 ---
 
@@ -196,11 +202,15 @@ As skills abaixo estão organizadas em pastas por categoria.
 |-------|-----------|
 | [`crafting-effective-readmes`](06-docs-relatorios/crafting-effective-readmes/) | READMEs eficazes por tipo de projeto e audiência. |
 | [`mermaid-diagram-specialist`](06-docs-relatorios/mermaid-diagram-specialist/) | Diagramas Mermaid — fluxos, sequência, ERDs, arquitetura. |
-| [`docx`](06-docs-relatorios/docx/) | Criar/ler/editar documentos Word (.docx). |
-| [`xlsx`](06-docs-relatorios/xlsx/) | Criar/editar planilhas (.xlsx, .csv, .tsv). |
-| [`pdf-processing`](06-docs-relatorios/pdf-processing/) | Ler, extrair, mesclar e manipular PDFs. |
 | [`changelog-generator`](06-docs-relatorios/changelog-generator/) | Gera changelog a partir do histórico de commits. |
 | [`to-issues`](06-docs-relatorios/to-issues/) | Quebra um plano/PRD em issues no tracker do projeto. |
 | [`web-to-markdown`](06-docs-relatorios/web-to-markdown/) | Converte páginas web (URLs) em Markdown limpo — útil para extrair conteúdo de fontes gov. |
 | [`pdf-processing-pro`](06-docs-relatorios/pdf-processing-pro/) | PDF em produção — forms, tabelas, OCR, validação e operações em lote. |
 | [`spreadsheet`](06-docs-relatorios/spreadsheet/) | Criar/editar/analisar planilhas via Python (openpyxl, pandas) com fórmulas. |
+
+> **Word, Excel, PowerPoint e PDF:** as skills `docx`, `xlsx` e `pdf` não estão aqui — são proprietárias da Anthropic e não podem ser redistribuídas por terceiros (ver [`NOTICE.md`](NOTICE.md)). Elas vêm da fonte oficial:
+>
+> ```bash
+> claude plugin marketplace add anthropics/skills
+> claude plugin install document-skills@anthropic-agent-skills
+> ```

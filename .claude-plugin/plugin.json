@@ -1,7 +1,7 @@
 {
   "name": "govhub-skills",
   "version": "1.0.0",
-  "description": "Coleção completa de skills do GovHub BR / lablivre — as 54 skills de todas as categorias em um único plugin.",
+  "description": "Coleção completa de skills do GovHub BR / lablivre — as 51 skills de todas as categorias em um único plugin.",
   "author": {
     "name": "GovHub BR / lablivre",
     "url": "https://github.com/GovHub-br"
@@ -65,13 +65,10 @@
     "./05-qualidade-testes/test-fixing",
     "./06-docs-relatorios/changelog-generator",
     "./06-docs-relatorios/crafting-effective-readmes",
-    "./06-docs-relatorios/docx",
     "./06-docs-relatorios/mermaid-diagram-specialist",
-    "./06-docs-relatorios/pdf-processing",
     "./06-docs-relatorios/pdf-processing-pro",
     "./06-docs-relatorios/spreadsheet",
     "./06-docs-relatorios/to-issues",
-    "./06-docs-relatorios/web-to-markdown",
-    "./06-docs-relatorios/xlsx"
+    "./06-docs-relatorios/web-to-markdown"
   ]
 }
