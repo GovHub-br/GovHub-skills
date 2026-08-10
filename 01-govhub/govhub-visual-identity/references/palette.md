@@ -52,6 +52,50 @@ estes hexadecimais. Os nomes de token estão em inglês (ver `tokens.css`).
 - **Fundos claros neutros** (`#F7F7F7`, `#F8F9FA`, branco) para respiro e legibilidade.
 - **Inter** como fonte em tudo.
 
+## Roxo exato da logo vs. roxo do site
+
+| Token | Hex | Uso |
+|---|---|---|
+| `--primary-purple` | `#7A34F3` | Roxo do CSS do site gov-hub.io. Use em produto, UI, dashboards. |
+| `--logo-purple` | `#7521F9` | Extraído do arquivo SVG oficial da logo (`fill="#7521F9"` nos paths). Ligeiramente mais escuro/azulado que `--primary-purple`. Use **especificamente** quando a logo aparecer sobre um fundo sólido (ex: capa de relatório) e o fundo precisar bater exatamente com a cor do arquivo da logo — a diferença é sutil mas visível lado a lado. |
+
+## Rampa editorial — relatórios longos com capítulos (livro GovHub)
+
+Extraída de *Gov Hub: um guia prático para integração e qualificação de dados
+públicos* (UnB/Ipea/Lab Livre, 2025). O livro usa uma **progressão de matiz**
+para diferenciar capítulos visualmente — cada capítulo tem sua cor sólida de
+capa — em vez do roxo+laranja único do site. Use esta rampa **somente em
+relatórios/frameworks longos e com capítulos** (como o Briefing, o guia de
+integração, ou qualquer PDF no estilo "00 Introdução, 01 Artefato, 02
+Artefato..."). Para telas de produto/UI, siga sempre roxo+laranja.
+
+| Token | Hex (aprox.) | Uso |
+|---|---|---|
+| `--editorial-01-purple` | `#5B21B6` | Capa/numeral do capítulo 00 ou 01 (abertura, introdução) |
+| `--editorial-02-magenta` | `#9520B6` | Capa/numeral do capítulo 02 |
+| `--editorial-03-pink` | `#C520A4` | Capa/numeral do capítulo 03 |
+| `--editorial-04-coral` | `#E8776F` | Capa/numeral do capítulo 04 (fechamento/solução) |
+
+**Como aplicar a progressão:**
+- Página de capa do documento: gradiente `--primary-purple` → `--purple-700`, com uma
+  faixa/onda decorativa em laranja e no rosa "Lab Livre" (`--editorial-04-coral`)
+  cruzando o fundo (ver `component-recipes.md`).
+- Cada capítulo/seção numerada ganha sua cor da rampa, em ordem, ciclando de
+  volta ao roxo se houver mais de 4 capítulos.
+- Sobre o fundo colorido da capa de capítulo, sobreponha uma grade sutil
+  (`--editorial-grid-line`) e 1–2 círculos/anéis translúcidos
+  (`--editorial-ring`) como textura decorativa — nunca ilustrações figurativas.
+- O número do capítulo e o título ficam sempre em branco, bold, sobre a cor sólida.
+- Dentro do corpo do capítulo (fundo branco), a cor do capítulo pode ser usada
+  como acento local: título de seção, ícone do callout, barra lateral —
+  mantendo o roxo como cor dominante do restante do documento (títulos gerais,
+  tabelas, badges).
+
+Essas cores foram harmonizadas por rotação de matiz a partir de
+`--primary-purple`, não amostradas pixel a pixel do PDF. Se for necessário
+fidelidade exata (ex: material impresso oficial), confirme os hexadecimais no
+Figma da marca antes de publicar.
+
 ## Acessibilidade (contraste)
 
 - Texto **branco** (`#FFFFFF`) sobre `--primary-purple` (`#7A34F3`): **OK** (contraste suficiente).

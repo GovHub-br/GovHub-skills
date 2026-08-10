@@ -1,15 +1,18 @@
 ---
 name: govhub-visual-identity
 description: >-
-  Especialista em aplicar a identidade visual oficial do GovHub (gov-hub.io) em
-  qualquer artefato — relatórios HTML/PDF, páginas web, componentes, slides,
+  Especialista em aplicar a identidade visual oficial do GovHub (gov-hub.io e
+  o livro "Gov Hub: um guia prático") em qualquer artefato — relatórios
+  HTML/PDF, e-books, frameworks numerados, páginas web, componentes, slides,
   dashboards, e-mails, temas CSS. Use SEMPRE que o usuário pedir para aplicar,
   usar ou trazer a identidade visual, cores, paleta, tema, estilo, marca ou
   "cara" do GovHub. Dispara com: "roxo do govhub", "tema govhub", "identidade
   visual govhub", "estilo govhub", "cores do govhub", "paleta govhub", "deixar
   com a cara do govhub", "aplicar a marca govhub", "deixar no padrão govhub",
-  "estilizar como o govhub", "usar o roxo #7A34F3". Cobre estilização de
-  relatório, site, PDF, slide, componente, e-mail e dashboard.
+  "estilizar como o govhub", "usar o roxo #7A34F3", "relatório/framework no
+  estilo do livro do GovHub", "e-book com capítulos GovHub". Cobre
+  estilização de relatório, site, PDF, e-book, framework numerado, slide,
+  componente, e-mail e dashboard.
 ---
 
 # GovHub — Identidade Visual
@@ -104,6 +107,36 @@ o `body` base). Depois use as receitas de `references/component-recipes.md`.
 - **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS) — use os hexadecimais literais: cabeçalho `#7A34F3`, texto `#2D3748`, botão CTA `#F97316`.
 - **Dashboard:** roxo nos headers/KPIs principais; verde `#10B981` para positivo; fundos `#F7F7F7`/`#F8F9FA`.
 
+### 4. Relatório longo / e-book / framework numerado (estilo do livro GovHub)
+
+Quando o pedido for um **documento longo com seções numeradas** (ex:
+"framework de briefing", "guia prático", "tutorial + framework", um e-book
+institucional) — não um dashboard nem uma página de produto — siga o estilo
+editorial documentado em
+[`references/editorial-report.md`](references/editorial-report.md), validado
+na prática com o Framework de Briefing:
+
+1. Capa com fundo **sólido** na cor exata da logo (`--logo-purple`,
+   `#7521F9`), logo oficial (`references/logo/`) + moldura arredondada fina,
+   sem onda decorativa, sem pílula, sem subtítulo — versão limpa.
+2. Cada seção ganha uma cor sólida da **rampa editorial** (roxo → magenta →
+   rosa → coral, ver `palette.md`) numa **faixa full-bleed que começa no
+   topo da página e vai de ponta a ponta**, não uma faixa inserida com
+   margem.
+3. Numeral grande do padrão "numeral + eyebrow + título" fica em branco a
+   ~75% de opacidade sobre a faixa colorida (não a técnica antiga de
+   "cor-sobre-cor com opacidade baixa", que só funciona em fundo branco).
+4. Ícone grande por seção usa os **ícones de produto oficiais**
+   (`references/icons/`, ver `editorial-report.md` seção 5) dentro de um
+   chip branco, para ter contraste garantido contra qualquer cor da rampa.
+5. Callouts usam os mesmos ícones de produto (não ícones de linha genéricos)
+   em caixa de contorno fino — tamanho generoso (badge 46px / ícone 32px).
+6. Sem travessão (—) no texto corrido — troque por dois-pontos, vírgula ou
+   ponto final.
+
+Essa rampa multicor é exclusiva para este tipo de documento. Produto, site e
+dashboard continuam só com roxo+laranja (`--primary-purple` + `--accent-orange`).
+
 ## Acessibilidade (obrigatório)
 
 - Texto **branco sobre `#7A34F3`**: OK.
@@ -119,5 +152,12 @@ o `body` base). Depois use as receitas de `references/component-recipes.md`.
 ## Referências (progressive disclosure)
 
 - [`references/tokens.css`](references/tokens.css) — tokens completos e comentados, prontos para copiar.
-- [`references/palette.md`](references/palette.md) — paleta detalhada, quando usar cada cor e regras de contraste.
+- [`references/palette.md`](references/palette.md) — paleta detalhada, quando usar cada cor, regras de contraste e a rampa editorial multicor.
 - [`references/component-recipes.md`](references/component-recipes.md) — receitas prontas: botão, card, navbar, tabela zebrada, badge, capa de relatório, gradiente.
+- [`references/editorial-report.md`](references/editorial-report.md) — estilo editorial geral (ícones de produto, callouts outline, convenção de escrita sem travessão) para relatórios/e-books longos no estilo do livro GovHub. Para capa, cabeçalho de capítulo e rodapé em **PDF**, vá direto aos 4 arquivos abaixo.
+- [`references/print-pages.md`](references/print-pages.md) — **comece por aqui para qualquer PDF gerado via Chrome headless**: a arquitetura de página (`.gh-page` fixa 210×297mm, `@page { margin: 0 }`) que evita um bug real de paginação do Chrome (margem negativa + quebra de página forçada pinta uma barra fantasma da cor errada na página anterior).
+- [`references/print-cover.md`](references/print-cover.md) — capa de PDF, código exato validado com o usuário.
+- [`references/print-header.md`](references/print-header.md) — cabeçalho de capítulo em PDF (faixa full-bleed, numeral/eyebrow/título, chip de ícone opcional), código exato validado com o usuário.
+- [`references/print-footer.md`](references/print-footer.md) — rodapé de PDF (repete em toda página, barra alinhada à margem do conteúdo, não à borda física), código exato validado, com os erros já cometidos documentados (barra até a borda física em vez da margem, logo grande demais, barra colada no texto).
+- [`references/logo/`](references/logo/) — logo oficial GovHub em 3 orientações (horizontal, vertical, símbolo isolado) × 4 cores (primary, light, dark, colourfull), SVG, pronta para usar.
+- [`references/icons/`](references/icons/) — biblioteca completa de ícones de produto GovHub, 32 nomes × variante `Default` (duotone roxo+laranja, para fundo branco), `orange` e `purple` (fundo sólido colorido), todos em SVG. Para capas/callouts de relatório use a variante `Default` e o subconjunto curado em `editorial-report.md` seção 5 (workflow, document_check, pessoal, forum, database, pie_chart, settings, governance, paper, notification, tools) — os demais nomes (acesso, charts, chat_round, chat_square, code, contratos, courses, deploy, download, eye_dropper, figma, folder, github, ia, link, open-folder, orcamento, paint_brush, server, teds) ficam disponíveis para outros usos.
