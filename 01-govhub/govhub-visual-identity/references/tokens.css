@@ -31,6 +31,9 @@
   --bg-light:  #F7F7F7; /* fundo neutro claro */
   --bg-subtle: #F8F9FA; /* fundo alternado (zebra, seções) */
 
+  /* ---------- Bordas / divisores ---------- */
+  --border-soft: #E3DAF3; /* linha divisória sutil (rodapé de PDF, divisores discretos) — lavanda bem clara, não cinza puro */
+
   /* ---------- Cores de estado / semânticas ---------- */
   --color-success:   #10B981; /* verde — sucesso */
   --color-highlight: #FFD700; /* amarelo — destaque */
@@ -52,6 +55,29 @@
   --radius-md: 10px;
   --radius-lg: 16px;
   --grid-gutter: 20px; /* alinhado ao Bootstrap 5.3.2 do site */
+
+  /* ---------- Rampa editorial (livro "Gov Hub: um guia prático") ----------
+     Progressão de matiz roxo -> magenta -> rosa -> coral, derivada por rotação
+     de matiz a partir de --primary-purple para harmonizar com a marca.
+     Uso: codificar visualmente capítulos/seções de relatórios longos
+     (capa de capítulo, tarja de artefato, numeral de seção), NUNCA em UI de
+     produto — ali o roxo+laranja do site seguem sendo a única paleta.
+     Valores aproximados/harmonizados; confirme hex exatos no Figma da marca
+     se precisar de fidelidade absoluta ao material impresso. */
+  --editorial-01-purple: #5B21B6; /* capítulo 00/01 — mesmo tom de --purple-700 */
+  --editorial-02-magenta: #9520B6; /* capítulo 02 */
+  --editorial-03-pink: #C520A4; /* capítulo 03 */
+  --editorial-04-coral: #E8776F; /* capítulo 04 — tom salmão/coral (eco do rosa "Lab Livre") */
+  --editorial-grid-line: rgba(255, 255, 255, 0.08); /* linha de grade sutil sobre capas coloridas */
+  --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */
+
+  /* ---------- Roxo exato da logo (capas de documento) ----------
+     Extraído diretamente do arquivo SVG oficial da logo (fill="#7521F9"
+     nos paths). Ligeiramente diferente de --primary-purple (#7A34F3, do
+     CSS do site). Use --logo-purple quando a logo aparecer sobre um fundo
+     sólido na capa, para o fundo casar exatamente com a cor do arquivo da
+     logo — não use --primary-purple nesse caso, o contraste sutil incomoda. */
+  --logo-purple: #7521F9;
 }
 
 /* Base recomendada — aplique no body do artefato */
