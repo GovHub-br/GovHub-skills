@@ -24,6 +24,29 @@ Aplique a identidade visual **oficial** do GovHub (extraída do CSS de
 - **Laranja `#F97316` como acento pontual** (só CTA/destaque — não abusar).
 - **Fundos claros neutros** e a fonte **Inter**.
 
+## Antes de começar: pergunte pelo formato dos arquivos de origem
+
+Quando o usuário fornecer arquivos para servirem de base ou serem
+incorporados ao artefato (imagens, diagramas, tabelas, texto), **antes de
+processá-los**, pare e pergunte se a pessoa tem esse mesmo conteúdo em um
+formato mais fácil de processar — evita retrabalho e conversões frágeis.
+Casos comuns:
+
+- **Diagramas/fluxogramas/imagens em PDF**: peça PNG ou SVG se existir. Um
+  PDF de diagrama pode exigir um motor de renderização externo pra extrair
+  a imagem com fidelidade (aconteceu neste projeto: duas páginas de PDF
+  exportadas do Figma vinham em branco em conversores nativos, e só
+  renderizaram corretamente depois de instalar o Poppler) — enquanto um
+  PNG ou SVG do mesmo diagrama é direto, sem conversão nenhuma.
+- **Texto em `.docx`**: peça PDF ou `.md`/`.txt` se a pessoa tiver — a
+  extração de texto de PDF ou Markdown é direta; `.docx` exige passos
+  extras.
+- **Regra geral**: se o arquivo que chegou é de um formato "difícil"
+  (PDF de diagrama, `.docx`, planilha complexa, etc.), pergunte antes de
+  começar a converter. Só siga direto com o formato recebido se a pessoa
+  não tiver alternativa mais simples ou se o formato já for direto (PNG,
+  SVG, `.md`, `.txt`, CSV).
+
 ## Design Tokens (fonte da verdade)
 
 Injete este bloco no `:root` do artefato (dentro de `<style>` no `<head>`, ou no
@@ -116,6 +139,14 @@ editorial documentado em
 [`references/editorial-report.md`](references/editorial-report.md), validado
 na prática com o Framework de Briefing:
 
+0. **Pergunte primeiro** se é um **relatório de entrega de produto**
+   (vinculado formalmente a um projeto de pesquisa/contrato, com meta e
+   produto identificados) ou um **relatório comum**. Só o de entrega leva
+   folha de identificação do projeto + índice logo após a capa — e, nesse
+   caso, peça ao usuário as informações pra preencher a folha (lista de
+   instituições/responsáveis, dados do projeto/entrega, autores) antes de
+   escrever a página. Código exato e a lista completa do que perguntar em
+   [`references/print-frontmatter.md`](references/print-frontmatter.md).
 1. Capa com fundo **sólido** na cor exata da logo (`--logo-purple`,
    `#7521F9`), logo oficial (`references/logo/`) + moldura arredondada fina,
    sem onda decorativa, sem pílula, sem subtítulo — versão limpa.
@@ -155,9 +186,10 @@ dashboard continuam só com roxo+laranja (`--primary-purple` + `--accent-orange`
 - [`references/palette.md`](references/palette.md) — paleta detalhada, quando usar cada cor, regras de contraste e a rampa editorial multicor.
 - [`references/component-recipes.md`](references/component-recipes.md) — receitas prontas: botão, card, navbar, tabela zebrada, badge, capa de relatório, gradiente.
 - [`references/editorial-report.md`](references/editorial-report.md) — estilo editorial geral (ícones de produto, callouts outline, convenção de escrita sem travessão) para relatórios/e-books longos no estilo do livro GovHub. Para capa, cabeçalho de capítulo e rodapé em **PDF**, vá direto aos 4 arquivos abaixo.
-- [`references/print-pages.md`](references/print-pages.md) — **comece por aqui para qualquer PDF gerado via Chrome headless**: a arquitetura de página (`.gh-page` fixa 210×297mm, `@page { margin: 0 }`) que evita um bug real de paginação do Chrome (margem negativa + quebra de página forçada pinta uma barra fantasma da cor errada na página anterior).
+- [`references/print-pages.md`](references/print-pages.md) — **comece por aqui para qualquer PDF gerado via Chrome headless**: a arquitetura de página (`.gh-page` fixa 210×297mm, `@page { margin: 0 }`) que evita um bug real de paginação do Chrome (margem negativa + quebra de página forçada pinta uma barra fantasma da cor errada na página anterior). Também traz o procedimento **obrigatório** de conferir visualmente todas as páginas do PDF gerado (rasterizar + inspecionar) atrás de dois erros opostos: overflow silencioso (conteúdo cortado sem aviso) e espaço desperdiçado (quebras de página desnecessárias) — a paginação manual não avisa de nenhum dos dois sozinha.
 - [`references/print-cover.md`](references/print-cover.md) — capa de PDF, código exato validado com o usuário.
+- [`references/print-frontmatter.md`](references/print-frontmatter.md) — folha de identificação do projeto + índice, as duas páginas que vêm logo após a capa **só em relatório de entrega de produto** (pergunte antes — ver seção 4 acima). Inclui a lista exata do que perguntar ao usuário para preencher a folha.
 - [`references/print-header.md`](references/print-header.md) — cabeçalho de capítulo em PDF (faixa full-bleed, numeral/eyebrow/título, chip de ícone opcional), código exato validado com o usuário.
 - [`references/print-footer.md`](references/print-footer.md) — rodapé de PDF (repete em toda página, barra alinhada à margem do conteúdo, não à borda física), código exato validado, com os erros já cometidos documentados (barra até a borda física em vez da margem, logo grande demais, barra colada no texto).
-- [`references/logo/`](references/logo/) — logo oficial GovHub em 3 orientações (horizontal, vertical, símbolo isolado) × 4 cores (primary, light, dark, colourfull), SVG, pronta para usar.
-- [`references/icons/`](references/icons/) — biblioteca completa de ícones de produto GovHub, 32 nomes × variante `Default` (duotone roxo+laranja, para fundo branco), `orange` e `purple` (fundo sólido colorido), todos em SVG. Para capas/callouts de relatório use a variante `Default` e o subconjunto curado em `editorial-report.md` seção 5 (workflow, document_check, pessoal, forum, database, pie_chart, settings, governance, paper, notification, tools) — os demais nomes (acesso, charts, chat_round, chat_square, code, contratos, courses, deploy, download, eye_dropper, figma, folder, github, ia, link, open-folder, orcamento, paint_brush, server, teds) ficam disponíveis para outros usos.
+- [`references/logo/`](references/logo/) — logo oficial GovHub em 3 orientações (horizontal, vertical, símbolo isolado) × 4 cores (primary, light, dark, colourfull), SVG, pronta para usar. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre, UnB), já em versão branca/transparente, usadas no rodapé da capa (ver `print-cover.md`) — ordem fixa: Lab Livre primeiro, UnB depois.
+- [`references/icons/`](references/icons/) — biblioteca completa de ícones de produto GovHub, 32 nomes × variante `Default` (duotone roxo+laranja, para fundo branco), `orange` e `purple` (fundo sólido colorido), todos em SVG. Para capas/callouts de relatório use a variante `Default` e o subconjunto curado em `editorial-report.md` seção 5 (workflow, document_check, pessoal, forum, database, pie_chart, settings, governance, paper, notification, tools) — os demais nomes (acesso, charts, chat_round, chat_square, code, contratos, courses, deploy, download, eye_dropper, figma, folder, github, ia, link, open-folder, orcamento, paint_brush, server, teds) ficam disponíveis para outros usos. **Nunca** use os ícones sobre fundo diferente de branco/roxo GovHub/laranja GovHub — ver regra completa e a borda do badge em `editorial-report.md` seção 5.

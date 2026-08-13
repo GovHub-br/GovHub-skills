@@ -2,18 +2,19 @@
 
 Pressupõe a arquitetura de [`print-pages.md`](print-pages.md) (`.gh-page`
 fixa 210×297mm, `@page { margin: 0 }`). Validado com o usuário em agosto de
-2026 — o que muda de um documento para outro é só o **título**, o
-**subtítulo** e o **kicker**; o resto (fundo, moldura, logo, rodapé da capa)
-é fixo, copie sem alterar.
+2026 — o que muda de um documento para outro é só o **título** e o
+**subtítulo**; o resto (fundo, moldura, logo, rodapé da capa) é fixo, copie
+sem alterar.
 
 ## O que é
 
 Fundo **sólido** `--logo-purple` (`#7521F9`), sem gradiente, sem onda
 decorativa. Moldura arredondada fina inset 10mm. Logo GovHub branca **no
 fluxo normal**, alinhada à esquerda junto com o resto do texto (não
-posicionada solta no canto) — acima do kicker. Título e subtítulo em
-branco. Rodapé pequeno no canto inferior esquerdo, mesma tipografia
-(maiúsculas + letter-spacing) do kicker.
+posicionada solta no canto) — direto acima do título, sem kicker entre os
+dois (testado com kicker antes; removido a pedido do usuário por ser
+redundante com o título). Título e subtítulo em branco. Rodapé da capa:
+logos dos parceiros institucionais, centralizadas.
 
 ## CSS
 
@@ -30,18 +31,12 @@ branco. Rodapé pequeno no canto inferior esquerdo, mesma tipografia
 .gh-cover__logo {
   display: block;
   height: 40px; width: auto;
-  margin-bottom: 52px;                          /* respiro antes do kicker */
+  margin-bottom: 52px;                          /* respiro antes do título */
 }
 
 .gh-cover__content {
   position: absolute; left: 20mm; right: 20mm; top: 50%;
   transform: translateY(-30%);                  /* bloco de texto um pouco acima do centro vertical */
-}
-
-.gh-cover__kicker {
-  text-transform: uppercase; letter-spacing: 2.2px;
-  font-size: 10.5px; font-weight: 700; opacity: .85;
-  margin-bottom: 16px;
 }
 
 .gh-cover__title {
@@ -54,10 +49,11 @@ branco. Rodapé pequeno no canto inferior esquerdo, mesma tipografia
 }
 
 .gh-cover__footer {
-  position: absolute; left: 20mm; bottom: 16mm;
-  text-transform: uppercase; letter-spacing: 1.8px;  /* mesma tipografia do kicker */
-  font-size: 10px; font-weight: 700; opacity: .85;
+  position: absolute; left: 20mm; right: 20mm; bottom: 16mm;
+  display: flex; align-items: center; justify-content: center;
+  gap: 28px;
 }
+.gh-cover__footer img { height: 22px; width: auto; }
 ```
 
 ## HTML
@@ -67,25 +63,33 @@ branco. Rodapé pequeno no canto inferior esquerdo, mesma tipografia
   <div class="gh-cover__border"></div>
   <div class="gh-cover__content">
     <img class="gh-cover__logo" alt="GovHub" src="logo/orientation=horizontal, colour=light.svg">
-    <div class="gh-cover__kicker">Metodologia GovHub · Governança de Dados</div>
     <h1 class="gh-cover__title">Título do documento em uma ou duas linhas</h1>
     <p class="gh-cover__subtitle">Subtítulo de uma frase explicando o documento.</p>
   </div>
-  <div class="gh-cover__footer">GovHub &middot; Lab Livre &middot; Metodologia de projetos</div>
+  <div class="gh-cover__footer">
+    <img src="logo/parceiros/lab-livre.png" alt="Lab Livre">
+    <img src="logo/parceiros/unb.png" alt="UnB">
+  </div>
 </div>
 ```
 
+As imagens `logo/parceiros/lab-livre.png` e `logo/parceiros/unb.png` já são
+versões brancas (fundo transparente), prontas para fundo sólido colorido —
+não precisam de nenhum tratamento adicional. **Ordem fixa: Lab Livre
+primeiro, UnB depois.** Copie a pasta `references/logo/` inteira (incluindo
+`logo/parceiros/`) para o projeto, junto com `icons/`, como de costume (ver
+`print-pages.md`).
+
 ## O que varia por documento
 
-- **Kicker**: contexto/metodologia (ex: "Metodologia GovHub · Governança de Dados").
 - **Título** (`.gh-cover__title`): nome do documento. `max-width: 15ch` já
   força quebra de linha em títulos longos — teste com 2-3 linhas antes de
   aumentar a largura.
 - **Subtítulo**: uma frase, `max-width: 60ch`.
-- O texto do `.gh-cover__footer` ("GovHub · Lab Livre · Metodologia de
-  projetos") é fixo da marca — normalmente **não muda** entre documentos.
 
 ## O que não varia (não mexa sem motivo)
 
-Cor de fundo, espessura/opacidade da moldura, tamanho e posição da logo,
-tipografia do rodapé da capa — já testados e aprovados.
+Cor de fundo, espessura/opacidade da moldura, tamanho e posição da logo, o
+rodapé da capa (logos dos parceiros, centralizadas, nessa ordem) — já
+testados e aprovados. **Sem kicker** — foi removido por ser redundante com
+o título; não reintroduza sem pedido explícito do usuário.

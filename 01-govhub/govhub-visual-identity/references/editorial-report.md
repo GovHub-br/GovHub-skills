@@ -100,6 +100,25 @@ download, eye_dropper, figma, folder, github, ia, link, open-folder,
 orcamento, paint_brush, server, teds) seguem o mesmo padrão de uso, escolha
 pelo nome mais próximo do conteúdo.
 
+**Fundo permitido — só três, escolha a variante certa para cada um.** Os
+ícones têm exatamente três variantes de arquivo, uma por fundo:
+
+| Fundo | Variante do arquivo |
+|---|---|
+| Branco / claro | `background=Default` (duotone roxo+laranja) |
+| Roxo GovHub (`--primary-purple`) | `background=purple` |
+| Laranja GovHub (`--accent-orange`) | `background=orange` |
+
+Nunca coloque um ícone (nenhuma variante) sobre outra cor — inclusive as
+cores da rampa editorial (magenta, rosa, coral) ou qualquer roxo que não
+seja o `--primary-purple` exato. Não existe arquivo desenhado para essas
+cores, e o duotone/fundo sólido do ícone destoa visualmente quando forçado
+sobre uma cor pra qual ele não foi feito. É por isso que o chip do ícone no
+cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`) é sempre um
+quadrado **branco**, mesmo quando a faixa atrás dele é magenta/rosa/coral —
+o chip branco garante que o ícone sempre está sobre um dos três fundos
+permitidos, não sobre a cor variável da faixa.
+
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 
 | Ícone | Uso sugerido |
@@ -120,9 +139,21 @@ Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 dentro de um badge de 34px) ficou pequena demais segundo o usuário. Tamanho
 validado: badge de 46px com ícone de 32px dentro.
 
+**Borda do badge (fundo branco):** todo ícone sobre fundo branco (badge de
+callout, card, etc.) leva uma borda fina na cor da seção/callout — a mesma
+cor e espessura da borda do card ao redor dele (`gh-callout-box`), pra dar
+uma moldura consistente ao ícone em vez de deixá-lo solto no fundo branco.
+
 ```css
-.gh-callout-box .gh-icon-badge { width: 46px; height: 46px; border-width: 1.4px; }
-.gh-callout-box .gh-icon-badge img { width: 32px; height: 32px; }
+.gh-icon-badge {
+  width: 46px; height: 46px;
+  border: 1.4px solid var(--callout-color, var(--section-color, var(--primary-purple)));
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.gh-icon-badge img { width: 32px; height: 32px; }
 ```
 
 ## 6. Caixa de callout (outline, não preenchida)

@@ -40,7 +40,7 @@ GovHub à direita.
   font-size: 11px; font-weight: 700; opacity: .85;
   margin-bottom: 7px;
 }
-.gh-band__title { font-size: 27px; font-weight: 800; line-height: 1.2; margin: 0; }
+.gh-band__title { font-size: 22pt; font-weight: 800; line-height: 1.2; margin: 0; }  /* título principal (H1) */
 
 /* chip do ícone — opcional, mas inclua no exemplo/template para não esquecer como fica */
 .gh-band__icon {
@@ -106,13 +106,32 @@ e a faixa fica na cor errada sem avisar nada. Confira o nome exato em
 .gh-page-body.no-band { top: 20mm; }
 ```
 
-Tipografia do corpo (não especificada em nenhum outro arquivo — use esta
-base e ajuste por documento):
+## Escala tipográfica (PDF impresso)
+
+Validada com o usuário em agosto de 2026. **Use sempre `pt`, nunca `px`**,
+em qualquer texto de PDF — `pt` é uma unidade física fixa (1pt = 1/72
+polegada), então o tamanho no papel é previsível; `px` depende da resolução
+assumida pelo motor de renderização e pode sair diferente do esperado.
+Isso vale para todo o corpo do documento (título de capítulo já é a
+exceção documentada abaixo, por ser um elemento de capa/faixa, não corpo
+corrido).
+
+| Nível | Uso | Tamanho |
+|---|---|---|
+| Título principal (H1) | `.gh-band__title`, título de capítulo na faixa colorida | 20–24pt (padrão: 22pt) |
+| Subtítulo (H2/H3) | `.gh-page-body h3`/`h4`, subtítulo de seção dentro do corpo (ex: "Frentes de trabalho") | 14–18pt (padrão: 16pt) |
+| Texto principal (corpo) | `.gh-page-body p`, `li`, texto corrido | 11–12pt (padrão: 11.5pt) |
+| Notas de rodapé e legendas | `.gh-footer__text`, `.gh-fig-inline__caption`, `.gh-table__caption`, células de tabela, callouts | 9–10pt |
 
 ```css
-.gh-page-body h3 { font-size: 15px; color: var(--logo-purple); margin: 0 0 10px; }
-.gh-page-body p  { font-size: 12.5px; line-height: 1.6; color: var(--text-body); margin: 0 0 14px; }
+.gh-page-body h3 { font-size: 16pt; color: var(--logo-purple); margin: 0 0 10px; }
+.gh-page-body p  { font-size: 11.5pt; line-height: 1.5; color: var(--text-body); margin: 0 0 14px; }
 ```
+
+O que **não muda** com essa escala: o numeral grande (`.gh-band__num`,
+56px, decorativo) e o eyebrow (`.gh-band__eyebrow`, rótulo pequeno em
+maiúsculas) — nenhum dos dois é "texto de leitura", então ficam fora da
+escala de 4 níveis acima.
 
 ## O que varia por capítulo
 

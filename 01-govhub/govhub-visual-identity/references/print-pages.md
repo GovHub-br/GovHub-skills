@@ -68,6 +68,59 @@ chrome --headless=new --disable-gpu --no-pdf-header-footer \
   --print-to-pdf="saida.pdf" "file:///caminho/para/documento.html"
 ```
 
+## Revisão obrigatória depois de gerar o PDF: overflow silencioso e espaço desperdiçado
+
+Como cada `.gh-page` tem altura fixa e `overflow: hidden`, **conteúdo que não
+cabe simplesmente desaparece** — sem erro, sem aviso, sem quebra automática
+para a página seguinte. A paginação é 100% manual (o autor decide onde cada
+`.gh-page` termina), então os dois erros abaixo são inevitáveis se o PDF não
+for conferido visualmente depois de gerado:
+
+1. **Overflow (perda de conteúdo)**: uma estimativa otimista de quanto texto
+   cabe numa página corta as últimas linhas/linhas de tabela sem deixar
+   rastro. Já aconteceu numa tabela de 3 colunas com células de texto longo:
+   a estimativa de altura por linha ficou baixa demais, e as últimas 7 das
+   16 linhas sumiram silenciosamente.
+2. **Espaço desperdiçado (quebras desnecessárias)**: o erro oposto e igual
+   de comum — estimar pouco espaço disponível numa página (com medo do
+   erro 1) deixa 200-500px de sobra em branco antes do rodapé, quando dava
+   pra ter puxado o parágrafo/bloco seguinte pra cima. Isso aconteceu em
+   várias páginas seguidas num relatório de ~30 páginas: capítulos que
+   caberiam em 2 páginas ficaram espalhados em 3 porque a estimativa de
+   altura de cada bloco de texto era conservadora demais.
+
+**Procedimento obrigatório após gerar o PDF** (não pule esta etapa,
+independente de quão confiante a estimativa de paginação pareça):
+
+1. Rasterize **todas** as páginas do PDF gerado em PNG (ex: `pdftoppm -png
+   -r 90 arquivo.pdf pagina` do Poppler) — não confie só no HTML fonte.
+2. Abra cada imagem e confira, por página:
+   - **Overflow**: alguma tabela, lista ou parágrafo termina exatamente na
+     borda inferior da área de conteúdo (perto do `bottom` do
+     `.gh-page-body`) de um jeito que parece cortado no meio de uma frase,
+     linha de tabela ou item de lista? Se sim, é overflow — confira contra
+     o HTML fonte quantos itens deveriam existir ali.
+   - **Espaço sobrando**: existe uma folga grande e óbvia (bem mais que uma
+     margem de respiro normal) entre o fim do conteúdo e a barra do
+     rodapé? Se a página seguinte for uma continuação do mesmo capítulo
+     (`.gh-page-body.no-band`, sem faixa nova), o início dela provavelmente
+     cabe nessa folga.
+3. Quando achar espaço sobrando entre duas páginas do mesmo capítulo, mova
+   parágrafos/blocos inteiros da página seguinte para o fim da página com
+   folga (nunca corte um parágrafo no meio). Prefira mover pouco e sobrar
+   uma margem segura (100px+) a preencher exatamente até a borda.
+4. Gere o PDF de novo e repita a conferência visual **completa** (todas as
+   páginas, não só as que mudaram) — mover conteúdo de uma página pode
+   fazer a página seguinte, antes cheia, ficar apertada ou até estourar.
+5. Repita até não sobrar nem overflow nem folga grande evidente. Normalmente
+   leva 2-3 rodadas num documento longo.
+
+Não existe atalho confiável de calcular isso só de cabeça (contando
+caracteres, estimando linhas) — a fonte, o `line-height`, a largura da
+coluna e a presença de negrito/itálico mudam a altura real o suficiente
+para a estimativa errar por uma margem grande. A rasterização + inspeção
+visual é o único jeito confiável de saber com certeza.
+
 ## Limitação conhecida (ainda em aberto): conteúdo que flui
 
 Esta técnica pressupõe que o autor sabe de antemão quantas páginas físicas
