@@ -91,14 +91,49 @@ continuam normais — a regra é só sobre o travessão longo usado como pausa.
 (pensada para fundo branco). Use estes, não ícones de linha genéricos
 desenhados à mão — o efeito de marca é bem mais forte.
 
-A pasta tem 32 nomes de ícone, cada um também em `background=orange` e
+A pasta tem 332 nomes de ícone, cada um também em `background=orange` e
 `background=purple` (versões de fundo sólido colorido, para usar sobre
-cartões/badges coloridos em vez do duotone). Abaixo está o mapeamento
-curado para os callouts do Framework de Briefing — os demais nomes (acesso,
-charts, chat_round, chat_square, code, contratos, courses, deploy,
-download, eye_dropper, figma, folder, github, ia, link, open-folder,
-orcamento, paint_brush, server, teds) seguem o mesmo padrão de uso, escolha
-pelo nome mais próximo do conteúdo.
+cartões/badges coloridos em vez do duotone) — 996 arquivos ao todo.
+**Escolha pelo nome**: os nomes são descritivos do conceito (ex.:
+`document-check`, `shield-check`, `chart-bar`, `folder-open`,
+`user-group`), então navegue a pasta procurando o nome mais próximo do
+conteúdo, em vez de depender de uma tabela fixa — a biblioteca é grande
+demais pra manter um mapeamento exaustivo atualizado. Abaixo está o
+mapeamento curado só para os callouts específicos do Framework de
+Briefing (um caso de uso recorrente que já foi validado); pra qualquer
+outro conteúdo, busque pelo nome.
+
+**Consistência dentro do mesmo documento**: depois de escolher um ícone
+para representar um conceito recorrente (ex.: "arquivo"), use o mesmo
+nome em todas as ocorrências desse conceito no documento — não alterne
+entre sinônimos próximos (`folder` num capítulo, `folder-open` noutro)
+para a mesma ideia.
+
+**Fundo permitido — só três, escolha a variante certa para cada um.** Os
+ícones têm exatamente três variantes de arquivo, uma por fundo:
+
+| Fundo | Variante do arquivo |
+|---|---|
+| Branco / claro | `background=Default` (duotone roxo+laranja) |
+| Roxo GovHub `#7A34F3` (`--primary-purple`) | `background=purple` |
+| Laranja `#F19F42` (`--color-warm` — **não** `--accent-orange` `#F97316`, são cores diferentes) | `background=orange` |
+
+Para **criar um ícone novo** que ainda não existe nesta pasta, esta skill
+não cobre isso — use a skill separada `govhub-icon-creation`, dedicada à
+técnica duotone exata (camadas, offset, cores por variante) e ao workflow
+de construção no Figma.
+
+Nunca coloque um ícone (nenhuma variante) sobre outra cor — inclusive as
+cores da rampa editorial (magenta, rosa, coral), qualquer roxo que não
+seja o `--primary-purple` exato, ou o `--accent-orange` (`#F97316`, cor de
+CTA — diferente do `--color-warm` `#F19F42` que a variante `orange` foi
+feita para). Não existe arquivo desenhado para essas cores, e o
+duotone/fundo sólido do ícone destoa visualmente quando forçado sobre uma
+cor pra qual ele não foi feito. É por isso que o chip do ícone no
+cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`) é sempre um
+quadrado **branco**, mesmo quando a faixa atrás dele é magenta/rosa/coral —
+o chip branco garante que o ícone sempre está sobre um dos três fundos
+permitidos, não sobre a cor variável da faixa.
 
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 
@@ -120,9 +155,21 @@ Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 dentro de um badge de 34px) ficou pequena demais segundo o usuário. Tamanho
 validado: badge de 46px com ícone de 32px dentro.
 
+**Borda do badge (fundo branco):** todo ícone sobre fundo branco (badge de
+callout, card, etc.) leva uma borda fina na cor da seção/callout — a mesma
+cor e espessura da borda do card ao redor dele (`gh-callout-box`), pra dar
+uma moldura consistente ao ícone em vez de deixá-lo solto no fundo branco.
+
 ```css
-.gh-callout-box .gh-icon-badge { width: 46px; height: 46px; border-width: 1.4px; }
-.gh-callout-box .gh-icon-badge img { width: 32px; height: 32px; }
+.gh-icon-badge {
+  width: 46px; height: 46px;
+  border: 1.4px solid var(--callout-color, var(--section-color, var(--primary-purple)));
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.gh-icon-badge img { width: 32px; height: 32px; }
 ```
 
 ## 6. Caixa de callout (outline, não preenchida)

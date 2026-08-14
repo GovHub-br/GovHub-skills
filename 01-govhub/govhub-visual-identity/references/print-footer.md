@@ -27,7 +27,7 @@ abaixo dela, nome curto do documento à esquerda + marca circular da GovHub
   position: absolute; left: 20mm; right: 20mm; bottom: 12mm;
   display: flex; align-items: center; justify-content: space-between;
 }
-.gh-footer__text { font-size: 9.5px; color: var(--text-muted); }
+.gh-footer__text { font-size: 9pt; color: var(--text-muted); }  /* nota de rodapé — ver escala em print-header.md */
 .gh-footer__logo { height: 9.5mm; width: auto; }
 ```
 
@@ -36,15 +36,25 @@ abaixo dela, nome curto do documento à esquerda + marca circular da GovHub
 ```html
 <div class="gh-footer-bar"></div>
 <div class="gh-footer">
-  <span class="gh-footer__text">Nome curto do documento &middot; Metodologia GovHub</span>
+  <span class="gh-footer__text">Nome curto do documento &middot; Nome curto do projeto/frente &middot; Gov Hub &middot; Lab Livre - UnB</span>
   <img class="gh-footer__logo" alt="" src="logo/orientation=none, colour=primary.svg">
 </div>
 ```
 
+## Padrão do texto (`.gh-footer__text`)
+
+```
+Nome curto do documento · Nome curto do projeto ou frente · Gov Hub · Lab Livre - UnB
+```
+
+Sempre as 4 partes nessa ordem, mesmo separador (`&middot;`) entre todas.
+Exemplo real: `Relatório de Diagnóstico · MGI · Gov Hub · Lab Livre - UnB`.
+
 ## O que varia por documento
 
-- Só o texto (`.gh-footer__text`) — nome do documento. A marca e a barra
-  são fixas.
+- As duas primeiras partes do texto — nome curto do documento e nome curto
+  do projeto/frente a que ele pertence. As duas últimas (`Gov Hub · Lab
+  Livre - UnB`) são fixas da marca, assim como o símbolo e a barra.
 
 ## Erros já cometidos (não repita)
 
