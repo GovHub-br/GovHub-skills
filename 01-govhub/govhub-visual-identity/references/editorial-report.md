@@ -1,4 +1,4 @@
-# Estilo editorial GovHub — relatórios longos e frameworks numerados
+# Estilo editorial Gov Hub — relatórios longos e frameworks numerados
 
 Fonte: *Gov Hub: um guia prático para integração e qualificação de dados
 públicos* (UnB/Ipea/Lab Livre, 2025) — o "livro" oficial do projeto — e um
@@ -11,10 +11,10 @@ Para telas de produto, dashboards ou UI, use `component-recipes.md` e a
 paleta roxo+laranja normal — não este arquivo.
 
 Todos os componentes abaixo assumem que `tokens.css` (incluindo a rampa
-`--editorial-*` e `--logo-purple`) já está carregado. Os assets de logo e
-ícones oficiais usados nos exemplos estão em `references/logo/` e
-`references/icons/` desta skill — copie-os para o projeto em vez de
-recriar ícones do zero.
+`--editorial-*` e `--logo-purple`) já está carregado. As **logos** usadas
+nos exemplos estão em `references/logo/` desta skill — copie a pasta para o
+projeto. Os **ícones** vêm por CDN (ver [`icons-catalog.md`](icons-catalog.md)),
+não são arquivos locais.
 
 ## 1. Logo — qual arquivo usar onde
 
@@ -24,9 +24,9 @@ recriar ícones do zero.
 
 | Contexto | Arquivo | Tamanho de referência |
 |---|---|---|
-| Capa, fundo colorido/escuro | `orientation=horizontal, colour=light.svg` (logotipo completo, branco) | ~64px de altura |
-| Rodapé de página, fundo branco | `orientation=none, colour=primary.svg` (só o símbolo, roxo) | ~45px de altura |
-| Rodapé sobre fundo colorido | `orientation=none, colour=light.svg` (símbolo branco) | ~45px de altura |
+| Capa, fundo colorido/escuro | `horizontal-light.svg` (logotipo completo, branco) | ~64px de altura |
+| Rodapé de página, fundo branco | `none-primary.svg` (só o símbolo, roxo) | ~45px de altura |
+| Rodapé sobre fundo colorido | `none-light.svg` (símbolo branco) | ~45px de altura |
 
 Os arquivos atuais já vêm com o *viewBox* ajustado rente ao desenho (sem
 sobra de espaço em branco nas bordas) — é seguro colocar `height` direto no
@@ -37,10 +37,10 @@ para dentro do que o texto ao lado — nesse caso, ajuste o `viewBox` para o
 bounding box real do desenho, não tente compensar só no CSS.
 
 ```html
-<img src="logo/orientation=horizontal, colour=light.svg" alt="GovHub" style="height:64px; width:auto;">
+<img src="logo/horizontal-light.svg" alt="Gov Hub" style="height:64px; width:auto;">
 ```
 
-Não escreva "GovHub" como texto ao lado da logo (ex. "· Lab Livre") a menos
+Não escreva "Gov Hub" como texto ao lado da logo (ex. "· Lab Livre") a menos
 que peçam explicitamente — a logo sozinha já é a marca; texto adicional colado
 nela tende a ficar poluído.
 
@@ -64,7 +64,7 @@ cabeçalho, só o nome do documento no rodapé):
   título, chip de ícone opcional.
 - [`print-footer.md`](print-footer.md) — rodapé: repete em toda página de
   conteúdo, barra fina alinhada à margem do texto (não à borda física da
-  página) + marca da GovHub.
+  página) + marca da Gov Hub.
 
 **Página de visão geral/framework** (grid com um card por seção) usa a
 mesma faixa full-bleed sólida no topo, com o texto "FRAMEWORK" como eyebrow
@@ -83,22 +83,37 @@ dependendo do que ficar mais natural na frase:
 Hífens dentro de palavras compostas (`ator-chave`, `pré-requisito`)
 continuam normais — a regra é só sobre o travessão longo usado como pausa.
 
-## 5. Ícones de produto GovHub (não são os ícones de linha genéricos)
+## 5. Ícones de produto Gov Hub (não são os ícones de linha genéricos)
 
-`references/icons/` traz os ícones oficiais reais do GovHub: ilustrações
-"duotone" com contorno roxo (`#7A34F3`) e uma sombra/silhueta laranja
-(`#F19F42`, igual a `--color-warm`) atrás, variante `background=Default`
-(pensada para fundo branco). Use estes, não ícones de linha genéricos
-desenhados à mão — o efeito de marca é bem mais forte.
+Os ícones oficiais reais do Gov Hub são ilustrações
+"duotone" com contorno roxo e uma sombra/silhueta laranja atrás, variante
+`default` (pensada para fundo branco). Use estes, não ícones de linha
+genéricos desenhados à mão — o efeito de marca é bem mais forte.
 
-A pasta tem 332 nomes de ícone, cada um também em `background=orange` e
-`background=purple` (versões de fundo sólido colorido, para usar sobre
-cartões/badges coloridos em vez do duotone) — 996 arquivos ao todo.
+> **Atenção — descompasso de paleta pendente:** a paleta oficial da marca
+> mudou (ver `palette.md`: roxo agora é `#613EFF`, e o laranja foi
+> descontinuado). O repositório externo de ícones (`GovHub-br/skills-assets`)
+> ainda não foi regerado com as novas cores — os arquivos que chegam pelo CDN
+> continuam desenhados no roxo/laranja antigos. Até a equipe de design
+> regerar esse repositório: use a variante `-default.svg` (fundo branco) e
+> `-purple.svg` (fundo roxo — o roxo antigo do ícone é próximo o bastante do
+> novo `#613EFF` pra não destoar); **evite a variante `-orange.svg`**, já que
+> não existe mais um fundo laranja oficial pra ela combinar.
+
+Os SVGs **não ficam nesta skill** — são servidos por CDN a partir do repo
+`GovHub-br/skills-assets`. Ver [`icons-catalog.md`](icons-catalog.md) para a
+URL-base, o padrão de nome e a lista completa dos 332 nomes. Resumo:
+
+```
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>.svg
+```
+
+São 332 nomes de ícone, cada um em 3 variantes (`default`, `orange`, `purple`).
 **Escolha pelo nome**: os nomes são descritivos do conceito (ex.:
 `document-check`, `shield-check`, `chart-bar`, `folder-open`,
-`user-group`), então navegue a pasta procurando o nome mais próximo do
-conteúdo, em vez de depender de uma tabela fixa — a biblioteca é grande
-demais pra manter um mapeamento exaustivo atualizado. Abaixo está o
+`user-group`), então procure na lista de `icons-catalog.md` o nome mais
+próximo do conteúdo, em vez de depender de uma tabela fixa — a biblioteca é
+grande demais pra manter um mapeamento exaustivo atualizado. Abaixo está o
 mapeamento curado só para os callouts específicos do Framework de
 Briefing (um caso de uso recorrente que já foi validado); pra qualquer
 outro conteúdo, busque pelo nome.
@@ -109,25 +124,24 @@ nome em todas as ocorrências desse conceito no documento — não alterne
 entre sinônimos próximos (`folder` num capítulo, `folder-open` noutro)
 para a mesma ideia.
 
-**Fundo permitido — só três, escolha a variante certa para cada um.** Os
-ícones têm exatamente três variantes de arquivo, uma por fundo:
+**Fundo permitido — até a atualização do repositório de ícones.** Os
+ícones têm três variantes de arquivo, uma por fundo, desenhadas para a
+paleta antiga:
 
-| Fundo | Variante do arquivo |
-|---|---|
-| Branco / claro | `background=Default` (duotone roxo+laranja) |
-| Roxo GovHub `#7A34F3` (`--primary-purple`) | `background=purple` |
-| Laranja `#F19F42` (`--color-warm` — **não** `--accent-orange` `#F97316`, são cores diferentes) | `background=orange` |
+| Fundo | Variante (sufixo na URL) | Status |
+|---|---|---|
+| Branco / claro | `-default.svg` (duotone roxo+laranja) | OK, usar |
+| Roxo Gov Hub (`--primary-purple`, agora `#613EFF`) | `-purple.svg` | OK, usar — tom próximo o bastante do roxo antigo |
+| ~~Laranja~~ | `-orange.svg` | **Evitar** — não existe mais fundo laranja oficial; sem substituto até o repo ser regerado |
 
-Para **criar um ícone novo** que ainda não existe nesta pasta, esta skill
+Para **criar um ícone novo** que ainda não existe na biblioteca, esta skill
 não cobre isso — use a skill separada `govhub-icon-creation`, dedicada à
 técnica duotone exata (camadas, offset, cores por variante) e ao workflow
 de construção no Figma.
 
 Nunca coloque um ícone (nenhuma variante) sobre outra cor — inclusive as
-cores da rampa editorial (magenta, rosa, coral), qualquer roxo que não
-seja o `--primary-purple` exato, ou o `--accent-orange` (`#F97316`, cor de
-CTA — diferente do `--color-warm` `#F19F42` que a variante `orange` foi
-feita para). Não existe arquivo desenhado para essas cores, e o
+cores da rampa editorial (navy, magenta, rosa, pêssego) ou o `--accent-pink`
+(`#F9006F`, cor de CTA). Não existe arquivo desenhado para essas cores, e o
 duotone/fundo sólido do ícone destoa visualmente quando forçado sobre uma
 cor pra qual ele não foi feito. É por isso que o chip do ícone no
 cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`) é sempre um
@@ -179,7 +193,7 @@ título em uppercase pequeno, corpo de texto normal.
 
 ```html
 <div class="gh-callout-box">
-  <div class="gh-icon-badge"><img src="icons/name=paper, background=Default.svg" alt=""></div>
+  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/paper-default.svg" alt=""></div>
   <div>
     <div class="gh-callout-box__title">O que é</div>
     <div class="gh-callout-box__body">Texto explicativo do callout.</div>
@@ -209,5 +223,5 @@ container pai.
 - Documentos de 1–3 páginas sem seções numeradas → a rampa editorial é
   exagero; um único acento roxo+laranja já resolve.
 - Qualquer contexto onde a marca precisa ser reconhecida instantaneamente
-  como "produto GovHub" (não como "publicação/relatório GovHub") → prefira
+  como "produto Gov Hub" (não como "publicação/relatório Gov Hub") → prefira
   roxo+laranja puro (`--primary-purple`, não `--logo-purple`).
