@@ -13,7 +13,7 @@ nunca na capa (a capa tem seu próprio rodapé pequeno, ver
 
 Uma barra fina divisória **alinhada à margem do conteúdo** (não vai até a
 borda física da página — só até onde o texto do documento também vai) e,
-abaixo dela, nome curto do documento à esquerda + marca circular da GovHub
+abaixo dela, nome curto do documento à esquerda + marca circular da Gov Hub
 (símbolo isolado) à direita, em tamanho pequeno-mas-legível.
 
 ## CSS
@@ -37,7 +37,7 @@ abaixo dela, nome curto do documento à esquerda + marca circular da GovHub
 <div class="gh-footer-bar"></div>
 <div class="gh-footer">
   <span class="gh-footer__text">Nome curto do documento &middot; Nome curto do projeto/frente &middot; Gov Hub &middot; Lab Livre - UnB</span>
-  <img class="gh-footer__logo" alt="" src="logo/orientation=none, colour=primary.svg">
+  <img class="gh-footer__logo" alt="" src="logo/none-primary.svg">
 </div>
 ```
 

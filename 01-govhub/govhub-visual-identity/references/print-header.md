@@ -15,7 +15,7 @@ exatamente no topo físico da página, sem nenhuma margem branca ao redor
 `print-pages.md` para o porquê de NÃO tentar isso com margem negativa).
 Dentro: numeral grande translúcido + eyebrow (rótulo pequeno em
 maiúsculas) + título, e opcionalmente um chip branco com ícone de produto
-GovHub à direita.
+Gov Hub à direita.
 
 **Numeração sempre começa em 1** (não em 0) — "01", "02", "03"...
 
@@ -40,7 +40,7 @@ GovHub à direita.
   font-size: 11px; font-weight: 700; opacity: .85;
   margin-bottom: 7px;
 }
-.gh-band__title { font-size: 22pt; font-weight: 800; line-height: 1.2; margin: 0; }  /* título principal (H1) */
+.gh-band__title { color: #fff; font-size: 22pt; font-weight: 800; line-height: 1.2; margin: 0; }  /* título principal (H1); color explícito — não confie na herança de .gh-band, um reset global tipo h1,h2,h3,h4{color:...} no projeto sobrescreve o branco silenciosamente */
 
 /* chip do ícone — opcional, mas inclua no exemplo/template para não esquecer como fica */
 .gh-band__icon {
@@ -73,7 +73,7 @@ faixa por causa disso.
            Use <img>, não SVG inline colado — mesmo padrão dos callouts em
            editorial-report.md seção 6, mais simples de manter consistente. -->
       <div class="gh-band__icon">
-        <img src="icons/name=workflow, background=Default.svg" alt="">
+        <img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/workflow-default.svg" alt="">
       </div>
     </div>
   </div>
@@ -97,7 +97,7 @@ e a faixa fica na cor errada sem avisar nada. Confira o nome exato em
 ```css
 .gh-page-body {
   position: absolute; left: 20mm; right: 20mm;
-  top: 74mm; bottom: 32mm;    /* top reserva espaço pra faixa; ajuste se a faixa crescer muito */
+  top: 74mm; bottom: 32mm;    /* top = altura real da faixa + ~28mm de respiro, ver fórmula abaixo */
   overflow: hidden;
 }
 /* página de continuação, sem faixa: só o top muda (respiro normal do topo).
@@ -105,6 +105,26 @@ e a faixa fica na cor errada sem avisar nada. Confira o nome exato em
    altura em toda página, tenha ela faixa ou não. */
 .gh-page-body.no-band { top: 20mm; }
 ```
+
+**`74mm` não é uma constante fixa — é `altura_real_da_faixa + ~28mm` de
+respiro, e o resultado bateu 74mm porque a faixa validada tinha ~46mm de
+altura.** Quando o corpo pagina por medição (ver "Conteúdo que flui em
+muitas páginas" em `print-pages.md`) e você mede a altura real de cada
+faixa no navegador, **não use a altura medida como `top` diretamente** — já
+aconteceu de um agente fazer isso e o texto do capítulo nasceu colado
+embaixo da faixa, sem nenhum respiro, porque ele leu "não force altura
+fixa na faixa" como licença para também não reservar respiro nenhum no
+corpo. A regra correta, com faixa de altura variável:
+
+```
+top = altura_real_da_faixa_em_mm + 28
+```
+
+Os ~28mm de respiro valem tanto pra faixa curta (uma linha de
+eyebrow+título, como no exemplo validado) quanto pra faixa mais alta
+(título de duas linhas, ou com `.gh-band__desc`) — é sempre a mesma folga
+absoluta somada por cima da altura real, não uma margem fixa de página que
+ignora o quanto a faixa cresceu.
 
 ## Escala tipográfica (PDF impresso)
 

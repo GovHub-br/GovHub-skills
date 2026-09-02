@@ -8,8 +8,10 @@ sem alterar.
 
 ## O que é
 
-Fundo **sólido** `--logo-purple` (`#7521F9`), sem gradiente, sem onda
-decorativa. Moldura arredondada fina inset 10mm. Logo GovHub branca **no
+Fundo **sólido** `--logo-purple` (placeholder `#613EFF`, pendente
+confirmação com a nova exportação da logo — ver nota em `palette.md`), sem
+gradiente, sem onda
+decorativa. Moldura arredondada fina inset 10mm. Logo Gov Hub branca **no
 fluxo normal**, alinhada à esquerda junto com o resto do texto (não
 posicionada solta no canto) — direto acima do título, sem kicker entre os
 dois (testado com kicker antes; removido a pedido do usuário por ser
@@ -40,6 +42,9 @@ logos dos parceiros institucionais, centralizadas.
 }
 
 .gh-cover__title {
+  color: #fff;  /* explícito, não confie na herança de .gh-cover — um reset
+                   global tipo h1,h2,h3,h4{color:...} no projeto que consome
+                   esta skill sobrescreve silenciosamente o branco herdado */
   font-size: 38px; font-weight: 800; line-height: 1.12;
   margin: 0 0 18px; max-width: 15ch;
 }
@@ -62,7 +67,7 @@ logos dos parceiros institucionais, centralizadas.
 <div class="gh-page gh-cover">
   <div class="gh-cover__border"></div>
   <div class="gh-cover__content">
-    <img class="gh-cover__logo" alt="GovHub" src="logo/orientation=horizontal, colour=light.svg">
+    <img class="gh-cover__logo" alt="Gov Hub" src="logo/horizontal-light.svg">
     <h1 class="gh-cover__title">Título do documento em uma ou duas linhas</h1>
     <p class="gh-cover__subtitle">Subtítulo de uma frase explicando o documento.</p>
   </div>
@@ -77,8 +82,8 @@ As imagens `logo/parceiros/lab-livre.png` e `logo/parceiros/unb.png` já são
 versões brancas (fundo transparente), prontas para fundo sólido colorido —
 não precisam de nenhum tratamento adicional. **Ordem fixa: Lab Livre
 primeiro, UnB depois.** Copie a pasta `references/logo/` inteira (incluindo
-`logo/parceiros/`) para o projeto, junto com `icons/`, como de costume (ver
-`print-pages.md`).
+`logo/parceiros/`) para o projeto, como de costume (ver `print-pages.md`).
+Os ícones não são copiados — vêm por CDN (ver `icons-catalog.md`).
 
 ## O que varia por documento
 
@@ -93,3 +98,14 @@ Cor de fundo, espessura/opacidade da moldura, tamanho e posição da logo, o
 rodapé da capa (logos dos parceiros, centralizadas, nessa ordem) — já
 testados e aprovados. **Sem kicker** — foi removido por ser redundante com
 o título; não reintroduza sem pedido explícito do usuário.
+
+**Cuidado com o nome:** esse rótulo pequeno em uppercase acima do título
+(o "kicker") é o mesmo tipo de elemento chamado de **eyebrow** no
+cabeçalho de capítulo (`.gh-band__eyebrow`, ver `print-header.md`) — lá
+ele é obrigatório, aqui na capa é proibido. Já aconteceu de um agente
+reintroduzir o kicker na capa sob o nome "eyebrow" (`.gh-cover__eyebrow`,
+com um texto tipo "Documentação de schema · dados abertos" acima do
+título), achando que era um elemento diferente por ter outro nome de
+classe — é o mesmo elemento proibido. A capa validada vai direto de
+`.gh-cover__logo` para `.gh-cover__title`, sem nenhum texto pequeno entre
+os dois, com qualquer nome de classe.

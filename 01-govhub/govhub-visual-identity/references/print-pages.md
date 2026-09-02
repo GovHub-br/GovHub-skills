@@ -9,6 +9,31 @@ Não é a técnica do `editorial-report.md` original (que usava margem de
 página + margem negativa para sangrar a faixa) — aquela abordagem tem um bug
 real do Chrome, documentado abaixo. Use sempre esta versão.
 
+## Regra: a dificuldade de paginar o corpo NÃO é motivo para simplificar capa/cabeçalho
+
+A capa (`print-cover.md`) e o cabeçalho de capítulo (`print-header.md`) são
+páginas de conteúdo curto e conhecido de antemão — sempre cabem numa única
+`.gh-page` full-bleed, sem exceção nenhuma. A dificuldade real está em
+paginar um **corpo** longo que flui por muitas páginas (ver "Conteúdo que
+flui em muitas páginas" abaixo) — isso é um problema totalmente
+independente e não justifica tocar na capa ou na faixa.
+
+**Já aconteceu**: montando o PDF de um dicionário de dados (28 tabelas,
+corpo com dezenas de páginas), o agente leu a limitação de paginação do
+corpo e, por analogia/receio de complexidade, decidiu simplificar TAMBÉM a
+capa e o cabeçalho — trocou o fundo sólido full-bleed por um cartão roxo
+com margem branca ao redor da página, e a faixa de capítulo por um card
+arredondado dentro da margem, sem nunca ter tentado a versão full-bleed
+para essas duas peças. O resultado não seguia mais o idv, e o usuário só
+percebeu depois de já ter recebido o PDF.
+
+**Regra**: capa e faixa de capítulo usam o código exato de `print-cover.md`
+e `print-header.md`, sempre — mesmo quando o corpo do documento é longo,
+tem conteúdo dinâmico, ou parece complicado demais para paginar com
+precisão. Se depois de tentar isso realmente não for possível, pare e
+pergunte ao usuário antes de simplificar — não decida sozinho que "mais
+simples" é aceitável só porque outra parte do documento é trabalhosa.
+
 ## O problema que esta técnica resolve
 
 A tentação óbvia é: dar um `@page { margin: 14mm }` para toda página (assim
@@ -121,38 +146,108 @@ coluna e a presença de negrito/itálico mudam a altura real o suficiente
 para a estimativa errar por uma margem grande. A rasterização + inspeção
 visual é o único jeito confiável de saber com certeza.
 
-## Limitação conhecida (ainda em aberto): conteúdo que flui
+## Conteúdo que flui em muitas páginas: paginação por medição (validado)
 
-Esta técnica pressupõe que o autor sabe de antemão quantas páginas físicas
-existem e escreve uma `.gh-page` por página. Isso funciona bem para
-frameworks/relatórios curtos com paginação manual (como o Framework de
-Briefing, ~10-15 páginas). Para um documento onde o conteúdo é gerado
-dinamicamente e pagina sozinho (ex: um dicionário de dados com centenas de
-linhas de tabela, onde não dá pra saber de antemão onde cada página
-termina), ainda não temos uma receita validada que combine "página fixa sem
-margem" com "conteúdo que flui e quebra sozinho". Duas direções possíveis a
-explorar quando isso for necessário, nenhuma testada ainda neste projeto:
-1. Gerar o PDF em duas passadas: uma primeira renderização mede onde as
-   quebras de conteúdo fluido cairiam, e uma segunda monta as `.gh-page`
-   manualmente com esses cortes.
-2. Usar `Page.printToPDF` (CDP) só para o rodapé repetido (via
-   `footerTemplate`) nas páginas de conteúdo fluido, mantendo margem real de
-   página (não zero) nelas — aceitando que, nessas páginas específicas, o
-   cabeçalho em faixa full-bleed não é usado (só a página de abertura de
-   capítulo, que pode continuar sendo uma `.gh-page` fixa isolada).
+Escrever uma `.gh-page` por página à mão só funciona quando o autor sabe de
+antemão quantas páginas físicas existem — bom para frameworks/relatórios
+curtos (ex: o Framework de Briefing, ~10-15 páginas). Para um documento
+onde o conteúdo é gerado dinamicamente e não dá pra saber de antemão onde
+cada página termina (ex: um dicionário de dados com dezenas de tabelas e
+diagramas de tamanho variável), pagine por **medição real de altura**, não
+por estimativa manual. Validado em produção (agosto de 2026, relatório de
+21 páginas com diagramas mermaid de altura variável, capa e faixas de
+capítulo full-bleed em todas as páginas, sem overflow nem folga grande):
+
+1. Quebre o conteúdo do corpo em **blocos atômicos** (uma tabela, um
+   diagrama, uma nota — nunca algo que não possa ser cortado no meio) mais
+   uma **faixa** (`.gh-band`, ver `print-header.md`) por capítulo.
+2. Num navegador headless (Puppeteer/Playwright), depois que qualquer
+   conteúdo assíncrono (ex: diagramas mermaid) já tiver renderizado, crie um
+   container escondido `position:absolute; width:170mm` (a largura útil do
+   corpo — 210mm menos as margens de 20mm de cada lado de `print-header.md`)
+   e, para cada bloco, jogue o HTML dele lá dentro e leia `scrollHeight`.
+   Meça a faixa de cada capítulo do mesmo jeito, a `210mm` (largura cheia).
+3. Empacote os blocos em páginas com um algoritmo guloso: a primeira página
+   de um capítulo tem orçamento vertical `297mm − altura_da_faixa − 32mm`
+   (32mm reservados pro rodapé); páginas de continuação (sem faixa) têm
+   `297mm − 20mm − 32mm`. Assim que um bloco não cabe no orçamento restante,
+   feche a página atual e abra uma nova sem faixa. Subtraia uma margem de
+   segurança do orçamento pra absorver diferenças de arredondamento entre a
+   medição e a renderização final — **use pelo menos ~20mm, não ~4mm**: em
+   produção, blocos empilhados como siblings reais (margem entre um bloco e
+   o próximo) mediram consistentemente alguns mm mais altos no PDF final do
+   que a soma das alturas medidas isoladamente, mesmo com o container de
+   medição em `position:absolute` (que já cria BFC) — a causa exata não foi
+   isolada, mas o sintoma é sempre no mesmo sentido (final mais alto que a
+   medição, nunca o contrário), então uma margem de segurança generosa é a
+   mitigação certa: overflow (conteúdo cortado) é o erro pior que espaço
+   sobrando, então errar para o lado de "mais folga" é a escolha segura.
+4. Blocos minúsculos (< ~40mm — legendas, cadeia de hierarquia, um `<h3>` de
+   seção) ficam órfãos com facilidade no fim de uma página, separados do
+   conteúdo que os segue. Antes de empacotar, funda cada bloco minúsculo com
+   o **próximo** bloco da lista (concatene o HTML, some as alturas).
+5. Gere o HTML final já com os blocos posicionados por página (uma
+   `.gh-page` por página calculada) e imprima normalmente. Como cada bloco
+   foi medido na mesma largura/fonte/CSS em que será renderizado no final, a
+   medição bate com o resultado real — mas confira mesmo assim (ver
+   "Revisão obrigatória" acima; ela continua obrigatória mesmo com
+   paginação por medição).
+
+**Pegadinha: bloco/faixa com `<img>` (ícone) mede menor do que o real se
+você não esperar a imagem carregar.** Ao jogar o HTML de um bloco dentro
+do container escondido de medição, `holder.scrollHeight` é lido de forma
+síncrona logo depois de `holder.innerHTML = html` — mas uma `<img>` (chip
+de ícone na faixa, ícone dos callouts) ainda não tem altura intrínseca
+nesse instante, porque o carregamento do arquivo (mesmo local, `file://`)
+não é síncrono com a atribuição do HTML. O resultado: a faixa/bloco é
+medido mais baixo do que vai ficar de verdade assim que a imagem terminar
+de carregar no HTML final — e esse déficit não aparece na medição, só no
+PDF já gerado, como uma linha de tabela cortada no fim de uma página que
+"deveria" ter cabido. Já aconteceu: um capítulo com chip de ícone na faixa
+mediu ~alguns pixels a menos que o real, e a última linha da tabela
+seguinte saiu cortada pelo `overflow:hidden` do `.gh-page-body`. Antes de
+ler `scrollHeight`, espere toda `<img>` dentro do container de medição
+terminar de carregar:
+
+```js
+const waitImages = (holder) => Promise.all(
+  Array.from(holder.querySelectorAll('img')).map((img) =>
+    img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })
+  )
+);
+// depois de holder.innerHTML = html, antes de ler holder.scrollHeight:
+await waitImages(holder);
+```
+
+Diagramas mermaid que não cabem numa página inteira sozinhos (ex: um ER
+diagram com muitas entidades em layout vertical) não têm solução de
+paginação — a correção é no diagrama, não na página: use `direction LR`
+para cadeias hierárquicas longas (transforma uma cadeia alta e estreita numa
+faixa larga e baixa, que cabe do lado da faixa de capítulo em vez de
+estourar a página sozinha) — só funciona a partir do **mermaid v11**; a v10
+ignora a diretiva e pior, a interpreta como um node literal chamado
+"direction"/"LR" no diagrama. Diagramas com grafo complexo (várias tabelas
+centrais, não uma cadeia linear) devem ser quebrados em 2-3 diagramas
+menores por sub-relação em vez de um único diagrama gigante.
 
 ## Caminho dos assets (logo e ícones)
 
-Copie as pastas `references/logo/` e `references/icons/` desta skill para
-**dentro da pasta do projeto onde o HTML do documento vai morar**, como
-`logo/` e `icons/` irmãs do arquivo HTML — não recrie os SVGs, não referencie
-o caminho original da skill a partir de outro projeto. Os `src=` usados nos
-exemplos deste arquivo e de `print-cover.md`/`print-header.md`/`print-footer.md`
-(ex: `logo/orientation=horizontal, colour=light.svg`) já assumem essa
-cópia local, relativa ao HTML.
+**Logos:** copie a pasta `references/logo/` desta skill para **dentro da
+pasta do projeto onde o HTML do documento vai morar**, como `logo/` irmã do
+arquivo HTML — não recrie os SVGs. Os `src=` de logo nos exemplos deste
+arquivo e de `print-cover.md`/`print-header.md`/`print-footer.md`
+(ex: `logo/horizontal-light.svg`) já assumem essa cópia local, relativa ao HTML.
+
+**Ícones:** não são copiados — os `src=` nos exemplos apontam direto para a
+CDN (`https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/...`).
+Ver [`icons-catalog.md`](icons-catalog.md) para a lista de nomes e, se o
+ambiente de geração do PDF não tiver internet, o comando para baixar a pasta
+`icons/` local e trocar os `src=` para caminho relativo.
 
 ## Referências
 
 - [`print-cover.md`](print-cover.md) — código exato da capa.
 - [`print-header.md`](print-header.md) — código exato do cabeçalho de capítulo (faixa colorida).
 - [`print-footer.md`](print-footer.md) — código exato do rodapé.
+- [`print-table.md`](print-table.md) — código exato de tabela de dados (legenda + header sólido na cor da seção, sem cartão ao redor).
+- [`print-frontmatter.md`](print-frontmatter.md) — folha de identificação + índice, só em relatório de entrega de produto (pergunte antes).

@@ -1,51 +1,70 @@
 /* ============================================================
-   GovHub — Design Tokens (identidade visual oficial)
-   Fonte: CSS de https://gov-hub.io
+   Gov Hub — Design Tokens (identidade visual oficial)
+   Fonte: Manual de Identidade Visual (MIV) Gov Hub — versão atual.
    Cole este bloco no <head> (dentro de <style>) ou no topo do
    seu arquivo CSS. Depois use as variáveis com var(--nome).
+
+   ATUALIZAÇÃO: paleta e tipografia trocadas para os valores oficiais
+   do MIV. O roxo/laranja antigo (#7A34F3 / #F97316) foi DESCONTINUADO
+   — substituição total, não uso em paralelo. Os arquivos de logo em
+   references/logo/ ainda são os antigos (aguardando nova exportação);
+   quando chegar a nova versão, `--logo-purple` deve ser conferido
+   contra o hex exato do SVG novo.
    ============================================================ */
 
-/* Fonte principal da marca */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Fontes da marca: Reddit Sans (principal) + Oswald (apoio, títulos) */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* ---------- Cores primárias da marca ---------- */
-  --primary-purple:   #7A34F3; /* ROXO PRINCIPAL — cor-assinatura / destaque primário */
-  --secondary-purple: #8B5CF6; /* roxo secundário — apoio, gradientes */
-  --accent-orange:    #F97316; /* laranja de acento — CTA / destaque pontual */
-  --accent-orange-hover: #EA580C; /* hover do laranja */
-  --text-white:       #FFFFFF;
+  /* ---------- Paleta oficial (MIV Gov Hub) ---------- */
+  --primary-purple:  #613EFF; /* ROXO VIBRANTE — cor-assinatura / destaque primário */
+  --dark-navy:       #0A005A; /* AZUL-MARINHO ESCURO — texto forte, fundos escuros, contraste máximo */
+  --accent-magenta:  #EF41FF; /* acento secundário — gradientes, destaques, rampa editorial */
+  --accent-pink:     #F9006F; /* acento pontual — CTA / destaque-chave (papel que o laranja tinha antes) */
+  --bg-peach:        #FFE7E1; /* fundo claro com tom da marca — alternativa aos neutros cinza */
+  --text-white:      #FFFFFF;
 
-  /* ---------- Roxos de apoio / estados ---------- */
-  --purple-400: #9249CA; /* roxo médio */
-  --purple-600: #7C3AAD; /* estado hover/foco do primário */
-  --purple-700: #5B21B6; /* estado active/pressionado (mais escuro) */
+  /* ---------- Estados derivados do primário ----------
+     Aproximados por escurecimento do --primary-purple para hover/active,
+     já que o MIV não define shades intermediários. Ajuste se o time de
+     design fornecer valores exatos. */
+  --purple-600: #5235D9; /* hover/foco do primário */
+  --purple-700: #3F28A6; /* active/pressionado (mais escuro) */
 
-  /* ---------- Neutros / texto ---------- */
-  --text-strong: #202020; /* títulos, texto forte */
-  --text-body:   #2D3748; /* corpo de texto */
+  /* ---------- Neutros / texto ----------
+     Mantidos neutros (não tingidos de roxo) para legibilidade em texto
+     corrido longo — ver nota de acessibilidade em palette.md. Títulos e
+     destaques de marca usam --dark-navy ou --primary-purple, não estes. */
+  --text-strong: #202020; /* títulos neutros, texto forte quando não é "de marca" */
+  --text-body:   #2D3748; /* corpo de texto padrão */
   --text-muted:  #666666; /* texto secundário / legendas */
 
   /* ---------- Fundos ---------- */
   --bg-white:  #FFFFFF;
-  --bg-light:  #F7F7F7; /* fundo neutro claro */
+  --bg-light:  #F7F7F7; /* fundo neutro claro, uso geral */
   --bg-subtle: #F8F9FA; /* fundo alternado (zebra, seções) */
+  /* --bg-peach (acima) é a alternativa "de marca" a estes dois neutros */
 
   /* ---------- Bordas / divisores ---------- */
-  --border-soft: #E3DAF3; /* linha divisória sutil (rodapé de PDF, divisores discretos) — lavanda bem clara, não cinza puro */
+  --border-soft: #E9DFFF; /* linha divisória sutil — lilás bem claro, tom do novo primário */
 
-  /* ---------- Cores de estado / semânticas ---------- */
+  /* ---------- Cores de estado / semânticas (não são cor de marca) ---------- */
   --color-success:   #10B981; /* verde — sucesso */
   --color-highlight: #FFD700; /* amarelo — destaque */
-  --color-warm:      #F19F42; /* laranja suave — destaque secundário */
 
-  /* ---------- Tipografia ---------- */
-  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* ---------- Tipografia ----------
+     Reddit Sans: fonte principal (logotipo em Black caps, tagline Medium,
+     texto corrido em Regular, Bold para ênfase). No Canva gratuito, usar
+     Open Sans no lugar (mantém proporções parecidas).
+     Oswald: fonte de apoio, só para títulos/chamadas de impacto, sempre
+     uppercase + Bold — nunca em texto corrido. */
+  --font-family-base:    'Reddit Sans', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-heading: 'Oswald', 'Reddit Sans', 'Open Sans', sans-serif;
 
   /* ---------- Sombras ---------- */
-  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 2px 10px rgba(10, 0, 90, 0.10);
+  --shadow-lg: 0 4px 20px rgba(10, 0, 90, 0.12);
+  --shadow-xl: 0 8px 30px rgba(10, 0, 90, 0.16);
 
   /* ---------- Transição padrão ---------- */
   --transition-normal: all 0.3s ease;
@@ -54,30 +73,27 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --grid-gutter: 20px; /* alinhado ao Bootstrap 5.3.2 do site */
+  --grid-gutter: 20px;
 
-  /* ---------- Rampa editorial (livro "Gov Hub: um guia prático") ----------
-     Progressão de matiz roxo -> magenta -> rosa -> coral, derivada por rotação
-     de matiz a partir de --primary-purple para harmonizar com a marca.
-     Uso: codificar visualmente capítulos/seções de relatórios longos
-     (capa de capítulo, tarja de artefato, numeral de seção), NUNCA em UI de
-     produto — ali o roxo+laranja do site seguem sendo a única paleta.
-     Valores aproximados/harmonizados; confirme hex exatos no Figma da marca
-     se precisar de fidelidade absoluta ao material impresso. */
-  --editorial-01-purple: #5B21B6; /* capítulo 00/01 — mesmo tom de --purple-700 */
-  --editorial-02-magenta: #9520B6; /* capítulo 02 */
-  --editorial-03-pink: #C520A4; /* capítulo 03 */
-  --editorial-04-coral: #E8776F; /* capítulo 04 — tom salmão/coral (eco do rosa "Lab Livre") */
+  /* ---------- Rampa editorial (relatórios longos / capítulos) ----------
+     Progressão oficial do MIV: azul-marinho -> roxo -> magenta -> rosa ->
+     pêssego claro. Substitui a rampa aproximada da versão anterior desta
+     skill (que usava tons "harmonizados", não oficiais). Uso: capa/numeral
+     de capítulo, tarja full-bleed de seção — nunca em UI de produto, onde
+     o roxo (--primary-purple) segue como cor única de assinatura. */
+  --editorial-00-navy:    #0A005A; /* abertura/capa, capítulo mais "denso" */
+  --editorial-01-purple:  #613EFF; /* capítulo 01 — mesmo tom do primário */
+  --editorial-02-magenta: #EF41FF; /* capítulo 02 */
+  --editorial-03-pink:    #F9006F; /* capítulo 03 */
+  --editorial-04-peach:   #FFE7E1; /* fechamento — claro, precisa de texto escuro (--dark-navy) em cima */
   --editorial-grid-line: rgba(255, 255, 255, 0.08); /* linha de grade sutil sobre capas coloridas */
   --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */
 
   /* ---------- Roxo exato da logo (capas de documento) ----------
-     Extraído diretamente do arquivo SVG oficial da logo (fill="#7521F9"
-     nos paths). Ligeiramente diferente de --primary-purple (#7A34F3, do
-     CSS do site). Use --logo-purple quando a logo aparecer sobre um fundo
-     sólido na capa, para o fundo casar exatamente com a cor do arquivo da
-     logo — não use --primary-purple nesse caso, o contraste sutil incomoda. */
-  --logo-purple: #7521F9;
+     PENDENTE: valor copiado do --primary-purple como placeholder até a
+     nova exportação do logo (aguardando arquivo do usuário). Quando
+     chegar, confira o fill= exato do SVG e atualize aqui. */
+  --logo-purple: #613EFF;
 }
 
 /* Base recomendada — aplique no body do artefato */
@@ -85,4 +101,11 @@ body {
   font-family: var(--font-family-base);
   color: var(--text-body);
   background: var(--bg-light);
+}
+
+/* Títulos/chamadas de impacto — fonte de apoio Oswald, sempre uppercase + bold */
+.gh-heading-display {
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  font-weight: 700;
 }
