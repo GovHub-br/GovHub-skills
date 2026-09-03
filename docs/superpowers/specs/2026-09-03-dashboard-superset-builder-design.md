@@ -13,10 +13,13 @@ Duas fontes de entrada já existem no repositório e servem de insumo direto:
 
 - `markdowm-devs.md` — guia de diretrizes de design ("Guia para Markdown", 17
   capítulos) fornecido pelo time de design, para estruturar interfaces geradas por IA.
-- Um servidor **Superset MCP** (lazy-loading: `get_instance_info`, `health_check`,
+- Um servidor **MCP do Superset** (lazy-loading: `get_instance_info`, `health_check`,
   `search_tools`, `call_tool` como camada fixa; as tools reais do Superset — chart,
-  dashboard, dataset — aparecem via `search_tools`/`call_tool`), já usado em uma
-  sessão anterior contra `http://10.0.0.32:30508/mcp` com Bearer token JWT.
+  dashboard, dataset — aparecem via `search_tools`/`call_tool`), já usado dessa forma
+  numa sessão anterior. **O endereço e o token desse servidor não fazem parte deste
+  design** (podem mudar a qualquer momento, são específicos de cada ambiente/usuário)
+  — a skill não referencia URL nem token nenhum, só o padrão de tools que esse tipo
+  de servidor expõe.
 
 ## Escopo
 
@@ -58,11 +61,16 @@ do `markdowm-devs.md`, cap. 2), só o que ainda não estiver claro na conversa:
   cap. 2.2 do guia).
 - Dataset alvo no Superset, se já existir (nome, ID ou UUID).
 
-Antes de prosseguir, a skill verifica que o Superset MCP está acessível na sessão
-(`health_check`/`get_instance_info` via `call_tool`). Se não estiver conectado, a
-skill explica como conectar (servidor MCP com Bearer token em variável de
-ambiente/secret manager — nunca em arquivo do repositório) e não prossegue sem
-confirmação de que a conexão existe.
+Antes de prosseguir, a skill **pergunta ao dev qual servidor MCP do Superset usar**
+(nunca assume um endereço fixo, já que isso varia por ambiente/usuário e pode mudar):
+lista os servidores MCP conectados na sessão atual e pede para o dev indicar qual é o
+do Superset — a menos que só exista um MCP conectado com esse padrão de tools
+(`get_instance_info`/`health_check`/`search_tools`/`call_tool`), caso em que a skill
+confirma com o dev em vez de adivinhar sozinha. Só então verifica que o servidor
+escolhido está acessível (`health_check`/`get_instance_info` via `call_tool`). Se
+nenhum servidor adequado estiver conectado, a skill explica como conectar um
+(servidor MCP com o token em variável de ambiente/secret manager — nunca em arquivo
+do repositório) e não prossegue sem confirmação de que a conexão existe.
 
 ### Fase 1 — Descoberta no Superset (somente leitura)
 
