@@ -1,0 +1,19 @@
+# Review package: a720ed2903c569b7e999919932f11ce0bc49f73e..17933e66c42badba28400a552938c7f5cc2cf518
+
+## Commits
+17933e6 chore: ignorar .env e .token (credenciais locais)
+
+## Files changed
+ .gitignore | 3 +++
+ 1 file changed, 3 insertions(+)
+
+## Diff
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..c73c891
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,3 @@
++# Credenciais locais — nunca versionar (ver docs/superpowers/specs/2026-09-03-dashboard-superset-builder-design.md)
++.env
++.token

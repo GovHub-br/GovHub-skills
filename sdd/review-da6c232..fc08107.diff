@@ -1,0 +1,168 @@
+# Review package: da6c232..fc08107
+
+## Commits
+fc08107 feat: registrar dashboard-superset-builder nos manifestos e no README
+
+## Files changed
+ .claude-plugin/marketplace.json      | 4 ++--
+ .claude-plugin/plugin.json           | 3 ++-
+ 01-govhub/.claude-plugin/plugin.json | 3 ++-
+ README.md                            | 5 +++--
+ 4 files changed, 9 insertions(+), 6 deletions(-)
+
+## Diff
+diff --git a/.claude-plugin/marketplace.json b/.claude-plugin/marketplace.json
+index 016f956..3918b61 100644
+--- a/.claude-plugin/marketplace.json
++++ b/.claude-plugin/marketplace.json
+@@ -4,27 +4,27 @@
+   "version": "1.0.0",
+   "description": "Marketplace de skills do Claude Code do GovHub BR / lablivre — dados governamentais, pipelines, relatórios oficiais, backend, infra, qualidade e documentação.",
+   "owner": {
+     "name": "GovHub BR / lablivre",
+     "url": "https://github.com/GovHub-br"
+   },
+   "plugins": [
+     {
+       "name": "govhub-skills",
+       "source": "./",
+-      "description": "Coleção completa — todas as 51 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
++      "description": "Coleção completa — todas as 52 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
+       "category": "development"
+     },
+     {
+       "name": "govhub-core",
+       "source": "./01-govhub",
+-      "description": "Específicas do GovHub — Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (3 skills)",
++      "description": "Específicas do GovHub — Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (4 skills)",
+       "category": "development"
+     },
+     {
+       "name": "govhub-dados",
+       "source": "./02-dados-e-bancos",
+       "description": "Dados & Bancos — Engenharia e ciência de dados, Postgres (schema, boas práticas, otimização), SQL, BigQuery, Jupyter e extração de PDF para banco. (9 skills)",
+       "category": "development"
+     },
+     {
+       "name": "govhub-backend",
+diff --git a/.claude-plugin/plugin.json b/.claude-plugin/plugin.json
+index d667371..6918edd 100644
+--- a/.claude-plugin/plugin.json
++++ b/.claude-plugin/plugin.json
+@@ -1,32 +1,33 @@
+ {
+   "name": "govhub-skills",
+   "version": "1.0.0",
+-  "description": "Coleção completa de skills do GovHub BR / lablivre — as 51 skills de todas as categorias em um único plugin.",
++  "description": "Coleção completa de skills do GovHub BR / lablivre — as 52 skills de todas as categorias em um único plugin.",
+   "author": {
+     "name": "GovHub BR / lablivre",
+     "url": "https://github.com/GovHub-br"
+   },
+   "homepage": "https://github.com/GovHub-br/GovHub-skills",
+   "repository": "https://github.com/GovHub-br/GovHub-skills",
+   "keywords": [
+     "govhub",
+     "dados-governamentais",
+     "airflow",
+     "dbt",
+     "postgres",
+     "python",
+     "devops",
+     "documentacao"
+   ],
+   "skills": [
+     "./01-govhub/accountability-report",
++    "./01-govhub/dashboard-superset-builder",
+     "./01-govhub/govhub-pipeline-guide",
+     "./01-govhub/govhub-visual-identity",
+     "./02-dados-e-bancos/bigquery-basics",
+     "./02-dados-e-bancos/data-engineer",
+     "./02-dados-e-bancos/data-scientist",
+     "./02-dados-e-bancos/jupyter-notebook",
+     "./02-dados-e-bancos/pdf-postgres-extractor",
+     "./02-dados-e-bancos/postgres-best-practices",
+     "./02-dados-e-bancos/postgres-schema-design",
+     "./02-dados-e-bancos/postgresql-optimization",
+diff --git a/01-govhub/.claude-plugin/plugin.json b/01-govhub/.claude-plugin/plugin.json
+index 90e94e7..6b7af89 100644
+--- a/01-govhub/.claude-plugin/plugin.json
++++ b/01-govhub/.claude-plugin/plugin.json
+@@ -1,24 +1,25 @@
+ {
+   "name": "govhub-core",
+   "version": "1.0.0",
+-  "description": "Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (3 skills)",
++  "description": "Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (4 skills)",
+   "author": {
+     "name": "GovHub BR / lablivre",
+     "url": "https://github.com/GovHub-br"
+   },
+   "homepage": "https://github.com/GovHub-br/GovHub-skills",
+   "repository": "https://github.com/GovHub-br/GovHub-skills",
+   "keywords": [
+     "govhub",
+     "airflow",
+     "dbt",
+     "dados-abertos",
+     "prestacao-de-contas",
+     "identidade-visual"
+   ],
+   "skills": [
+     "./accountability-report",
++    "./dashboard-superset-builder",
+     "./govhub-pipeline-guide",
+     "./govhub-visual-identity"
+   ]
+ }
+diff --git a/README.md b/README.md
+index 543105c..cb91cf1 100644
+--- a/README.md
++++ b/README.md
+@@ -44,22 +44,22 @@ claude plugin install govhub-skills@govhub
+ ```
+ 
+ **Ou instale só as categorias que interessam:**
+ 
+ ```bash
+ claude plugin install govhub-core@govhub
+ ```
+ 
+ | Plugin | O que traz | Skills |
+ |--------|-----------|--------|
+-| `govhub-skills` | **Tudo** — as 51 skills de todas as categorias | 51 |
+-| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
++| `govhub-skills` | **Tudo** — as 52 skills de todas as categorias | 52 |
++| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas, dashboards Superset | 4 |
+ | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
+ | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
+ | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
+ | `govhub-qualidade` | [05 · Qualidade & arquitetura](#05--qualidade-testes--arquitetura) — TDD, debug, clean code, ADR, segurança | 18 |
+ | `govhub-docs` | [06 · Docs & relatórios](#06--documentação-relatórios--escritório) — planilhas, PDF, changelog, README, Mermaid | 7 |
+ 
+ > Instale **o `govhub-skills` ou os plugins por categoria** — não os dois, senão as mesmas skills entram duas vezes.
+ 
+ Dentro de uma sessão do Claude Code dá para fazer o mesmo pelo comando `/plugin`, que abre o navegador de marketplaces e mostra as skills de cada plugin antes de instalar.
+ 
+@@ -127,20 +127,21 @@ Este repositório **reúne** skills de origens diferentes e por isso **não tem
+ 
+ As skills abaixo estão organizadas em pastas por categoria.
+ 
+ ## 01 · Específicas do GovHub
+ 
+ | Skill | O que faz |
+ |-------|-----------|
+ | [`govhub-pipeline-guide`](01-govhub/govhub-pipeline-guide/) | Implementar uma nova fonte de dados no Gov Hub BR — DAG Airflow, cliente de API, transformações dbt (bronze → silver → gold), testes e PR. Cobre SIAPE, SIAFI, SICONV, TransfereGov, IBGE, PNCP. |
+ | [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do GovHub (gov-hub.io) em relatórios, páginas, slides, dashboards e temas CSS. Roxo `#7A34F3`. |
+ | [`accountability-report`](01-govhub/accountability-report/) | Relatório de prestação de contas de um repositório a partir do git. Saída em Markdown, HTML e PDF A4 pronto para entrega oficial. |
++| [`dashboard-superset-builder`](01-govhub/dashboard-superset-builder/) | Planeja (esboço + wireframe), valida com o dev, e cria de fato dashboards e charts no Superset via MCP. |
+ 
+ ## 02 · Dados & Bancos
+ 
+ | Skill | O que faz |
+ |-------|-----------|
+ | [`data-engineer`](02-dados-e-bancos/data-engineer/) | Persona de engenharia de dados — pipelines, ETL/ELT, modelagem dimensional, qualidade de dados, orquestração. |
+ | [`data-scientist`](02-dados-e-bancos/data-scientist/) | Analytics avançada, machine learning, modelagem estatística e BI. |
+ | [`bigquery-basics`](02-dados-e-bancos/bigquery-basics/) | Datasets, tabelas e jobs no BigQuery + BigQuery ML. |
+ | [`sql-pro`](02-dados-e-bancos/sql-pro/) | SQL avançado, OLTP/OLAP, tuning de queries e modelagem. |
+ | [`postgres-best-practices`](02-dados-e-bancos/postgres-best-practices/) | Boas práticas de PostgreSQL — modelagem, tipos, índices, queries, transações. |
