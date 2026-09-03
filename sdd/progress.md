@@ -37,9 +37,14 @@ subagent file handoffs in this session.
     `## <viz_type>`): kept deliberately; reviewer said no change needed, lookups
     still resolve. → nothing for final review to do here.
 
+- Task 5 (manifests + README): complete (commits da6c232..fc08107, review Approved —
+  spec ✅, no findings). Generator re-run leaves tree clean; validar-plugins.sh exits 0;
+  README counts 52 / govhub-core 4 match the script totals; only the 3 manifests +
+  README changed; skill row placed after accountability-report.
+
 ## Remaining
-- Task 5 (register skill in manifests + README): pending. Run
-  `python3 scripts/atualizar-manifestos.py` then `bash scripts/validar-plugins.sh`;
-  edit README counts 51→52 and govhub-core 3→4, add the skill's table row.
-- Task 6 (end-to-end manual verification): pending — needs the user (approve/reject
-  the Fase 3 gate) and the superset-govhub MCP.
+- Final whole-branch review: dispatched after Task 5.
+- Task 6 (end-to-end manual verification): pending — needs the USER (role-play the
+  Fase 3 approval gate, incl. answering vaguely once to prove the gate blocks) and
+  the superset-govhub MCP + a real test dataset in their Superset. Cannot be done by
+  a subagent. Steps in sdd/task-6-brief.md if generated, else plan Task 6.
