@@ -96,6 +96,47 @@ dev.
 Essas chamadas são somente leitura — não têm a tag `mutate` — então não precisam de
 aprovação humana.
 
+## Fase 1b — Ler o dashboard fonte (somente leitura)
+
+Roda **só** quando a pergunta 5 da Fase 0 foi `novo a partir do fonte:
+<id/uuid/título>`. Todas as chamadas aqui são somente leitura (tools com tag
+`discovery`) — **não precisam de aprovação humana**. Nenhuma escreve no dashboard
+fonte.
+
+1. `get_dashboard_info(<ref do fonte>)` (via `call_tool`) → título, lista de charts
+   com seus IDs, e o layout.
+2. Para cada chart: `get_chart_info(<chart_id>)` → recupere `dataset`, `viz_type`
+   original, métricas, dimensões/`groupby` e filtros (do `form_data`/params do
+   chart).
+3. Monte a lista de componentes pré-preenchida para a Fase 2 — um bloco
+   `## Componente: <nome>` por chart, com **só os campos de dados**: a linha
+   `dataset:` e o miolo de `config` que mapeia limpo (métricas, dimensões,
+   `filters` estruturados `column`/`op`/`value`). **Não** preencha `viz_type`,
+   título nem posição — isso fica para a Fase 2 redecidir do zero.
+4. Capture o **layout original** e os **filtros nativos do dashboard** como um
+   bloco de referência textual para o topo do esboço, com o rótulo
+   `Estado atual do fonte:` — explicitamente uma referência ("era assim"), nunca um
+   ponto de partida.
+
+Casos de borda — **registre no esboço e siga**, nunca aborte a fase:
+
+- Chart com `viz_type` fora dos 7 do cache (`references/superset-schema.md`), ou
+  `form_data` que não mapeia limpo → traga o que der (dataset, métricas, filtros) e
+  marque o bloco com `# viz_type a escolher / config a confirmar na Fase 3`.
+- `get_chart_info` falha (permissão, chart órfão, dataset removido) → pule o chart,
+  siga nos outros, e **liste as falhas** ao fim da Fase 1b.
+- Vários charts no mesmo dataset → normal, sem tratamento especial.
+- Filtro do chart que é expressão SQL/adhoc → não invente equivalente estruturado;
+  marque o bloco com `# filtro do fonte a reconstruir`.
+
+O `dataset` recuperado por `get_chart_info` já é uma referência real (vem de um
+chart vivo), então o gate de "nomes placeholder" da Fase 3 não se aplica a
+componentes re-derivados — a menos que o dataset tenha sido removido, caso já
+coberto pelo caso de borda acima.
+
+A saída (o bloco `Estado atual do fonte:` + os blocos de componente pré-preenchidos)
+entra na Fase 2 exatamente como um esboço montado à mão.
+
 ## Fase 2 — Montar o esboço (markdown + wireframe)
 
 Produza um único arquivo markdown. Antes dos blocos de componente, um cabeçalho do
@@ -109,6 +150,16 @@ Esse campo passa pelo gate da Fase 3 junto com o resto do esboço e decide a
 ramificação da Fase 4. Quando for `novo a partir de:`, o esboço também começa com
 o bloco de referência `Estado atual do fonte:` produzido pela Fase 1b (ver Fase 1b
 e o parágrafo de re-derivação mais abaixo nesta fase).
+
+**Se o `dashboard alvo:` for `novo a partir de:`** — comece o arquivo com o bloco
+`Estado atual do fonte:` produzido pela Fase 1b (layout + filtros nativos do fonte,
+como texto), deixando claro que é referência, não ponto de partida. Trate os blocos
+de componente que a Fase 1b pré-preencheu como qualquer esboço: escolha `viz_type`,
+hierarquia (Primária/Secundária/Complementar/Descartável) e posição **do zero** —
+os dados (dataset, métricas, dimensões, filtros) vêm do fonte, a forma não. Qualquer
+componente ainda marcado `# viz_type a escolher`, `# config a confirmar` ou
+`# filtro do fonte a reconstruir` tem que ser resolvido antes de apresentar o
+esboço na Fase 3.
 
 Depois do cabeçalho, um bloco `## Componente: <nome>` por chart. Para cada
 componente:
@@ -173,6 +224,10 @@ aprovar como está, ajustar algo, ou cancelar.
   confirmados, o humano pode aprovar o **design**, mas essa aprovação **não**
   libera a Fase 4: volte para a Fase 1 e vincule os nomes reais primeiro (a Fase 4
   precisa de um `dataset` real e nomes de coluna reais para sequer rodar).
+- Se algum componente ainda está marcado `# viz_type a escolher`,
+  `# config a confirmar` ou `# filtro do fonte a reconstruir` (vindo da Fase 1b),
+  isso **não** libera a Fase 4 — resolva primeiro, como no caso dos nomes
+  placeholder.
 
 ## Fase 4 — Criação real no Superset
 
