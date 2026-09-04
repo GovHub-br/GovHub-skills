@@ -5,3 +5,6 @@ handoff-skill-mcp.md
 
 # Bookkeeping do subagent-driven-development (briefs, reports, diffs de review, ledger)
 sdd/
+
+__pycache__/
+*.pyc
