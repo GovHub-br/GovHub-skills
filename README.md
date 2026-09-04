@@ -51,8 +51,8 @@ claude plugin install govhub-core@govhub
 
 | Plugin | O que traz | Skills |
 |--------|-----------|--------|
-| `govhub-skills` | **Tudo** — as 51 skills de todas as categorias | 51 |
-| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
+| `govhub-skills` | **Tudo** — as 52 skills de todas as categorias | 52 |
+| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas, dashboards Superset | 4 |
 | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
 | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
 | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
@@ -134,6 +134,7 @@ As skills abaixo estão organizadas em pastas por categoria.
 | [`govhub-pipeline-guide`](01-govhub/govhub-pipeline-guide/) | Implementar uma nova fonte de dados no Gov Hub BR — DAG Airflow, cliente de API, transformações dbt (bronze → silver → gold), testes e PR. Cobre SIAPE, SIAFI, SICONV, TransfereGov, IBGE, PNCP. |
 | [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do GovHub (gov-hub.io) em relatórios, páginas, slides, dashboards e temas CSS. Roxo `#7A34F3`. |
 | [`accountability-report`](01-govhub/accountability-report/) | Relatório de prestação de contas de um repositório a partir do git. Saída em Markdown, HTML e PDF A4 pronto para entrega oficial. |
+| [`dashboard-superset-builder`](01-govhub/dashboard-superset-builder/) | Planeja (esboço + wireframe), valida com o dev, e cria de fato dashboards e charts no Superset via MCP. |
 
 ## 02 · Dados & Bancos
 

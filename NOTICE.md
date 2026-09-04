@@ -42,7 +42,7 @@ claude plugin install document-skills@anthropic-agent-skills
 
 ## Pendência conhecida
 
-Das 51 skills que restam, **43 não trazem qualquer indicação de origem ou licença**. Elas foram reunidas de coleções públicas da comunidade, mas o repositório de origem não foi registrado no momento em que entraram aqui.
+Das 52 skills que restam, **43 não trazem qualquer indicação de origem ou licença**. Elas foram reunidas de coleções públicas da comunidade, mas o repositório de origem não foi registrado no momento em que entraram aqui.
 
 Isso significa que o GovHub **não pode afirmar** sob que termos essas skills estão, nem relicenciá-las. Enquanto a procedência não for rastreada:
 

@@ -92,6 +92,13 @@ mkdir -p /home/joaoegewarth/GovHub-skills/01-govhub/dashboard-superset-builder/r
 
 Conteúdo de `01-govhub/dashboard-superset-builder/SKILL.md`:
 
+> **Nota (pós-review final):** o bloco abaixo é o rascunho original. A versão
+> canônica — com os campos reais do schema `xy`, a coleta de dashboard alvo na
+> Fase 0, o Passo 0 da Fase 4 e o wireframe alinhado — é o arquivo já versionado
+> em `01-govhub/dashboard-superset-builder/SKILL.md`. Se for reexecutar este
+> plano, copie o arquivo versionado, não o bloco abaixo (que ainda usa
+> `metrics`/`groupby`/`adhoc_filters`, nomes que a Tarefa 6 Passo 2 rejeita).
+
 ````markdown
 ---
 name: dashboard-superset-builder
@@ -655,10 +662,13 @@ dataset de teste existente no ambiente do usuário. Acompanhe as 5 fases.
 
 - [ ] **Step 2: Confirmar que o esboço usa nomes de campo reais**
 
-No arquivo de esboço gerado (Fase 2), confirme visualmente que os nomes de campo
-(`dataset_id`, `metrics`, `groupby` etc.) batem com o que está em
-`references/superset-schema.md` para o `viz_type` escolhido — não são nomes
-inventados.
+No arquivo de esboço gerado (Fase 2), confirme visualmente que o bloco `config:`
+de cada componente usa exatamente os nomes de propriedade de
+`references/superset-schema.md` para o `viz_type` daquele componente (ex.: `xy` →
+`x`, `y`, `kind`, `filters`; nunca `metrics`/`groupby`/`adhoc_filters`), e que
+cada entrada de `filters` é estruturada `{column, op, value}` — não SQL cru nem
+`adhoc_filters`. O `dataset`, o título do chart e `save_chart` são parâmetros
+wrapper do `generate_chart`, não campos de `config`.
 
 - [ ] **Step 3: Confirmar que o gate da Fase 3 bloqueia mesmo sem aprovação clara**
 
