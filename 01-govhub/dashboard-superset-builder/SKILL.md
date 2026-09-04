@@ -6,8 +6,10 @@ description: >-
   pede validação humana explícita, e só depois cria de fato os charts e o dashboard
   no Superset via MCP. Use sempre que o usuário pedir para "montar um dashboard no
   Superset", "criar um gráfico/chart no Superset", "planejar um dashboard", "esboçar
-  um dashboard", "adicionar um chart a um dashboard existente do Superset" ou
-  "construir um dashboard".
+  um dashboard", "adicionar um chart a um dashboard existente do Superset",
+  "construir um dashboard", "recriar / reconstruir um dashboard", "um dashboard
+  novo baseado em outro" ou "o mesmo dashboard com outra organização / outros
+  gráficos".
 ---
 
 # Dashboard Superset Builder
@@ -37,10 +39,21 @@ Pergunte ao dev (só o que ainda não estiver claro na conversa):
    souber, a Fase 1 chama `list_datasets` (somente leitura) para ajudar a escolher;
    só se ainda assim não der para escolher é que o esboço segue com nomes
    descritivos a confirmar antes da Fase 4.
-5. **Dashboard novo ou já existente? Se existente, qual (ID, UUID ou título)?** —
-   define a ramificação da Fase 4 (`add_chart_to_existing_dashboard` x
-   `generate_dashboard`). Registrado no cabeçalho do esboço da Fase 2 como
-   `dashboard alvo:`.
+5. **De onde vem o dashboard?** Três respostas possíveis:
+   - `novo do zero` — Fase 4 usa `generate_dashboard`; Fase 1 faz descoberta de
+     dataset normal.
+   - `acrescentar a existente: <id/uuid/título>` — Fase 4 usa
+     `add_chart_to_existing_dashboard`; Fase 1 faz descoberta de dataset normal.
+   - `novo a partir do fonte: <id/uuid/título>` — Fase 4 usa `generate_dashboard`
+     (o resultado é um dashboard **novo**); a **Fase 1b** lê o dashboard fonte
+     antes da Fase 2.
+
+   A escolha é registrada no cabeçalho do esboço da Fase 2 como `dashboard alvo:`.
+
+   **Oferta proativa:** se o dev mencionar um dashboard que já existe com intenção
+   de "melhorar", "reorganizar" ou "mudar a cara", responda que a skill **não
+   edita** o original, mas pode criar um **novo a partir dele** — e, se ele
+   aceitar, trate a pergunta 5 como `novo a partir do fonte`.
 
 **Nunca assuma o endereço de um servidor MCP do Superset.** Diferentes sessões e
 ambientes têm servidores diferentes, e o endereço pode mudar a qualquer momento.
@@ -86,10 +99,16 @@ aprovação humana.
 ## Fase 2 — Montar o esboço (markdown + wireframe)
 
 Produza um único arquivo markdown. Antes dos blocos de componente, um cabeçalho do
-esboço com uma linha `dashboard alvo:` — `novo: "<título>"` ou
-`existente: <id/uuid/título>`, conforme a resposta da pergunta 5 da Fase 0. Esse
-campo passa pelo gate da Fase 3 junto com o resto do esboço e decide a ramificação
-da Fase 4.
+esboço com uma linha `dashboard alvo:`, conforme a resposta da pergunta 5 da Fase 0:
+
+- `novo: "<título>"`
+- `existente: <id/uuid/título>`
+- `novo a partir de: <id/uuid/título do fonte> → "<título novo>"`
+
+Esse campo passa pelo gate da Fase 3 junto com o resto do esboço e decide a
+ramificação da Fase 4. Quando for `novo a partir de:`, o esboço também começa com
+o bloco de referência `Estado atual do fonte:` produzido pela Fase 1b (ver Fase 1b
+e o parágrafo de re-derivação mais abaixo nesta fase).
 
 Depois do cabeçalho, um bloco `## Componente: <nome>` por chart. Para cada
 componente:
@@ -175,8 +194,11 @@ Para cada componente aprovado, na ordem em que aparecem no esboço:
 2. Ramifique pelo campo `dashboard alvo:` do cabeçalho do esboço:
    - `existente: <id/uuid/título>` → `add_chart_to_existing_dashboard` para cada
      chart criado.
-   - `novo: "<título>"` → `generate_dashboard` (passando a lista de chart IDs
-     criados nesta rodada) **apenas** na primeira leva de charts do dashboard novo.
+   - `novo: "<título>"` **ou** `novo a partir de: <fonte> → "<título novo>"` →
+     `generate_dashboard` (passando a lista de chart IDs criados nesta rodada)
+     **apenas** na primeira leva de charts do dashboard novo. Nos dois casos o
+     resultado é um dashboard novo; no caso `novo a partir de:`, o dashboard
+     **fonte não é tocado** em nenhuma chamada.
    Nunca use `generate_dashboard` como fallback de
    `add_chart_to_existing_dashboard`.
 
@@ -187,7 +209,13 @@ link do dashboard final.
 
 ## Fora de escopo (v1)
 
-- Editar ou atualizar dashboards que não foram criados por esta skill.
+- **Alterar um dashboard existente** — editar charts no lugar, mexer no layout,
+  remover chart, mudar título ou filtros nativos do dashboard. É **planejado, mas
+  bloqueado**: o MCP não tem uma tool `update_dashboard`, e `update_chart`
+  sobrescreve o objeto do chart salvo (que pode ser compartilhado por outros
+  dashboards). Reavaliar quando o MCP ganhar `update_dashboard`. A skill **lê**
+  dashboards existentes como fonte (Fase 1b) para criar um dashboard **novo**, mas
+  nunca escreve num dashboard que não criou.
 - Criar datasets virtuais via SQL (`create_virtual_dataset`) — se o dev precisar
   disso, avise que está fora do escopo atual desta skill.
 
