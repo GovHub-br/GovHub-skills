@@ -101,9 +101,16 @@ corporativos, cap. 2.2), com campos que já usam a nomenclatura do Superset:
 - prioridade: primária
 ```
 
-Os nomes exatos de campo (`dataset_id`, `metrics`, `groupby`, `adhoc_filters`,
-`viz_type` etc.) variam por `viz_type` e vêm do cache de schema (ver seção
+Os nomes exatos de campo variam por `viz_type` e vêm do cache de schema (ver seção
 "Cache de schema do Superset" abaixo) — a skill não inventa nomes de campo.
+
+> **Nota (pós-review final):** o bloco de exemplo acima é ilustrativo e ficou
+> desatualizado. O schema real do `xy` usa `chart_type`, `x`, `y` (array de
+> `{name, aggregate}`), `kind` e `filters` (array de `{column, op, value}`) —
+> nunca `metrics`, `groupby` nem `adhoc_filters` (este último é explicitamente
+> proibido pelo schema). A fonte canônica é
+> `01-govhub/dashboard-superset-builder/references/superset-schema.md` e o
+> `SKILL.md` já versionado.
 
 Junto ao markdown, a skill gera um wireframe em **ASCII/Mermaid embutido no próprio
 arquivo**, mostrando a posição relativa dos componentes num grid de 2 colunas (o

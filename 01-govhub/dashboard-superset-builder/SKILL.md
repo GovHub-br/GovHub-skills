@@ -74,6 +74,12 @@ conseguir escolher (ou o dataset ainda não existir) é que a Fase 2 segue com n
 descritivos — nesse caso **sinalize explicitamente no esboço** que esses nomes
 (dataset e colunas) são placeholders e precisam ser confirmados antes da Fase 4.
 
+Se o dataset **não existe ainda** no Superset, entregue o esboço como artefato de
+design e avise o dev de que a Fase 4 só roda depois que o dataset existir na
+instância — criar o dataset (inclusive dataset virtual via SQL) está fora do escopo
+desta skill. Não fique em loop Fase 1 ↔ Fase 3: pare aqui e devolva a pendência ao
+dev.
+
 Essas chamadas são somente leitura — não têm a tag `mutate` — então não precisam de
 aprovação humana.
 

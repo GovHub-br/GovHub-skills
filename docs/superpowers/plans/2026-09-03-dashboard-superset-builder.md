@@ -92,6 +92,13 @@ mkdir -p /home/joaoegewarth/GovHub-skills/01-govhub/dashboard-superset-builder/r
 
 Conteúdo de `01-govhub/dashboard-superset-builder/SKILL.md`:
 
+> **Nota (pós-review final):** o bloco abaixo é o rascunho original. A versão
+> canônica — com os campos reais do schema `xy`, a coleta de dashboard alvo na
+> Fase 0, o Passo 0 da Fase 4 e o wireframe alinhado — é o arquivo já versionado
+> em `01-govhub/dashboard-superset-builder/SKILL.md`. Se for reexecutar este
+> plano, copie o arquivo versionado, não o bloco abaixo (que ainda usa
+> `metrics`/`groupby`/`adhoc_filters`, nomes que a Tarefa 6 Passo 2 rejeita).
+
 ````markdown
 ---
 name: dashboard-superset-builder
