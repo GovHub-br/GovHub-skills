@@ -1,13 +1,15 @@
 # Diretrizes de Design para Dashboards
 
-Resumo curado de `markdowm-devs.md` (Guia para Markdown, 17 capítulos), focado no
-que a skill `dashboard-superset-builder` usa nas Fases 0 e 2. Para o guia completo,
-veja o arquivo original na raiz do repositório.
+Resumo curado do guia interno de Markdown do time (Guia para Markdown, 17
+capítulos), focado no que a skill `dashboard-superset-builder` usa nas Fases 0 e 2.
+Esse guia é um documento interno de trabalho da equipe — não é distribuído junto
+com a skill, então não conte com poder abri-lo a partir do repositório; este resumo
+é a fonte que a skill de fato usa.
 
-**Aviso de cobertura:** os capítulos do guia mais específicos de dashboard — 13
+**Aviso de cobertura:** os capítulos mais específicos de dashboard — 13
 (Estruturação de Dashboards), 14 (Tabelas), boa parte do 15 (Catálogo de
-Componentes) e 4.5 (Cores para Visualização de Dados) — estão, na versão atual do
-`markdowm-devs.md`, só com os títulos das subseções, sem conteúdo escrito. Não
+Componentes) e 4.5 (Cores para Visualização de Dados) — estão, no guia interno
+usado como fonte, só com os títulos das subseções, sem conteúdo escrito. Não
 invente conteúdo para preencher essas lacunas: quando uma decisão do esboço
 dependeria de uma diretriz específica ainda não escrita (ex.: regra exata de cor
 por tipo de gráfico), sinalize isso no esboço em vez de decidir sozinho.

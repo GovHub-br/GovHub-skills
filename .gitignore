@@ -1,3 +1,4 @@
 # Credenciais locais — nunca versionar (ver docs/superpowers/specs/2026-09-03-dashboard-superset-builder-design.md)
 .env
 .token
+handoff-skill-mcp.md

@@ -655,10 +655,13 @@ dataset de teste existente no ambiente do usuário. Acompanhe as 5 fases.
 
 - [ ] **Step 2: Confirmar que o esboço usa nomes de campo reais**
 
-No arquivo de esboço gerado (Fase 2), confirme visualmente que os nomes de campo
-(`dataset_id`, `metrics`, `groupby` etc.) batem com o que está em
-`references/superset-schema.md` para o `viz_type` escolhido — não são nomes
-inventados.
+No arquivo de esboço gerado (Fase 2), confirme visualmente que o bloco `config:`
+de cada componente usa exatamente os nomes de propriedade de
+`references/superset-schema.md` para o `viz_type` daquele componente (ex.: `xy` →
+`x`, `y`, `kind`, `filters`; nunca `metrics`/`groupby`/`adhoc_filters`), e que
+cada entrada de `filters` é estruturada `{column, op, value}` — não SQL cru nem
+`adhoc_filters`. O `dataset`, o título do chart e `save_chart` são parâmetros
+wrapper do `generate_chart`, não campos de `config`.
 
 - [ ] **Step 3: Confirmar que o gate da Fase 3 bloqueia mesmo sem aprovação clara**
 
