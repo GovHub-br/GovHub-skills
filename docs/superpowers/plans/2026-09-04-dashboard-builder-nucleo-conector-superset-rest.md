@@ -298,8 +298,6 @@ Conteúdo de `01-govhub/dashboard-superset-builder/scripts/test_superset_client.
 import json
 from unittest.mock import MagicMock
 
-import pytest
-
 from superset_client import SupersetClient, rison_q
 
 
@@ -578,7 +576,7 @@ Run:
 cd /home/joaoegewarth/GovHub-skills/01-govhub/dashboard-superset-builder/scripts
 python3 -m pytest test_superset_client.py -v
 ```
-Expected: 8 passed. Saída sem warnings.
+Expected: 9 passed. Saída sem warnings.
 
 - [ ] **Step 5: Conferir que o CLI recusa ambiente incompleto em vez de estourar**
 
@@ -727,6 +725,18 @@ def test_create_chart_dry_run_le_mas_nao_escreve():
     s.post.assert_not_called()
 
 
+# --- create_dashboard ------------------------------------------------------
+
+def test_create_dashboard_nao_recria_quando_o_slug_ja_existe():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {"id": 3, "slug": "painel"}})
+
+    r = cliente(s).create_dashboard({"dashboard_title": "Painel", "slug": "painel"}, [7])
+
+    assert r == {"acao": "inalterado", "slug": "painel", "id": 3}
+    s.post.assert_not_called()
+
+
 # --- add_chart_to_dashboard ------------------------------------------------
 
 def test_add_chart_to_dashboard_preserva_o_layout_existente():
@@ -754,7 +764,7 @@ Run:
 cd /home/joaoegewarth/GovHub-skills/01-govhub/dashboard-superset-builder/scripts
 python3 -m pytest test_superset_client.py -v
 ```
-Expected: os 8 da Tarefa 2 passam; os 8 novos falham com `ImportError: cannot import name 'build_position_json'` e `AttributeError: … 'create_chart'`.
+Expected: os 9 da Tarefa 2 passam; os 9 novos falham com `ImportError: cannot import name 'build_position_json'` e `AttributeError: … 'create_chart'`.
 
 - [ ] **Step 3: Implementar `build_position_json` e as escritas**
 
@@ -935,7 +945,7 @@ Run:
 cd /home/joaoegewarth/GovHub-skills/01-govhub/dashboard-superset-builder/scripts
 python3 -m pytest test_superset_client.py -v
 ```
-Expected: 16 passed, sem warnings.
+Expected: 18 passed, sem warnings.
 
 - [ ] **Step 6: Conferir que o CLI expõe os sete subcomandos**
 
@@ -991,17 +1001,39 @@ git mv 01-govhub/dashboard-superset-builder/references/diretrizes-dashboard.md \
 
 - [ ] **Step 3: Escrever o `01-govhub/dashboard-builder/SKILL.md`**
 
-O arquivo tem quatro partes. As Fases 2 e 3 são **cópia literal** das seções
-`## Fase 2 — Montar o esboço (markdown + wireframe)` e
+O arquivo tem quatro partes. A Fase 3 é **cópia literal** da seção
 `## Fase 3 — Validação humana (gate obrigatório)` do `SKILL.md` atual do
-conector, com **duas** substituições no texto da Fase 2:
+conector. A Fase 2 é cópia da seção
+`## Fase 2 — Montar o esboço (markdown + wireframe)`, com **três**
+substituições — o envelope do esboço é agnóstico de ferramenta, mas os campos
+dentro de `config:` não são, e o núcleo não pode fingir que são:
 
 1. onde ela diz "consulte [`references/superset-schema.md`](references/superset-schema.md)"
    e manda chamar `get_chart_type_schema`, trocar por: "use os nomes de campo que
    a fase de descoberta do conector devolveu; se faltar algum, peça ao conector
    antes de montar o bloco — não invente nomes de campo.";
 2. onde ela cita `add_chart_to_existing_dashboard` ao explicar o grid de 2
-   colunas, trocar por "o conector posiciona em grid de 2 colunas".
+   colunas, trocar por "o conector posiciona em grid de 2 colunas";
+3. o bloco de exemplo de componente inteiro (o fence ```` ```markdown ```` com
+   `## Componente: Consumo Total do Período` e o parágrafo logo abaixo dele) é
+   substituído por este, que mostra o envelope sem fixar vocabulário de nenhuma
+   ferramenta:
+
+   ````markdown
+   ```markdown
+   ## Componente: Consumo Total do Período
+   - dataset: <o que a descoberta do conector devolveu>
+   - prioridade: primária
+   - config:
+       <campos da ferramenta escolhida — o conector diz quais são e como se chamam>
+   ```
+
+   O envelope (`## Componente:`, `dataset:`, `prioridade:`, `config:`) é o mesmo
+   para qualquer ferramenta. O conteúdo de `config:` **não é**: cada ferramenta
+   tem seu próprio vocabulário, e quem fornece os nomes corretos é o conector, na
+   fase de descoberta. Não invente nomes de campo e não reaproveite os de outra
+   ferramenta.
+   ````
 
 O restante (frontmatter, Fase 0, handoff) é novo:
 
@@ -1098,8 +1130,12 @@ m = re.search(r'^name:\s*([^\n]+)$', t, re.M)
 assert m and m.group(1).strip() == p.parent.name, "name não bate com a pasta"
 for secao in ("## Fase 0", "## Fase 2", "## Fase 3", "## Handoff"):
     assert secao in t, f"faltou {secao}"
-assert "superset" not in t.lower().replace("dashboard-superset-builder", ""), \
-    "o núcleo não pode ter conteúdo específico de Superset além do nome do conector"
+# Citar "Superset" como opção de ferramenta e nomear o conector é esperado. O que
+# o núcleo NÃO pode ter é detalhe de implementação de nenhuma ferramenta.
+for vazamento in ("superset_client", "api/v1", "viz_type", "chart_type",
+                  "datasource_id", "superset-schema", "position_json",
+                  "generate_chart", "add_chart_to_existing_dashboard"):
+    assert vazamento not in t, f"detalhe de implementação vazou para o núcleo: {vazamento}"
 print("OK")
 PY
 ```
@@ -1442,12 +1478,13 @@ Substitua a linha de `dashboard-superset-builder` por estas duas:
 Run:
 ```bash
 cd /home/joaoegewarth/GovHub-skills
-grep -c 'dashboard-builder' README.md
+grep -c '^| \[`dashboard-builder`\]' README.md
+grep -c '^| \[`dashboard-superset-builder`\]' README.md
+grep -c '53 skills' README.md
 bash scripts/validar-plugins.sh >/dev/null && echo "validador ok"
 ```
-Expected: o `grep -c` devolve ao menos `3` (linha de contagem não conta; as duas
-linhas novas da tabela citam `dashboard-builder` e `dashboard-superset-builder`),
-e `validador ok`.
+Expected: `1`, `1`, `1` e `validador ok` — uma linha de tabela para cada skill e
+a contagem atualizada.
 
 - [ ] **Step 6: Commit**
 
