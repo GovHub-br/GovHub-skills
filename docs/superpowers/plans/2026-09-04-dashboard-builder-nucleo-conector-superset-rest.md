@@ -1132,10 +1132,17 @@ for secao in ("## Fase 0", "## Fase 2", "## Fase 3", "## Handoff"):
     assert secao in t, f"faltou {secao}"
 # Citar "Superset" como opção de ferramenta e nomear o conector é esperado. O que
 # o núcleo NÃO pode ter é detalhe de implementação de nenhuma ferramenta.
-for vazamento in ("superset_client", "api/v1", "viz_type", "chart_type",
-                  "datasource_id", "superset-schema", "position_json",
-                  "generate_chart", "add_chart_to_existing_dashboard"):
+# Atenção: `# viz_type a escolher` é um MARCADOR — vocabulário compartilhado que o
+# conector escreve no esboço e o gate da Fase 3 procura. Ele fica; renomeá-lo só de
+# um lado faz o gate parar de reconhecer o componente em silêncio. Por isso o check
+# olha `viz_type` fora do marcador, não a substring solta.
+sem_marcador = t.replace("# viz_type a escolher", "")
+for vazamento in ("superset_client", "api/v1", "chart_type", "datasource_id",
+                  "superset-schema", "position_json", "generate_chart",
+                  "add_chart_to_existing_dashboard"):
     assert vazamento not in t, f"detalhe de implementação vazou para o núcleo: {vazamento}"
+assert "viz_type" not in sem_marcador, \
+    "viz_type fora do marcador vazou para o núcleo (use 'tipo de visualização' na prosa)"
 print("OK")
 PY
 ```
