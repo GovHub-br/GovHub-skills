@@ -1,0 +1,327 @@
+# Review package: c806e99..806950d
+
+## Commits
+806950d fix(dashboard-superset-builder): alinhar SKILL.md ao schema real e cobrir inputs da Fase 4
+
+## Files changed
+ .gitignore                                         |  1 +
+ 01-govhub/dashboard-superset-builder/SKILL.md      | 93 +++++++++++++++-------
+ .../references/diretrizes-dashboard.md             | 14 ++--
+ .../references/superset-schema.md                  |  2 +-
+ NOTICE.md                                          |  2 +-
+ .../plans/2026-09-03-dashboard-superset-builder.md | 11 ++-
+ 6 files changed, 82 insertions(+), 41 deletions(-)
+
+## Diff
+diff --git a/.gitignore b/.gitignore
+index c73c891..18c5152 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,4 @@
+ # Credenciais locais — nunca versionar (ver docs/superpowers/specs/2026-09-03-dashboard-superset-builder-design.md)
+ .env
+ .token
++handoff-skill-mcp.md
+diff --git a/01-govhub/dashboard-superset-builder/SKILL.md b/01-govhub/dashboard-superset-builder/SKILL.md
+index 81bfa8a..9cbefa7 100644
+--- a/01-govhub/dashboard-superset-builder/SKILL.md
++++ b/01-govhub/dashboard-superset-builder/SKILL.md
+@@ -26,23 +26,28 @@ Pergunte ao dev (só o que ainda não estiver claro na conversa):
+ 1. **Perfil do usuário final do dashboard** — nível de experiência digital
+    (iniciante / intermediário / avançado / especialista) e nível de conhecimento de
+    negócio (leigo / técnico / especialista / gestor). Ver
+    [`references/diretrizes-dashboard.md`](references/diretrizes-dashboard.md) seção
+    "Perfil do usuário" para o que cada combinação implica em densidade e volume de
+    informação.
+ 2. **Dispositivo principal** (desktop / tablet / mobile) — dashboard corporativo
+    tende a desktop, mas confirme.
+ 3. **Qual pergunta o dashboard precisa responder em 5 segundos** — essa é a
+    informação primária, a que recebe maior destaque no wireframe.
+-4. **Dataset alvo no Superset**, se já existir (nome, ID ou UUID). Se não existir
+-   ou o dev não souber, siga sem isso — a Fase 1 é pulada e o esboço usa nomes
+-   descritivos.
++4. **Dataset alvo no Superset**, se já existir (nome, ID ou UUID). Se o dev não
++   souber, a Fase 1 chama `list_datasets` (somente leitura) para ajudar a escolher;
++   só se ainda assim não der para escolher é que o esboço segue com nomes
++   descritivos a confirmar antes da Fase 4.
++5. **Dashboard novo ou já existente? Se existente, qual (ID, UUID ou título)?** —
++   define a ramificação da Fase 4 (`add_chart_to_existing_dashboard` x
++   `generate_dashboard`). Registrado no cabeçalho do esboço da Fase 2 como
++   `dashboard alvo:`.
+ 
+ **Nunca assuma o endereço de um servidor MCP do Superset.** Diferentes sessões e
+ ambientes têm servidores diferentes, e o endereço pode mudar a qualquer momento.
+ Em vez disso:
+ 
+ - Liste os servidores MCP conectados na sessão atual.
+ - Se houver **exatamente um** com o padrão de tools de um Superset MCP
+   (`get_instance_info`, `health_check`, `search_tools`, `call_tool` como camada
+   fixa, tools reais de chart/dashboard/dataset aparecendo via `search_tools`),
+   confirme com o dev que é esse antes de usar — não assuma sozinho.
+@@ -55,95 +60,125 @@ Em vez disso:
+ 
+ Com o servidor escolhido, confirme que está acessível chamando `health_check` ou
+ `get_instance_info` (via `call_tool`) antes de seguir para a Fase 1.
+ 
+ ## Fase 1 — Descoberta no Superset (somente leitura)
+ 
+ Se o dev indicou um dataset existente, chame `get_dataset_info` e/ou `get_schema`
+ (via `call_tool`) para obter as colunas, métricas e dimensões **reais** daquele
+ dataset. Use esses nomes reais no esboço da Fase 2 em vez de inventar nomes.
+ 
+-Se o dataset ainda não existe ou o dev não sabe qual usar, siga para a Fase 2 com
+-nomes descritivos e **sinalize explicitamente no esboço** que esses nomes precisam
+-ser confirmados antes da Fase 4.
++Se o dev não sabe qual dataset usar, chame `list_datasets` (somente leitura) e
++mostre os candidatos para ele escolher um; então chame `get_dataset_info` /
++`get_schema` no escolhido para pegar os nomes reais. Só se o dev ainda assim não
++conseguir escolher (ou o dataset ainda não existir) é que a Fase 2 segue com nomes
++descritivos — nesse caso **sinalize explicitamente no esboço** que esses nomes
++(dataset e colunas) são placeholders e precisam ser confirmados antes da Fase 4.
+ 
+ Essas chamadas são somente leitura — não têm a tag `mutate` — então não precisam de
+ aprovação humana.
+ 
+ ## Fase 2 — Montar o esboço (markdown + wireframe)
+ 
+-Produza um único arquivo markdown com um bloco `## Componente: <nome>` por chart.
+-Para cada componente:
++Produza um único arquivo markdown. Antes dos blocos de componente, um cabeçalho do
++esboço com uma linha `dashboard alvo:` — `novo: "<título>"` ou
++`existente: <id/uuid/título>`, conforme a resposta da pergunta 5 da Fase 0. Esse
++campo passa pelo gate da Fase 3 junto com o resto do esboço e decide a ramificação
++da Fase 4.
++
++Depois do cabeçalho, um bloco `## Componente: <nome>` por chart. Para cada
++componente:
+ 
+ - Aplique a hierarquia de informação (Primária / Secundária / Complementar /
+   Descartável) e a densidade visual — "média" é o padrão para dashboard corporativo,
+   a não ser que o perfil de usuário da Fase 0 sugira outra coisa. Ver
+   [`references/diretrizes-dashboard.md`](references/diretrizes-dashboard.md) seções
+   "Hierarquia de informação" e "Densidade visual".
+ - Use os nomes de campo exatos que o Superset espera para o `viz_type` escolhido —
+   consulte [`references/superset-schema.md`](references/superset-schema.md). Se o
+   `viz_type` não estiver nesse cache, chame `get_chart_type_schema` (via
+   `call_tool`, com `chart_type` e `include_examples: true`) para obter o schema ao
+   vivo antes de montar o bloco — não invente nomes de campo.
+ 
+-Formato de cada bloco:
++Formato de cada bloco (os campos **dentro de `config`** são exatamente os do schema
++do `viz_type` escolhido — veja [`references/superset-schema.md`](references/superset-schema.md)):
+ 
+ ```markdown
+ ## Componente: Consumo Total do Período
+-- dataset_id: 42 (consumo_energia)
+-- viz_type: xy (linha)
+-- metrics: [SUM(consumo_kwh)]
+-- groupby: [data_referencia]
+-- adhoc_filters: [unidade = "Matriz"]
++- dataset: consumo_energia (id 42)   # vai no parâmetro do generate_chart, não em config
++- viz_type: xy
+ - prioridade: primária
++- config:
++    chart_type: xy
++    kind: line
++    x: { name: data_referencia }
++    y: [ { name: consumo_kwh, aggregate: SUM } ]
++    filters: [ { column: unidade, op: "=", value: "Matriz" } ]
+ ```
+ 
+-(Os campos exatos variam por `viz_type` — o exemplo acima é ilustrativo para `xy`;
+-siga o schema real do tipo escolhido.)
++Os campos de `config` mudam por `viz_type` (ex.: `pie` usa `dimension` + `metric`;
++`table` usa `columns`; `big_number` usa `metric`). Nunca use `adhoc_filters` nem
++SQL cru em `filters` — o schema exige filtros estruturados `column`/`op`/`value`.
+ 
+ Depois do último bloco, gere um **wireframe em ASCII ou Mermaid**, embutido no
+ mesmo arquivo markdown, mostrando a posição relativa dos componentes num grid de 2
+ colunas (mesmo padrão de auto-posicionamento do `add_chart_to_existing_dashboard`).
+ Exemplo de wireframe ASCII:
+ 
+ ```
+-┌─────────────────────────────┬─────────────────────────────┐
+-│ Consumo Total do Período     │ Distribuição por Unidade     │
+-│ (linha · primária)           │ (pizza · secundária)         │
+-├─────────────────────────────┴─────────────────────────────┤
+-│ Histórico Detalhado (tabela · complementar)                 │
+-└──────────────────────────────────────────────────────────────┘
++┌────────────────────────────┬────────────────────────────┐
++│ Consumo Total do Período   │ Distribuição por Unidade   │
++│ (linha · primária)         │ (pizza · secundária)       │
++├────────────────────────────┴────────────────────────────┤
++│ Histórico Detalhado (tabela · complementar)             │
++└─────────────────────────────────────────────────────────┘
+ ```
+ 
+ ## Fase 3 — Validação humana (gate obrigatório)
+ 
+ Apresente o esboço completo (markdown + wireframe) ao dev e pergunte explicitamente:
+ aprovar como está, ajustar algo, ou cancelar.
+ 
+ - Se pedir ajuste: volte para a Fase 2, gere a versão ajustada, e apresente de novo
+   para nova aprovação. Não "corrija e siga sozinho".
+ - Se cancelar: pare aqui.
+ - **Só uma resposta afirmativa e explícita libera a Fase 4.** Uma resposta vaga
+   ("ok", "bacana", silêncio) não conta como aprovação — peça confirmação direta
+   antes de prosseguir.
++- Se o esboço ainda contém nomes placeholder de dataset ou de coluna não
++  confirmados, o humano pode aprovar o **design**, mas essa aprovação **não**
++  libera a Fase 4: volte para a Fase 1 e vincule os nomes reais primeiro (a Fase 4
++  precisa de um `dataset` real e nomes de coluna reais para sequer rodar).
+ 
+ ## Fase 4 — Criação real no Superset
+ 
++**Passo 0 (antes da primeira chamada):** descubra a assinatura real de
++`generate_chart` (e de `add_chart_to_existing_dashboard` / `generate_dashboard`)
++via `search_tools` + uma inspeção do `inputSchema` — não presuma os nomes dos
++parâmetros wrapper (como o dataset é passado, título/nome do chart, `save_chart`).
++O cache em [`references/superset-schema.md`](references/superset-schema.md) cobre só
++o objeto `config`/`request` interno, não os parâmetros da tool.
++
+ Para cada componente aprovado, na ordem em que aparecem no esboço:
+ 
+-1. `generate_chart` com `save_chart=True`, montando o `request` conforme o schema
+-   real do `viz_type` (do cache em `references/superset-schema.md`, ou consultado
+-   ao vivo via `get_chart_type_schema` se o tipo não estiver cacheado).
+-2. `add_chart_to_existing_dashboard` para adicionar o chart criado a um dashboard
+-   já existente — **ou** `generate_dashboard` (passando a lista de chart IDs
+-   criados nesta rodada) **apenas** se for a primeira leva de charts de um
+-   dashboard novo. Nunca use `generate_dashboard` como fallback de
++1. `generate_chart`: o bloco `config:` do componente vai no objeto `request` da
++   tool, montado conforme o schema real do `viz_type` (do cache em
++   [`references/superset-schema.md`](references/superset-schema.md), ou consultado
++   ao vivo via `get_chart_type_schema` se o tipo não estiver cacheado). O `dataset`
++   do componente, o título do chart e `save_chart=True` são parâmetros wrapper da
++   tool (nomes exatos vindos do Passo 0), não campos de `config`.
++2. Ramifique pelo campo `dashboard alvo:` do cabeçalho do esboço:
++   - `existente: <id/uuid/título>` → `add_chart_to_existing_dashboard` para cada
++     chart criado.
++   - `novo: "<título>"` → `generate_dashboard` (passando a lista de chart IDs
++     criados nesta rodada) **apenas** na primeira leva de charts do dashboard novo.
++   Nunca use `generate_dashboard` como fallback de
+    `add_chart_to_existing_dashboard`.
+ 
+ Se um componente falhar, registre o erro e continue tentando os demais — não pare
+ a rodada inteira por causa de um componente. Ao final, apresente um resumo com o
+ resultado de cada componente (sucesso com ID/link, ou erro com a mensagem) e o
+ link do dashboard final.
+ 
+ ## Fora de escopo (v1)
+ 
+ - Editar ou atualizar dashboards que não foram criados por esta skill.
+diff --git a/01-govhub/dashboard-superset-builder/references/diretrizes-dashboard.md b/01-govhub/dashboard-superset-builder/references/diretrizes-dashboard.md
+index 5fe3d69..f1a34f7 100644
+--- a/01-govhub/dashboard-superset-builder/references/diretrizes-dashboard.md
++++ b/01-govhub/dashboard-superset-builder/references/diretrizes-dashboard.md
+@@ -1,20 +1,22 @@
+ # Diretrizes de Design para Dashboards
+ 
+-Resumo curado de `markdowm-devs.md` (Guia para Markdown, 17 capítulos), focado no
+-que a skill `dashboard-superset-builder` usa nas Fases 0 e 2. Para o guia completo,
+-veja o arquivo original na raiz do repositório.
++Resumo curado do guia interno de Markdown do time (Guia para Markdown, 17
++capítulos), focado no que a skill `dashboard-superset-builder` usa nas Fases 0 e 2.
++Esse guia é um documento interno de trabalho da equipe — não é distribuído junto
++com a skill, então não conte com poder abri-lo a partir do repositório; este resumo
++é a fonte que a skill de fato usa.
+ 
+-**Aviso de cobertura:** os capítulos do guia mais específicos de dashboard — 13
++**Aviso de cobertura:** os capítulos mais específicos de dashboard — 13
+ (Estruturação de Dashboards), 14 (Tabelas), boa parte do 15 (Catálogo de
+-Componentes) e 4.5 (Cores para Visualização de Dados) — estão, na versão atual do
+-`markdowm-devs.md`, só com os títulos das subseções, sem conteúdo escrito. Não
++Componentes) e 4.5 (Cores para Visualização de Dados) — estão, no guia interno
++usado como fonte, só com os títulos das subseções, sem conteúdo escrito. Não
+ invente conteúdo para preencher essas lacunas: quando uma decisão do esboço
+ dependeria de uma diretriz específica ainda não escrita (ex.: regra exata de cor
+ por tipo de gráfico), sinalize isso no esboço em vez de decidir sozinho.
+ 
+ ## Perfil do usuário
+ 
+ Duas perguntas definem a complexidade permitida na interface:
+ 
+ **Experiência digital:**
+ - **Iniciante** — precisa de mais orientação visual, fluxos simples, baixa
+diff --git a/01-govhub/dashboard-superset-builder/references/superset-schema.md b/01-govhub/dashboard-superset-builder/references/superset-schema.md
+index c0dc541..26326da 100644
+--- a/01-govhub/dashboard-superset-builder/references/superset-schema.md
++++ b/01-govhub/dashboard-superset-builder/references/superset-schema.md
+@@ -1,15 +1,15 @@
+ # Schema do Superset por `viz_type`
+ 
+ Cache estático do schema real de `generate_chart`, obtido via `get_chart_type_schema` do MCP do Superset (serviço `Superset MCP Service`, versão 6.1.0, capturado em 2026-09-03). Evita depender de uma chamada ao vivo ao MCP durante o planejamento (Fases 0–3 da skill); a criação real (Fase 4) ainda pode consultar o MCP ao vivo para um `viz_type` que não esteja aqui.
+ 
+-Como usar: cada bloco abaixo é o retorno bruto de `get_chart_type_schema(chart_type=<tipo>, include_examples=true)`. O objeto sob `schema` é o JSON Schema do config do chart; na Fase 4 esse config vai dentro do parâmetro `request` de `generate_chart`, com `save_chart=true` para persistir (sem isso o `generate_chart` só devolve um preview). Alguns `$defs` se repetem entre os tipos: `ColumnRef` e `FilterConfig` aparecem em todos os 7; `AxisConfig` só em `xy` e `mixed_timeseries`; `TimeGrain` em `xy`, `mixed_timeseries` e `big_number`; `LegendConfig` só em `xy` (os demais usam um booleano `show_legend`). `ColumnRef` é como toda métrica/dimensão é declarada (`name` obrigatório; `aggregate` para métrica ad-hoc; `saved_metric: true` para usar uma métrica salva do dataset). Filtros são sempre estruturados (`column`/`op`/`value`) — nunca `adhoc_filters` nem SQL cru.
++Como usar: cada bloco abaixo é o objeto `schema` retornado por `get_chart_type_schema(chart_type=<tipo>, include_examples=true)` (mais o(s) `examples`), não o retorno completo `{chart_type, schema, examples}`. Esse objeto `schema` é o JSON Schema do config do chart; na Fase 4 esse config vai dentro do parâmetro `request` de `generate_chart`, com `save_chart=true` para persistir (sem isso o `generate_chart` só devolve um preview). Alguns `$defs` se repetem entre os tipos: `ColumnRef` e `FilterConfig` aparecem em todos os 7; `AxisConfig` só em `xy` e `mixed_timeseries`; `TimeGrain` em `xy`, `mixed_timeseries` e `big_number`; `LegendConfig` só em `xy` (os demais usam um booleano `show_legend`). `ColumnRef` é como toda métrica/dimensão é declarada (`name` obrigatório; `aggregate` para métrica ad-hoc; `saved_metric: true` para usar uma métrica salva do dataset). Filtros são sempre estruturados (`column`/`op`/`value`) — nunca `adhoc_filters` nem SQL cru.
+ 
+ ## Tipos válidos (`viz_type`)
+ 
+ Lista completa aceita por `get_chart_type_schema` / `generate_chart` (obtida chamando com um `chart_type` inválido):
+ 
+ - `big_number`
+ - `handlebars`
+ - `mixed_timeseries`
+ - `pie`
+ - `pivot_table`
+diff --git a/NOTICE.md b/NOTICE.md
+index db95054..248d66f 100644
+--- a/NOTICE.md
++++ b/NOTICE.md
+@@ -35,19 +35,19 @@ Elas não fazem falta: a Anthropic publica as mesmas skills no marketplace ofici
+ ```bash
+ claude plugin marketplace add anthropics/skills
+ ```
+ 
+ ```bash
+ claude plugin install document-skills@anthropic-agent-skills
+ ```
+ 
+ ## Pendência conhecida
+ 
+-Das 51 skills que restam, **43 não trazem qualquer indicação de origem ou licença**. Elas foram reunidas de coleções públicas da comunidade, mas o repositório de origem não foi registrado no momento em que entraram aqui.
++Das 52 skills que restam, **43 não trazem qualquer indicação de origem ou licença**. Elas foram reunidas de coleções públicas da comunidade, mas o repositório de origem não foi registrado no momento em que entraram aqui.
+ 
+ Isso significa que o GovHub **não pode afirmar** sob que termos essas skills estão, nem relicenciá-las. Enquanto a procedência não for rastreada:
+ 
+ - não adicione um `LICENSE` na raiz declarando uma licença única para o repositório;
+ - ao trazer uma skill nova de fora, registre no frontmatter o `author:` e a `license:`, e traga o arquivo de licença original junto quando existir;
+ - ao escrever uma skill própria do GovHub, deixe isso explícito no frontmatter — é o que separa o que é do time do que foi apenas reunido aqui.
+ 
+ Skills escritas pelo próprio GovHub BR / lablivre (as de [`01-govhub/`](01-govhub/), por exemplo) são do time e podem ser licenciadas por ele a qualquer momento.
+diff --git a/docs/superpowers/plans/2026-09-03-dashboard-superset-builder.md b/docs/superpowers/plans/2026-09-03-dashboard-superset-builder.md
+index cbaf8c6..e276579 100644
+--- a/docs/superpowers/plans/2026-09-03-dashboard-superset-builder.md
++++ b/docs/superpowers/plans/2026-09-03-dashboard-superset-builder.md
+@@ -648,24 +648,27 @@ esboço na Fase 3) e do mesmo servidor MCP escolhido na Tarefa 4.
+ **Files:** nenhum (verificação, não implementação).
+ 
+ - [ ] **Step 1: Rodar a skill de ponta a ponta com um dataset de teste real**
+ 
+ Com a skill instalada/carregada (pasta em `~/.claude/skills/dashboard-superset-builder/`
+ ou o plugin instalado), peça para "montar um dashboard no Superset" usando um
+ dataset de teste existente no ambiente do usuário. Acompanhe as 5 fases.
+ 
+ - [ ] **Step 2: Confirmar que o esboço usa nomes de campo reais**
+ 
+-No arquivo de esboço gerado (Fase 2), confirme visualmente que os nomes de campo
+-(`dataset_id`, `metrics`, `groupby` etc.) batem com o que está em
+-`references/superset-schema.md` para o `viz_type` escolhido — não são nomes
+-inventados.
++No arquivo de esboço gerado (Fase 2), confirme visualmente que o bloco `config:`
++de cada componente usa exatamente os nomes de propriedade de
++`references/superset-schema.md` para o `viz_type` daquele componente (ex.: `xy` →
++`x`, `y`, `kind`, `filters`; nunca `metrics`/`groupby`/`adhoc_filters`), e que
++cada entrada de `filters` é estruturada `{column, op, value}` — não SQL cru nem
++`adhoc_filters`. O `dataset`, o título do chart e `save_chart` são parâmetros
++wrapper do `generate_chart`, não campos de `config`.
+ 
+ - [ ] **Step 3: Confirmar que o gate da Fase 3 bloqueia mesmo sem aprovação clara**
+ 
+ Responda de forma vaga ("ok", "bacana") à pergunta de aprovação da Fase 3.
+ Expected: a skill **não** avança para chamadas de criação no Superset — pede uma
+ confirmação mais direta.
+ 
+ - [ ] **Step 4: Aprovar explicitamente e confirmar a criação real**
+ 
+ Responda com uma aprovação explícita ("aprovado, pode criar"). Expected: a skill

@@ -42,9 +42,30 @@ subagent file handoffs in this session.
   README counts 52 / govhub-core 4 match the script totals; only the 3 manifests +
   README changed; skill row placed after accountability-report.
 
+- Final whole-branch review (opus): done. Verdict "merge with fixes" — 1 Critical
+  (SKILL.md Fase 2 example used metrics/groupby/adhoc_filters, which the real xy
+  schema forbids), 4 Important (Fase 4 wrapper undefined; dashboard target never
+  collected; dataset-unknown path had no resolution; diretrizes pointed at
+  untracked markdowm-devs.md), 6 Minor.
+- Fix pass (commit c806e99..806950d, sonnet): all 1+4+6 applied. User decided:
+  do all of it; real schema governs the xy example. Fase 0 gained a 5th question
+  (dashboard novo/existente); Fase 4 gained "Passo 0" (discover wrapper params) and
+  an explicit new/existing branch; Fase 1 uses list_datasets; Fase 3 won't release
+  Fase 4 on placeholder names; plan Task 6 Step 2 rewritten; NOTICE 51→52; wireframe
+  aligned; superset-schema.md header reworded; .gitignore covers handoff-skill-mcp.md.
+  Minor 7 (author/license frontmatter) deliberately skipped — repo-wide gap, user's.
+- Re-review (opus): all 10 items VERIFIED, all regression checks OK, shipped skill
+  ready. 2 follow-ups → fixed in commit 806950d..99f2171:
+  - SKILL.md Fase 1 now has a terminal state when the dataset doesn't exist at all
+    (stop, hand back to dev; no Fase 1<->3 loop; dataset creation out of scope).
+  - plan Task 2's embedded SKILL.md draft + design spec's stale example each got a
+    "canonical version is the versioned file" note (they still show old field names).
+
 ## Remaining
-- Final whole-branch review: dispatched after Task 5.
-- Task 6 (end-to-end manual verification): pending — needs the USER (role-play the
+- Task 6 (end-to-end manual verification): PENDING — needs the USER (role-play the
   Fase 3 approval gate, incl. answering vaguely once to prove the gate blocks) and
   the superset-govhub MCP + a real test dataset in their Superset. Cannot be done by
-  a subagent. Steps in sdd/task-6-brief.md if generated, else plan Task 6.
+  a subagent. Steps: plan Task 6.
+- Then: superpowers:finishing-a-development-branch (merge/PR decision). Note the
+  worktree branch has sdd/* bookkeeping commits mixed with feature commits — decide
+  whether to squash/drop sdd/ before merging to main.
