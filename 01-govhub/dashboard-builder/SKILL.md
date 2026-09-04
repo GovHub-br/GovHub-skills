@@ -72,7 +72,7 @@ como texto), deixando claro que é referência, não ponto de partida. Trate os 
 de componente que a Fase 1b pré-preencheu como qualquer esboço: escolha o tipo de
 visualização, hierarquia (Primária/Secundária/Complementar/Descartável) e posição
 **do zero** — os dados (dataset, métricas, dimensões, filtros) vêm do fonte, a
-forma não. Qualquer componente ainda marcado `# tipo de visualização a escolher`,
+forma não. Qualquer componente ainda marcado `# viz_type a escolher`,
 `# config a confirmar` ou `# filtro do fonte a reconstruir` tem que ser resolvido
 antes de apresentar o esboço na Fase 3.
 
@@ -137,7 +137,7 @@ aprovar como está, ajustar algo, ou cancelar.
   confirmados, o humano pode aprovar o **design**, mas essa aprovação **não**
   libera a Fase 4: volte para a Fase 1 e vincule os nomes reais primeiro (a Fase 4
   precisa de um `dataset` real e nomes de coluna reais para sequer rodar).
-- Se algum componente ainda está marcado `# tipo de visualização a escolher`,
+- Se algum componente ainda está marcado `# viz_type a escolher`,
   `# config a confirmar` ou `# filtro do fonte a reconstruir` (vindo da Fase 1b),
   isso **não** libera a Fase 4 — resolva primeiro, como no caso dos nomes
   placeholder.
