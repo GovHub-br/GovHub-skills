@@ -33,6 +33,46 @@ def rison_q(page: int = 0, page_size: int = 100, filters=None) -> str:
     return "(" + ",".join(partes) + ")"
 
 
+LARGURA_COLUNA = 6  # o grid do Superset tem 12 colunas; 2 colunas => 6 cada
+ALTURA_CHART = 50
+
+
+def build_position_json(charts: list) -> dict:
+    """Monta ROOT → GRID → ROW → CHART com `meta` em TODO nó.
+
+    Omitir `meta` em qualquer nó quebra a página inteira do Superset 6 com
+    `n.meta is undefined`. Duas colunas por linha.
+    """
+    pos = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["GRID_ID"], "meta": {}},
+        "GRID_ID": {"type": "GRID", "id": "GRID_ID", "children": [],
+                    "parents": ["ROOT_ID"], "meta": {}},
+    }
+    for i in range(0, len(charts), 2):
+        linha = f"ROW-{i // 2}"
+        pos["GRID_ID"]["children"].append(linha)
+        pos[linha] = {
+            "type": "ROW", "id": linha, "children": [],
+            "parents": ["ROOT_ID", "GRID_ID"],
+            "meta": {"background": "BACKGROUND_TRANSPARENT"},
+        }
+        for chart in charts[i:i + 2]:
+            no = f"CHART-{chart['id']}"
+            pos[linha]["children"].append(no)
+            pos[no] = {
+                "type": "CHART", "id": no, "children": [],
+                "parents": ["ROOT_ID", "GRID_ID", linha],
+                "meta": {
+                    "chartId": chart["id"],
+                    "width": LARGURA_COLUNA,
+                    "height": ALTURA_CHART,
+                    "sliceName": chart.get("slice_name", ""),
+                },
+            }
+    return pos
+
+
 class SupersetClient:
     def __init__(self, base_url: str, username: str, password: str, session=None):
         self.base = base_url.rstrip("/")
@@ -97,6 +137,93 @@ class SupersetClient:
     def get_chart(self, id_):
         return self._get_result(f"/api/v1/chart/{id_}")
 
+    # --- escrita (nunca antes da aprovação humana da Fase 3) ---------------
+
+    def create_chart(self, payload: dict, dry_run: bool = False) -> dict:
+        """POST idempotente: procura por slice_name e compara o conteúdo.
+
+        Achar pelo nome e seguir adiante não basta — um chart cujo dataset
+        mudou continua na tela e só para de carregar, sem avisar ninguém.
+        """
+        nome = payload["slice_name"]
+        atual = next(
+            (c for c in self.list_all("chart") if c.get("slice_name") == nome), None
+        )
+        if atual is None:
+            if dry_run:
+                return {"acao": "criaria", "slice_name": nome, "id": None}
+            novo = self.s.post(
+                f"{self.base}/api/v1/chart/", json=payload, timeout=TIMEOUT
+            ).json()
+            return {"acao": "criado", "slice_name": nome, "id": novo["id"]}
+
+        detalhe = self.get_chart(atual["id"]) or {}
+        igual = (
+            atual.get("datasource_id") == payload.get("datasource_id")
+            and detalhe.get("params") == payload.get("params")
+        )
+        if igual:
+            return {"acao": "inalterado", "slice_name": nome, "id": atual["id"]}
+        if dry_run:
+            return {"acao": "atualizaria", "slice_name": nome, "id": atual["id"]}
+        self.s.put(
+            f"{self.base}/api/v1/chart/{atual['id']}",
+            json={
+                "datasource_id": payload["datasource_id"],
+                "datasource_type": payload["datasource_type"],
+                "params": payload["params"],
+            },
+            timeout=TIMEOUT,
+        )
+        return {"acao": "atualizado", "slice_name": nome, "id": atual["id"]}
+
+    def create_dashboard(self, payload: dict, chart_ids: list, dry_run: bool = False) -> dict:
+        """POST de dashboard novo, com position_json montado a partir dos charts."""
+        slug = payload.get("slug")
+        if slug:
+            existente = self.get_dashboard(slug)
+            if existente:
+                return {"acao": "inalterado", "slug": slug, "id": existente["id"]}
+        charts = [{"id": i, "slice_name": (self.get_chart(i) or {}).get("slice_name", "")}
+                  for i in chart_ids]
+        corpo = dict(payload)
+        corpo["position_json"] = json.dumps(build_position_json(charts))
+        if dry_run:
+            return {"acao": "criaria", "slug": slug, "id": None}
+        novo = self.s.post(
+            f"{self.base}/api/v1/dashboard/", json=corpo, timeout=TIMEOUT
+        ).json()
+        return {"acao": "criado", "slug": slug, "id": novo["id"]}
+
+    def add_chart_to_dashboard(self, dashboard_ref, chart_id: int,
+                               dry_run: bool = False) -> dict:
+        """Lê o layout publicado, acrescenta o chart e reescreve.
+
+        Ler antes é obrigatório: reescrever do zero apaga ajustes feitos na
+        interface do Superset.
+        """
+        dash = self.get_dashboard(dashboard_ref)
+        if dash is None:
+            return {"acao": "dashboard_nao_encontrado", "id": None}
+        atual = json.loads(dash.get("position_json") or "{}")
+        existentes = [
+            {"id": no["meta"]["chartId"], "slice_name": no["meta"].get("sliceName", "")}
+            for no in atual.values()
+            if isinstance(no, dict) and no.get("type") == "CHART"
+        ]
+        if any(c["id"] == chart_id for c in existentes):
+            return {"acao": "inalterado", "id": dash["id"]}
+        novo = self.get_chart(chart_id) or {}
+        existentes.append({"id": chart_id, "slice_name": novo.get("slice_name", "")})
+        if dry_run:
+            return {"acao": "adicionaria", "id": dash["id"]}
+        self.s.put(
+            f"{self.base}/api/v1/dashboard/{dash['id']}",
+            json={"position_json": json.dumps(build_position_json(existentes))},
+            timeout=TIMEOUT,
+        )
+        return {"acao": "adicionado", "id": dash["id"]}
+
 
 def cliente_do_ambiente() -> SupersetClient:
     """Constrói o cliente a partir do ambiente e já autentica."""
@@ -139,6 +266,20 @@ def main(argv=None) -> int:
     q = sub.add_parser("get-chart", help="params/form_data reais de um chart.")
     q.add_argument("id")
 
+    q = sub.add_parser("create-chart", help="Cria/atualiza um chart (idempotente).")
+    q.add_argument("--file", required=True, help="JSON com o payload do chart.")
+    q.add_argument("--dry-run", action="store_true")
+
+    q = sub.add_parser("create-dashboard", help="Cria um dashboard novo.")
+    q.add_argument("--file", required=True,
+                   help='JSON com {"payload": {…}, "chart_ids": [1,2]}.')
+    q.add_argument("--dry-run", action="store_true")
+
+    q = sub.add_parser("add-chart-to-dashboard", help="Acrescenta um chart a um dashboard.")
+    q.add_argument("ref")
+    q.add_argument("chart_id", type=int)
+    q.add_argument("--dry-run", action="store_true")
+
     args = p.parse_args(argv)
     c = cliente_do_ambiente()
 
@@ -151,6 +292,17 @@ def main(argv=None) -> int:
         _imprimir(c.get_dashboard(args.ref))
     elif args.comando == "get-chart":
         _imprimir(c.get_chart(args.id))
+    elif args.comando == "create-chart":
+        with open(args.file, encoding="utf-8") as fh:
+            _imprimir(c.create_chart(json.load(fh), dry_run=args.dry_run))
+    elif args.comando == "create-dashboard":
+        with open(args.file, encoding="utf-8") as fh:
+            entrada = json.load(fh)
+        _imprimir(c.create_dashboard(entrada["payload"], entrada["chart_ids"],
+                                     dry_run=args.dry_run))
+    elif args.comando == "add-chart-to-dashboard":
+        _imprimir(c.add_chart_to_dashboard(args.ref, args.chart_id,
+                                           dry_run=args.dry_run))
     return 0
 
 
