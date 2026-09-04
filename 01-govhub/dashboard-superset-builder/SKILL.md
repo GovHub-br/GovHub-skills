@@ -122,7 +122,7 @@ Casos de borda — **registre no esboço e siga**, nunca aborte a fase:
 
 - Chart com `viz_type` fora dos 7 do cache (`references/superset-schema.md`), ou
   `form_data` que não mapeia limpo → traga o que der (dataset, métricas, filtros) e
-  marque o bloco com `# viz_type a escolher / config a confirmar na Fase 3`.
+  marque o bloco com `# viz_type a escolher` e `# config a confirmar`.
 - `get_chart_info` falha (permissão, chart órfão, dataset removido) → pule o chart,
   siga nos outros, e **liste as falhas** ao fim da Fase 1b.
 - Vários charts no mesmo dataset → normal, sem tratamento especial.
