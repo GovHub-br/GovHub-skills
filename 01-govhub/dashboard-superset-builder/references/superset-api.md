@@ -45,8 +45,13 @@ GET /api/v1/dataset/?q=(page:0,page_size:100)
 Com filtro:
 
 ```
-q=(filters:!((col:table_name,opr:ct,value:gld_boletim)),page_size:100)
+q=(filters:!((col:table_name,opr:ct,value:'gld_boletim')),page:0,page_size:100)
 ```
+
+O valor vai entre **aspas simples de Rison**, com `!` e `'` internos escapados
+como `!!` e `!'`. Sem as aspas, um valor com espaço (`consumo de agua`) produz
+Rison malformado e a API responde 400 — que, engolido, viraria "não existe".
+Números vão nus; booleanos e nulo são os literais `!t`, `!f` e `!n`.
 
 Para percorrer tudo: avance `page` até que a soma dos resultados alcance o
 `count` da resposta, ou até vir uma página vazia.
@@ -100,10 +105,23 @@ Rodar duas vezes não pode duplicar nada. O padrão é **procurar antes de criar
 **conferir o conteúdo** quando já existe — achar pelo nome e seguir adiante não
 basta (ver a primeira armadilha):
 
-1. Listar os existentes e indexar por nome (`slice_name`) ou slug.
+1. Procurar o existente. Para **chart**, na listagem, pela dupla `slice_name` +
+   `datasource_id`: só os dois juntos identificam o chart. `slice_name` sozinho
+   é genérico o bastante ("Total do Período") para casar com um chart de outro
+   dashboard, sobre outro dataset, e sobrescrevê-lo em silêncio. Para
+   **dashboard**, pelo slug, com `GET /api/v1/dashboard/<slug>` — nunca pela
+   listagem (ver a segunda armadilha), e por isso o slug é obrigatório.
 2. Se não existe → criar.
-3. Se existe → comparar o conteúdo relevante (no mínimo `datasource_id` e
-   `params`). Igual → não fazer nada. Diferente → `PUT`.
+3. Se existe → comparar o conteúdo relevante (para chart, `params`). Igual → não
+   fazer nada. Diferente → `PUT`.
+
+Consequência aceita da busca por nome + dataset: um chart cujo dataset mudou é
+criado como novo em vez de atualizado. É o lado seguro do erro — o chart antigo
+continua visível e auditável, em vez de ser sobrescrito.
+
+E erro HTTP na busca **estoura**, nunca vira lista vazia: o corpo de erro do
+Superset não tem `result` nem `count`, então um 500 ou um 401 de sessão expirada
+lido como "não achei nada" faz a etapa 2 duplicar tudo que já existe.
 
 ## `position_json`
 
@@ -114,6 +132,12 @@ inteira com `n.meta is undefined`.
 A cadeia mínima é `ROOT → GRID → ROW → CHART`, e **todos os nós levam `meta`**,
 mesmo vazio. O grid do Superset tem 12 colunas de largura; um layout de duas
 colunas usa `width: 6` por chart.
+
+Num dashboard que já tem layout, o publicado é a fonte da verdade e o chart novo
+entra nele por splice. Quando a árvore publicada não oferece lugar para uma ROW —
+nem GRID nem TAB, um `ROOT → MARKDOWN` por exemplo — a escrita é **recusada**.
+Gerar o grid canônico ali descartaria o conteúdo publicado, e remover nó de
+layout está fora do escopo da skill: não haveria como desfazer.
 
 ## Armadilhas
 

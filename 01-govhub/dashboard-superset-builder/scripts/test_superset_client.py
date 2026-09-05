@@ -3,8 +3,10 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
+import requests
 
 from superset_client import (
+    LayoutSemLugarParaRow,
     SupersetClient,
     build_position_json,
     inserir_chart_no_layout,
@@ -34,7 +36,25 @@ def test_rison_q_paginacao_simples():
 
 def test_rison_q_com_filtro():
     q = rison_q(0, 100, filters=[("table_name", "ct", "gld_boletim")])
-    assert q == "(filters:!((col:table_name,opr:ct,value:gld_boletim)),page:0,page_size:100)"
+    assert q == "(filters:!((col:table_name,opr:ct,value:'gld_boletim')),page:0,page_size:100)"
+
+
+def test_rison_q_escapa_valor_com_espaco_e_aspas():
+    # sem aspas, "consumo de agua" produz Rison malformado -> 400 -> a busca
+    # seria lida como "o dataset não existe"
+    q = rison_q(0, 100, filters=[("table_name", "ct", "consumo de agua")])
+    assert "value:'consumo de agua'" in q
+
+    q = rison_q(0, 100, filters=[("table_name", "ct", "d'agua")])
+    assert "value:'d!'agua'" in q
+
+    q = rison_q(0, 100, filters=[("table_name", "ct", "a!b")])
+    assert "value:'a!!b'" in q
+
+
+def test_rison_q_nao_poe_aspas_em_numero_e_booleano():
+    q = rison_q(0, 100, filters=[("id", "eq", 42), ("published", "eq", True)])
+    assert "value:42" in q and "value:!t" in q
 
 
 # --- login -----------------------------------------------------------------
@@ -83,6 +103,16 @@ def test_list_all_para_em_pagina_vazia():
     s = MagicMock()
     s.get.side_effect = [resposta(corpo={"count": 99, "result": []})]
     assert cliente(s).list_all("chart") == []
+
+
+def test_list_all_estoura_em_erro_http_em_vez_de_devolver_vazio():
+    s = MagicMock()
+    erro = resposta(status=500, corpo={"message": "boom"})
+    erro.raise_for_status.side_effect = requests.HTTPError("500")
+    s.get.return_value = erro
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s).list_all("chart")
 
 
 # --- leitura por id/slug ---------------------------------------------------
@@ -174,19 +204,41 @@ def test_create_chart_nao_faz_nada_quando_identico():
     s.put.assert_not_called()
 
 
-def test_create_chart_atualiza_quando_o_dataset_mudou():
+def test_create_chart_cria_novo_quando_o_dataset_mudou():
+    # contrato novo (I8): "o mesmo chart" é nome + dataset. Um chart homônimo
+    # sobre outro dataset não é este, então vira criação, não update.
     s = MagicMock()
-    s.get.side_effect = [
-        resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "Consumo Total",
-                                                "datasource_id": 7}]}),
-        resposta(corpo={"result": {"id": 5, "params": PAYLOAD["params"]}}),
-    ]
-    s.put.return_value = resposta(corpo={"id": 5})
+    s.get.return_value = resposta(corpo={"count": 1, "result": [
+        {"id": 5, "slice_name": "Consumo Total", "datasource_id": 7}]})
+    s.post.return_value = resposta(corpo={"id": 123})
 
     r = cliente(s).create_chart(PAYLOAD)
 
-    assert r == {"acao": "atualizado", "slice_name": "Consumo Total", "id": 5}
-    assert s.put.call_args[0][0] == "https://superset.exemplo/api/v1/chart/5"
+    assert r == {"acao": "criado", "slice_name": "Consumo Total", "id": 123}
+    s.put.assert_not_called()
+
+
+def test_create_chart_nao_sobrescreve_chart_homonimo_de_outro_dataset():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"count": 1, "result": [
+        {"id": 5, "slice_name": "Consumo Total", "datasource_id": 99}]})
+    s.post.return_value = resposta(corpo={"id": 123})
+
+    r = cliente(s).create_chart(PAYLOAD)  # PAYLOAD usa datasource_id 42
+
+    assert r["acao"] == "criado", "nome igual em outro dataset não é o mesmo chart"
+    s.put.assert_not_called()
+
+
+def test_create_chart_nao_posta_quando_a_listagem_falha():
+    s = MagicMock()
+    erro = resposta(status=500, corpo={"message": "boom"})
+    erro.raise_for_status.side_effect = requests.HTTPError("500")
+    s.get.return_value = erro
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s).create_chart(PAYLOAD)
+    s.post.assert_not_called(), "erro na busca não pode virar duplicata"
 
 
 def test_create_chart_dry_run_le_mas_nao_escreve():
@@ -275,15 +327,70 @@ def test_create_dashboard_atualiza_quando_os_charts_mudaram():
     s.put.assert_called_once()
 
 
-def test_create_dashboard_sem_slug_procura_pelo_titulo():
+def test_create_dashboard_sem_slug_falha_alto():
+    # contrato novo (I9): a listagem omite dashboards, então decidir existência
+    # por ela produz cópias. Sem slug não há busca confiável — falha alto.
     s = MagicMock()
-    s.get.return_value = resposta(corpo={"count": 1, "result": [
-        {"id": 3, "dashboard_title": "Painel"}]})
 
-    r = cliente(s).create_dashboard({"dashboard_title": "Painel"}, [])
+    with pytest.raises(ValueError) as erro:
+        cliente(s).create_dashboard({"dashboard_title": "Painel"}, [])
 
-    assert r["id"] == 3, "sem slug, tem que achar pelo título em vez de duplicar"
+    assert "slug" in str(erro.value)
+    s.get.assert_not_called()
     s.post.assert_not_called()
+
+
+def test_create_dashboard_normaliza_chart_ids_string():
+    s = MagicMock()
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(layout)}}),
+    ]
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, ["7"])
+
+    assert r["acao"] == "inalterado", "'7' e 7 são o mesmo chart"
+    s.put.assert_not_called()
+
+
+def test_create_dashboard_recusa_quando_resolve_no_proprio_fonte():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {
+        "id": 3, "slug": "painel-fonte", "dashboard_title": "Outro título",
+        "position_json": json.dumps(build_position_json([{"id": 7, "slice_name": "A"}])),
+    }})
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel derivado", "slug": "painel-fonte"}, [7],
+        fonte_id=3)
+
+    assert r == {"acao": "recusado_e_o_fonte", "slug": "painel-fonte", "id": 3}
+    s.put.assert_not_called(), "o dashboard fonte nunca é reescrito"
+    s.post.assert_not_called()
+
+
+def test_create_dashboard_recusa_layout_sem_lugar_para_row():
+    s = MagicMock()
+    patologico = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["MARKDOWN-1"],
+                    "meta": {}},
+        "MARKDOWN-1": {"type": "MARKDOWN", "id": "MARKDOWN-1", "children": [],
+                       "parents": ["ROOT_ID"], "meta": {"code": "# Só isto"}},
+    }
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(patologico)}}),
+        resposta(corpo={"result": {"id": 9, "slice_name": "C"}}),
+    ]
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, [9])
+
+    assert r == {"acao": "layout_sem_lugar_para_row", "slug": "painel", "id": 3}
+    s.put.assert_not_called(), "recusar é melhor que descartar o conteúdo publicado"
 
 
 # --- add_chart_to_dashboard ------------------------------------------------
@@ -381,6 +488,55 @@ def test_add_chart_to_dashboard_recusa_position_json_ilegivel():
     assert r == {"acao": "layout_invalido", "id": 3}
     # não dá para preservar o que não dá para ler: recusa em vez de apagar
     s.put.assert_not_called()
+
+
+def test_add_chart_to_dashboard_recusa_chart_inexistente():
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(
+            build_position_json([{"id": 7, "slice_name": "A"}]))}}),
+        resposta(status=404),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 99999)
+
+    assert r["acao"] == "chart_nao_encontrado"
+    s.put.assert_not_called(), "nó fantasma não pode entrar no layout"
+
+
+def test_add_chart_to_dashboard_recusa_layout_sem_lugar_para_row():
+    s = MagicMock()
+    patologico = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["MARKDOWN-1"],
+                    "meta": {}},
+        "MARKDOWN-1": {"type": "MARKDOWN", "id": "MARKDOWN-1", "children": [],
+                       "parents": ["ROOT_ID"], "meta": {"code": "# Só isto"}},
+    }
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(patologico)}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 8)
+
+    assert r == {"acao": "layout_sem_lugar_para_row", "id": 3}
+    s.put.assert_not_called(), "o markdown publicado não pode ser descartado"
+
+
+def test_inserir_chart_levanta_quando_nao_ha_container_para_row():
+    patologico = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["MARKDOWN-1"],
+                    "meta": {}},
+        "MARKDOWN-1": {"type": "MARKDOWN", "id": "MARKDOWN-1", "children": [],
+                       "parents": ["ROOT_ID"], "meta": {"code": "# Só isto"}},
+    }
+
+    with pytest.raises(LayoutSemLugarParaRow):
+        inserir_chart_no_layout(patologico, 8, "B")
+
+    assert patologico["MARKDOWN-1"]["meta"]["code"] == "# Só isto"
 
 
 def test_inserir_chart_ignora_no_chart_sem_chart_id():

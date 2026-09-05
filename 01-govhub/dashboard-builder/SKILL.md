@@ -52,14 +52,34 @@ Volte para a Fase 2 com esses nomes em mãos. Não monte o esboço com nomes
 inventados: se a descoberta não achou algo, o esboço marca o item como pendente
 e a Fase 3 não libera a execução.
 
+## Vocabulário compartilhado
+
+Estes literais atravessam a fronteira entre o núcleo e o conector. Escreva-os
+exatamente assim dos dois lados — uma variação de grafia quebra o gate em
+silêncio.
+
+`dashboard alvo:` aceita exatamente três formas:
+
+- `novo: "<título>"`
+- `existente: <slug ou id>`
+- `novo a partir de: <slug ou id do fonte> → "<título novo>"`
+
+Marcadores de pendência que o conector escreve e este gate procura:
+
+- `# viz_type a escolher`
+- `# config a confirmar`
+- `# filtro do fonte a reconstruir`
+
 ## Fase 2 — Montar o esboço (markdown + wireframe)
 
 Produza um único arquivo markdown. Antes dos blocos de componente, um cabeçalho do
-esboço com uma linha `dashboard alvo:`, conforme a resposta da pergunta 5 da Fase 0:
+esboço com uma linha `dashboard alvo:`, com um dos três valores do
+[Vocabulário compartilhado](#vocabulário-compartilhado), conforme a resposta da
+segunda pergunta da Fase 0-conector:
 
 - `novo: "<título>"`
-- `existente: <id/uuid/título>`
-- `novo a partir de: <id/uuid/título do fonte> → "<título novo>"`
+- `existente: <slug ou id>`
+- `novo a partir de: <slug ou id do fonte> → "<título novo>"`
 
 Esse campo passa pelo gate da Fase 3 junto com o resto do esboço e decide a
 ramificação da Fase 4. Quando for `novo a partir de:`, o esboço também começa com
@@ -104,10 +124,10 @@ tem seu próprio vocabulário, e quem fornece os nomes corretos é o conector, n
 fase de descoberta. Não invente nomes de campo e não reaproveite os de outra
 ferramenta.
 
-Os campos de `config` mudam conforme o tipo de visualização (ex.: um gráfico de
-pizza usa `dimension` + `metric`; uma tabela usa `columns`; um indicador numérico
-usa `metric`). Nunca use `adhoc_filters` nem SQL cru em `filters` — o schema exige
-filtros estruturados `column`/`op`/`value`.
+Os campos de `config` também mudam conforme o tipo de visualização escolhido — um
+gráfico de proporção não pede os mesmos campos que uma tabela. Quem diz quais são
+e como se chamam é o conector, na descoberta; não deduza a partir de outra
+ferramenta.
 
 Depois do último bloco, gere um **wireframe em ASCII ou Mermaid**, embutido no
 mesmo arquivo markdown, mostrando a posição relativa dos componentes num grid de 2
@@ -135,7 +155,8 @@ aprovar como está, ajustar algo, ou cancelar.
   antes de prosseguir.
 - Se o esboço ainda contém nomes placeholder de dataset ou de coluna não
   confirmados, o humano pode aprovar o **design**, mas essa aprovação **não**
-  libera a Fase 4: volte para a Fase 1 e vincule os nomes reais primeiro (a Fase 4
+  libera a Fase 4: volte para o handoff de descoberta no conector e vincule os
+  nomes reais primeiro (a Fase 4
   precisa de um `dataset` real e nomes de coluna reais para sequer rodar).
 - Se algum componente ainda está marcado `# viz_type a escolher`,
   `# config a confirmar` ou `# filtro do fonte a reconstruir` (vindo da Fase 1b),

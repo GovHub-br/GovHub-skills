@@ -18,18 +18,39 @@ import requests
 TIMEOUT = 30
 
 
+def rison_valor(valor) -> str:
+    """Serializa um valor Python para Rison.
+
+    String vai entre aspas simples, com `!` e `'` internos escapados (`!!` e
+    `!'`) — sem isso um valor com espaço ("consumo de agua") produz Rison
+    malformado, a API devolve 400 e a busca é lida como "não existe".
+    Números vão nus; booleanos e `None` viram os literais `!t`/`!f`/`!n`.
+    """
+    if valor is None:
+        return "!n"
+    if isinstance(valor, bool):
+        return "!t" if valor else "!f"
+    if isinstance(valor, (int, float)):
+        return str(valor)
+    return "'" + str(valor).replace("!", "!!").replace("'", "!'") + "'"
+
+
 def rison_q(page: int = 0, page_size: int = 100, filters=None) -> str:
     """Monta o parâmetro `q` em Rison.
 
     `filters` é uma lista de triplas (coluna, operador, valor). A API ignora
     `page`/`page_size` soltos e devolve 20 itens em silêncio — daí o Rison.
+    Todo valor passa por `rison_valor`; colunas e operadores são identificadores
+    e vão crus.
     """
     partes = []
     if filters:
-        clausulas = ",".join(f"(col:{c},opr:{o},value:{v})" for c, o, v in filters)
+        clausulas = ",".join(
+            f"(col:{c},opr:{o},value:{rison_valor(v)})" for c, o, v in filters
+        )
         partes.append(f"filters:!({clausulas})")
-    partes.append(f"page:{page}")
-    partes.append(f"page_size:{page_size}")
+    partes.append(f"page:{rison_valor(page)}")
+    partes.append(f"page_size:{rison_valor(page_size)}")
     return "(" + ",".join(partes) + ")"
 
 
@@ -145,6 +166,15 @@ def _pai_de(pos: dict, id_: str):
     return parents[-1] if parents else None
 
 
+class LayoutSemLugarParaRow(Exception):
+    """O layout publicado não tem GRID nem TAB onde pendurar uma ROW.
+
+    Regenerar um grid canônico aqui apagaria o conteúdo publicado (markdown,
+    abas, divisores). Recusar a escrita é estritamente melhor: o chamador
+    devolve `layout_sem_lugar_para_row` sem tocar no dashboard.
+    """
+
+
 def _container_para_row(pos: dict, ordem: list):
     """Onde pendurar uma ROW quando o layout não tem nenhuma: GRID, senão TAB."""
     for tipo in ("GRID", "TAB"):
@@ -155,7 +185,11 @@ def _container_para_row(pos: dict, ordem: list):
 
 
 def inserir_chart_no_layout(pos: dict, chart_id: int, slice_name: str = "") -> dict:
-    """Insere um CHART na árvore existente sem tocar em nenhum outro nó."""
+    """Insere um CHART na árvore existente sem tocar em nenhum outro nó.
+
+    Levanta `LayoutSemLugarParaRow` quando a árvore existe mas não tem nenhum
+    container onde uma ROW caiba.
+    """
     if not isinstance(pos, dict):
         pos = {}
     if chart_id in _chart_ids_do_layout(pos):
@@ -175,7 +209,7 @@ def inserir_chart_no_layout(pos: dict, chart_id: int, slice_name: str = "") -> d
             usada += meta.get("width") or LARGURA_COLUNA
         sobra = COLUNAS_DO_GRID - usada
         if sobra >= LARGURA_COLUNA:
-            destino, largura = ultima, min(LARGURA_COLUNA, sobra)
+            destino, largura = ultima, LARGURA_COLUNA
 
     if destino is None:
         if linhas:
@@ -188,9 +222,11 @@ def inserir_chart_no_layout(pos: dict, chart_id: int, slice_name: str = "") -> d
             parents_row = (list((pos.get(pai) or {}).get("parents") or []) + [pai]
                            if pai else [])
         if not isinstance(pos.get(pai), dict):
-            # Árvore sem lugar reconhecível para uma ROW: melhor um layout
-            # canônico com o chart novo do que um PUT que o Superset não abre.
-            return build_position_json([{"id": chart_id, "slice_name": slice_name}])
+            # Árvore sem lugar reconhecível para uma ROW. Regenerar o grid
+            # canônico aqui descartaria o conteúdo publicado — recusa.
+            raise LayoutSemLugarParaRow(
+                "layout publicado não tem GRID nem TAB onde inserir uma ROW"
+            )
         destino = _id_livre(pos, "ROW-")
         pos[destino] = {
             "type": "ROW", "id": destino, "children": [],
@@ -277,7 +313,12 @@ class SupersetClient:
     # --- leitura -----------------------------------------------------------
 
     def list_all(self, resource: str, filters=None) -> list:
-        """Percorre todas as páginas de /api/v1/<resource>/."""
+        """Percorre todas as páginas de /api/v1/<resource>/.
+
+        Erro HTTP estoura: o corpo de erro do Superset não tem `result` nem
+        `count`, então engolir o status devolveria lista vazia e a busca de
+        idempotência concluiria "não existe" — duplicando o que já está lá.
+        """
         pagina, saida = 0, []
         while True:
             r = self.s.get(
@@ -285,6 +326,7 @@ class SupersetClient:
                 params={"q": rison_q(pagina, 100, filters)},
                 timeout=TIMEOUT,
             )
+            r.raise_for_status()
             corpo = r.json()
             resultados = corpo.get("result", [])
             saida += resultados
@@ -293,10 +335,15 @@ class SupersetClient:
             pagina += 1
 
     def _get_result(self, caminho: str):
-        """GET que devolve `result`, ou None em 404 (não é erro: é 'não existe')."""
+        """GET que devolve `result`, ou None em 404 (não é erro: é 'não existe').
+
+        Qualquer outro erro HTTP estoura: 401 de sessão expirada ou 500 não
+        podem ser lidos como "não existe" e virar uma criação duplicada.
+        """
         r = self.s.get(f"{self.base}{caminho}", timeout=TIMEOUT)
         if r.status_code == 404:
             return None
+        r.raise_for_status()
         return r.json()["result"]
 
     def get_dataset(self, id_):
@@ -309,7 +356,7 @@ class SupersetClient:
     def get_chart(self, id_):
         return self._get_result(f"/api/v1/chart/{id_}")
 
-    # --- escrita (nunca antes da aprovação humana da Fase 3) ---------------
+    # --- escrita (nunca antes de uma aprovação humana explícita) -----------
 
     @staticmethod
     def _validar_datasource(payload: dict) -> None:
@@ -340,15 +387,21 @@ class SupersetClient:
                 "slice_name": (self.get_chart(chart_id) or {}).get("slice_name", "")}
 
     def create_chart(self, payload: dict, dry_run: bool = False) -> dict:
-        """POST idempotente: procura por slice_name e compara o conteúdo.
+        """POST idempotente: procura por slice_name + datasource_id.
 
-        Achar pelo nome e seguir adiante não basta — um chart cujo dataset
-        mudou continua na tela e só para de carregar, sem avisar ninguém.
+        Só é "o mesmo chart" quando nome e dataset batem: um `slice_name`
+        genérico ("Total do Período") que já existe em outro dashboard, sobre
+        outro dataset, não pode ser sobrescrito em silêncio. Consequência
+        aceita: um chart cujo dataset mudou é criado como novo, não atualizado.
         """
         self._validar_datasource(payload)
         nome = payload["slice_name"]
+        datasource_id = payload.get("datasource_id")
         atual = next(
-            (c for c in self.list_all("chart") if c.get("slice_name") == nome), None
+            (c for c in self.list_all("chart")
+             if c.get("slice_name") == nome
+             and c.get("datasource_id") == datasource_id),
+            None,
         )
         if atual is None:
             if dry_run:
@@ -359,13 +412,10 @@ class SupersetClient:
             return {"acao": "criado", "slice_name": nome, "id": novo["id"]}
 
         detalhe = self.get_chart(atual["id"]) or {}
-        igual = (
-            atual.get("datasource_id") == payload.get("datasource_id")
-            # como JSON: o Superset reserializa `params` e a comparação de
-            # string crua forçaria um PUT a cada execução.
-            and _params_iguais(detalhe.get("params"), payload.get("params"))
-        )
-        if igual:
+        # O dataset já bate (foi critério da busca); resta o conteúdo. Compara
+        # como JSON: o Superset reserializa `params` e a comparação de string
+        # crua forçaria um PUT a cada execução.
+        if _params_iguais(detalhe.get("params"), payload.get("params")):
             return {"acao": "inalterado", "slice_name": nome, "id": atual["id"]}
         if dry_run:
             return {"acao": "atualizaria", "slice_name": nome, "id": atual["id"]}
@@ -378,37 +428,37 @@ class SupersetClient:
         )
         return {"acao": "atualizado", "slice_name": nome, "id": atual["id"]}
 
-    def _achar_dashboard(self, payload: dict):
-        """Procura por slug; sem slug, pelo `dashboard_title` na listagem.
-
-        Sem essa segunda busca não há idempotência nenhuma para dashboard sem
-        slug: cada execução criaria uma cópia.
-        """
-        slug = payload.get("slug")
-        if slug:
-            return self.get_dashboard(slug)
-        titulo = payload.get("dashboard_title")
-        if not titulo:
-            return None
-        achado = next(
-            (d for d in self.list_all("dashboard")
-             if d.get("dashboard_title") == titulo),
-            None,
-        )
-        if achado is None:
-            return None
-        # A listagem não traz position_json; o detalhe traz.
-        detalhe = self.get_dashboard(achado["id"])
-        return detalhe if isinstance(detalhe, dict) else achado
-
-    def create_dashboard(self, payload: dict, chart_ids: list, dry_run: bool = False) -> dict:
+    def create_dashboard(self, payload: dict, chart_ids: list,
+                         dry_run: bool = False, fonte_id: int | None = None) -> dict:
         """POST/PUT idempotente: compara conteúdo, não só existência.
 
         Achar pelo nome e seguir adiante não basta aqui tampouco — um dashboard
         cujo título ou cujos charts mudaram nunca seria atualizado.
+
+        `slug` é obrigatório: a listagem do Superset omite dashboards (ver
+        `references/superset-api.md`), então decidir existência por ela produz
+        cópias. Só `GET /api/v1/dashboard/<slug>` responde com confiança.
+
+        `fonte_id`, quando o dashboard está sendo re-derivado de outro, é o id
+        do fonte: se a resolução cair nele, a escrita é recusada em vez de
+        reescrever o dashboard que serviu de referência.
         """
         slug = payload.get("slug")
-        existente = self._achar_dashboard(payload)
+        if not slug:
+            raise ValueError(
+                "dashboard sem `slug`: a listagem do Superset omite dashboards, "
+                "então não há como decidir existência sem ele e cada execução "
+                "criaria uma cópia. Inclua `slug` no payload."
+            )
+        # `chartId` no layout é int; um "7" vindo do JSON não casaria com o 7
+        # já publicado e acrescentaria um nó CHART a cada execução.
+        chart_ids = [int(i) for i in chart_ids]
+        existente = self.get_dashboard(slug)
+
+        if existente is not None and fonte_id is not None \
+                and existente.get("id") == fonte_id:
+            return {"acao": "recusado_e_o_fonte", "slug": slug,
+                    "id": existente.get("id")}
 
         if existente is None:
             corpo = dict(payload)
@@ -440,9 +490,12 @@ class SupersetClient:
         if pos:
             # Mesmo motivo do add_chart_to_dashboard: o layout publicado é a
             # fonte da verdade, o novo chart entra nele.
-            for i in faltando:
-                pos = inserir_chart_no_layout(
-                    pos, i, self._resumo_do_chart(i)["slice_name"])
+            try:
+                for i in faltando:
+                    pos = inserir_chart_no_layout(
+                        pos, i, self._resumo_do_chart(i)["slice_name"])
+            except LayoutSemLugarParaRow:
+                return {"acao": "layout_sem_lugar_para_row", "slug": slug, "id": id_}
         else:
             pos = build_position_json([self._resumo_do_chart(i) for i in chart_ids])
         corpo["position_json"] = json.dumps(pos)
@@ -464,10 +517,17 @@ class SupersetClient:
             return {"acao": "layout_invalido", "id": dash.get("id")}
         if chart_id in _chart_ids_do_layout(pos):
             return {"acao": "inalterado", "id": dash["id"]}
-        novo = self.get_chart(chart_id) or {}
+        novo = self.get_chart(chart_id)
+        if novo is None:
+            # Sem isso o 404 vira um nó CHART fantasma no layout publicado, e
+            # remover nó de layout está fora do escopo da skill.
+            return {"acao": "chart_nao_encontrado", "id": None}
         if dry_run:
             return {"acao": "adicionaria", "id": dash["id"]}
-        pos = inserir_chart_no_layout(pos, chart_id, novo.get("slice_name", ""))
+        try:
+            pos = inserir_chart_no_layout(pos, chart_id, novo.get("slice_name", ""))
+        except LayoutSemLugarParaRow:
+            return {"acao": "layout_sem_lugar_para_row", "id": dash["id"]}
         self.s.put(
             f"{self.base}/api/v1/dashboard/{dash['id']}",
             json={"position_json": json.dumps(pos)},
@@ -523,8 +583,12 @@ def main(argv=None) -> int:
 
     q = sub.add_parser("create-dashboard", help="Cria um dashboard novo.")
     q.add_argument("--file", required=True,
-                   help='JSON com {"payload": {…}, "chart_ids": [1,2]}.')
+                   help='JSON com {"payload": {…}, "chart_ids": [1,2]}; '
+                        "`slug` é obrigatório dentro de payload.")
     q.add_argument("--dry-run", action="store_true")
+    q.add_argument("--fonte", help="Slug ou id do dashboard fonte, quando este "
+                                   "dashboard é re-derivado de outro: protege o "
+                                   "fonte de ser reescrito por engano.")
 
     q = sub.add_parser("add-chart-to-dashboard", help="Acrescenta um chart a um dashboard.")
     q.add_argument("ref")
@@ -549,8 +613,14 @@ def main(argv=None) -> int:
     elif args.comando == "create-dashboard":
         with open(args.file, encoding="utf-8") as fh:
             entrada = json.load(fh)
+        fonte_id = None
+        if args.fonte:
+            fonte = c.get_dashboard(args.fonte)
+            if fonte is None:
+                sys.exit(f"dashboard fonte não encontrado: {args.fonte}")
+            fonte_id = fonte.get("id")
         _imprimir(c.create_dashboard(entrada["payload"], entrada["chart_ids"],
-                                     dry_run=args.dry_run))
+                                     dry_run=args.dry_run, fonte_id=fonte_id))
     elif args.comando == "add-chart-to-dashboard":
         _imprimir(c.add_chart_to_dashboard(args.ref, args.chart_id,
                                            dry_run=args.dry_run))
