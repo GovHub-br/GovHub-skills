@@ -238,7 +238,8 @@ def test_create_chart_nao_posta_quando_a_listagem_falha():
 
     with pytest.raises(requests.HTTPError):
         cliente(s).create_chart(PAYLOAD)
-    s.post.assert_not_called(), "erro na busca não pode virar duplicata"
+    # erro na busca não pode virar duplicata
+    s.post.assert_not_called()
 
 
 def test_create_chart_dry_run_le_mas_nao_escreve():
@@ -367,7 +368,8 @@ def test_create_dashboard_recusa_quando_resolve_no_proprio_fonte():
         fonte_id=3)
 
     assert r == {"acao": "recusado_e_o_fonte", "slug": "painel-fonte", "id": 3}
-    s.put.assert_not_called(), "o dashboard fonte nunca é reescrito"
+    # o dashboard fonte nunca é reescrito
+    s.put.assert_not_called()
     s.post.assert_not_called()
 
 
@@ -390,7 +392,53 @@ def test_create_dashboard_recusa_layout_sem_lugar_para_row():
         {"dashboard_title": "Painel", "slug": "painel"}, [9])
 
     assert r == {"acao": "layout_sem_lugar_para_row", "slug": "painel", "id": 3}
-    s.put.assert_not_called(), "recusar é melhor que descartar o conteúdo publicado"
+    # recusar é melhor que descartar o conteúdo publicado
+    s.put.assert_not_called()
+
+
+def test_create_dashboard_dry_run_tambem_recusa_layout_sem_lugar_para_row():
+    # Fix residual 1: um dry-run que promete "atualizaria" quando o run de
+    # verdade recusaria mentiria sobre o efeito real mostrado ao dev.
+    s = MagicMock()
+    patologico = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["MARKDOWN-1"],
+                    "meta": {}},
+        "MARKDOWN-1": {"type": "MARKDOWN", "id": "MARKDOWN-1", "children": [],
+                       "parents": ["ROOT_ID"], "meta": {"code": "# Só isto"}},
+    }
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(patologico)}}),
+        resposta(corpo={"result": {"id": 9, "slice_name": "C"}}),
+    ]
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, [9], dry_run=True)
+
+    assert r == {"acao": "layout_sem_lugar_para_row", "slug": "painel", "id": 3}
+    s.put.assert_not_called()
+    s.post.assert_not_called()
+
+
+def test_create_dashboard_recusa_chart_inexistente():
+    # Fix residual 2: mesmo defeito do add_chart_to_dashboard, no caminho de
+    # atualização de create_dashboard — um chart_id que 404 não pode virar
+    # nó fantasma na position_json publicada.
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(
+                                       build_position_json([{"id": 7, "slice_name": "A"}]))}}),
+        resposta(status=404),
+    ]
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, [7, 99999])
+
+    assert r["acao"] == "chart_nao_encontrado"
+    s.post.assert_not_called()
+    s.put.assert_not_called()
 
 
 # --- add_chart_to_dashboard ------------------------------------------------
@@ -501,7 +549,8 @@ def test_add_chart_to_dashboard_recusa_chart_inexistente():
     r = cliente(s).add_chart_to_dashboard("3", 99999)
 
     assert r["acao"] == "chart_nao_encontrado"
-    s.put.assert_not_called(), "nó fantasma não pode entrar no layout"
+    # nó fantasma não pode entrar no layout
+    s.put.assert_not_called()
 
 
 def test_add_chart_to_dashboard_recusa_layout_sem_lugar_para_row():
@@ -521,7 +570,31 @@ def test_add_chart_to_dashboard_recusa_layout_sem_lugar_para_row():
     r = cliente(s).add_chart_to_dashboard("3", 8)
 
     assert r == {"acao": "layout_sem_lugar_para_row", "id": 3}
-    s.put.assert_not_called(), "o markdown publicado não pode ser descartado"
+    # o markdown publicado não pode ser descartado
+    s.put.assert_not_called()
+
+
+def test_add_chart_to_dashboard_dry_run_tambem_recusa_layout_sem_lugar_para_row():
+    # Fix residual 1: um dry-run que promete "adicionaria" quando o run de
+    # verdade recusaria mentiria sobre o efeito real mostrado ao dev.
+    s = MagicMock()
+    patologico = {
+        "DASHBOARD_VERSION_KEY": "v2",
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["MARKDOWN-1"],
+                    "meta": {}},
+        "MARKDOWN-1": {"type": "MARKDOWN", "id": "MARKDOWN-1", "children": [],
+                       "parents": ["ROOT_ID"], "meta": {"code": "# Só isto"}},
+    }
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(patologico)}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 8, dry_run=True)
+
+    assert r == {"acao": "layout_sem_lugar_para_row", "id": 3}
+    s.put.assert_not_called()
+    s.post.assert_not_called()
 
 
 def test_inserir_chart_levanta_quando_nao_ha_container_para_row():

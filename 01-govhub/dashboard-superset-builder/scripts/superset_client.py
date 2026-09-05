@@ -175,6 +175,18 @@ class LayoutSemLugarParaRow(Exception):
     """
 
 
+class ChartNaoEncontrado(Exception):
+    """Chart id não existe (404 em `get_chart`).
+
+    Deixar passar viraria um nó CHART fantasma na position_json publicada —
+    a mesma razão pela qual `add_chart_to_dashboard` já recusa esse caso.
+    """
+
+    def __init__(self, chart_id):
+        self.chart_id = chart_id
+        super().__init__(f"chart {chart_id} não encontrado")
+
+
 def _container_para_row(pos: dict, ordem: list):
     """Onde pendurar uma ROW quando o layout não tem nenhuma: GRID, senão TAB."""
     for tipo in ("GRID", "TAB"):
@@ -383,8 +395,18 @@ class SupersetClient:
             )
 
     def _resumo_do_chart(self, chart_id: int) -> dict:
-        return {"id": chart_id,
-                "slice_name": (self.get_chart(chart_id) or {}).get("slice_name", "")}
+        """Resolve nome do chart para a position_json — falha se o id não existe.
+
+        `get_chart(i) or {}` (contrato anterior) engolia um 404 e deixava um
+        `chart_id` inexistente virar nó CHART fantasma no layout publicado. É
+        o mesmo defeito que `add_chart_to_dashboard` já recusa; aqui é o ponto
+        único por onde passam tanto o caminho de criação quanto o de
+        atualização de `create_dashboard`, então a checagem entra uma vez só.
+        """
+        chart = self.get_chart(chart_id)
+        if chart is None:
+            raise ChartNaoEncontrado(chart_id)
+        return {"id": chart_id, "slice_name": chart.get("slice_name", "")}
 
     def create_chart(self, payload: dict, dry_run: bool = False) -> dict:
         """POST idempotente: procura por slice_name + datasource_id.
@@ -462,9 +484,12 @@ class SupersetClient:
 
         if existente is None:
             corpo = dict(payload)
-            corpo["position_json"] = json.dumps(
-                build_position_json([self._resumo_do_chart(i) for i in chart_ids])
-            )
+            try:
+                corpo["position_json"] = json.dumps(
+                    build_position_json([self._resumo_do_chart(i) for i in chart_ids])
+                )
+            except ChartNaoEncontrado:
+                return {"acao": "chart_nao_encontrado", "slug": slug, "id": None}
             if dry_run:
                 return {"acao": "criaria", "slug": slug, "id": None}
             novo = self.s.post(
@@ -483,21 +508,28 @@ class SupersetClient:
         titulo_igual = not titulo or existente.get("dashboard_title") == titulo
         if titulo_igual and not faltando:
             return {"acao": "inalterado", "slug": slug, "id": id_}
+
+        # Tenta a splice (ou o rebuild) antes do dry-run: um layout sem lugar
+        # para ROW, ou um chart_id inexistente, têm que aparecer no dry-run
+        # também — senão ele promete uma escrita que o run de verdade recusa.
+        try:
+            if pos:
+                # Mesmo motivo do add_chart_to_dashboard: o layout publicado é
+                # a fonte da verdade, o novo chart entra nele.
+                for i in faltando:
+                    pos = inserir_chart_no_layout(
+                        pos, i, self._resumo_do_chart(i)["slice_name"])
+            else:
+                pos = build_position_json([self._resumo_do_chart(i) for i in chart_ids])
+        except LayoutSemLugarParaRow:
+            return {"acao": "layout_sem_lugar_para_row", "slug": slug, "id": id_}
+        except ChartNaoEncontrado:
+            return {"acao": "chart_nao_encontrado", "slug": slug, "id": id_}
+
         if dry_run:
             return {"acao": "atualizaria", "slug": slug, "id": id_}
 
         corpo = dict(payload)
-        if pos:
-            # Mesmo motivo do add_chart_to_dashboard: o layout publicado é a
-            # fonte da verdade, o novo chart entra nele.
-            try:
-                for i in faltando:
-                    pos = inserir_chart_no_layout(
-                        pos, i, self._resumo_do_chart(i)["slice_name"])
-            except LayoutSemLugarParaRow:
-                return {"acao": "layout_sem_lugar_para_row", "slug": slug, "id": id_}
-        else:
-            pos = build_position_json([self._resumo_do_chart(i) for i in chart_ids])
         corpo["position_json"] = json.dumps(pos)
         self.s.put(f"{self.base}/api/v1/dashboard/{id_}", json=corpo, timeout=TIMEOUT)
         return {"acao": "atualizado", "slug": slug, "id": id_}
@@ -522,12 +554,15 @@ class SupersetClient:
             # Sem isso o 404 vira um nó CHART fantasma no layout publicado, e
             # remover nó de layout está fora do escopo da skill.
             return {"acao": "chart_nao_encontrado", "id": None}
-        if dry_run:
-            return {"acao": "adicionaria", "id": dash["id"]}
+        # Tenta a splice antes do dry-run: um layout sem lugar para ROW tem
+        # que aparecer no dry-run também — senão ele promete uma escrita que
+        # o run de verdade recusa.
         try:
             pos = inserir_chart_no_layout(pos, chart_id, novo.get("slice_name", ""))
         except LayoutSemLugarParaRow:
             return {"acao": "layout_sem_lugar_para_row", "id": dash["id"]}
+        if dry_run:
+            return {"acao": "adicionaria", "id": dash["id"]}
         self.s.put(
             f"{self.base}/api/v1/dashboard/{dash['id']}",
             json={"position_json": json.dumps(pos)},
@@ -619,6 +654,14 @@ def main(argv=None) -> int:
             if fonte is None:
                 sys.exit(f"dashboard fonte não encontrado: {args.fonte}")
             fonte_id = fonte.get("id")
+            if fonte_id is None:
+                # `id` ausente desligaria a proteção contra reescrever o
+                # fonte em silêncio (fonte_id=None equivale a "sem fonte").
+                sys.exit(
+                    f"dashboard fonte ({args.fonte}) resolveu mas o payload "
+                    "não trouxe `id`: não dá para proteger o fonte contra "
+                    "reescrita sem ele"
+                )
         _imprimir(c.create_dashboard(entrada["payload"], entrada["chart_ids"],
                                      dry_run=args.dry_run, fonte_id=fonte_id))
     elif args.comando == "add-chart-to-dashboard":

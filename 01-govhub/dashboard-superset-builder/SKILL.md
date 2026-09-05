@@ -122,7 +122,9 @@ núcleo resolve antes, no gate.
 
 ## Fase 4 — Criação real
 
-Só depois da aprovação explícita da Fase 3 do núcleo.
+Só depois da aprovação explícita: o gate da Fase 3 do núcleo quando chamado por
+ele, ou o seu próprio gate quando chamado direto, sem o núcleo (barreira no
+topo desta skill).
 
 Para cada componente aprovado, na ordem do esboço:
 
