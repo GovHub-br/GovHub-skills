@@ -123,6 +123,78 @@ E erro HTTP na busca **estoura**, nunca vira lista vazia: o corpo de erro do
 Superset não tem `result` nem `count`, então um 500 ou um 401 de sessão expirada
 lido como "não achei nada" faz a etapa 2 duplicar tudo que já existe.
 
+## `query_context`
+
+`params` **não basta**. O Superset guarda a configuração de um chart em dois
+campos, e eles servem a consumidores diferentes:
+
+- `params` — o `form_data` que o **front** usa para renderizar e para reabrir o
+  chart no Explore.
+- `query_context` — o que a **API de dados** (`/api/v1/chart/<id>/data/`) usa para
+  montar a consulta.
+
+Um chart criado por `POST /api/v1/chart/` só com `params` abre normalmente na
+interface, roda sem erro, e **devolve o número errado** pela API: os
+`adhoc_filters` do `params` são simplesmente ignorados.
+
+Foi assim que um KPI mostrou 262.998 em vez de 131.499 — o dobro exato, porque o
+dataset guardava linhas em dois níveis (`nivel` = `uf` e `regiao`) e o filtro
+`nivel = 'uf'`, presente no `params`, não valeu. Nenhum erro em lugar nenhum.
+
+Forma do `query_context` (de um chart criado pela interface):
+
+```json
+{"datasource": {"id": 35, "type": "table"},
+ "force": false,
+ "form_data": { … o mesmo objeto do params … },
+ "result_format": "json",
+ "result_type": "full",
+ "queries": [{"filters": [{"col": "nivel", "op": "==", "val": "uf"}],
+              "metrics": [ … ],
+              "columns": [ … ],
+              "extras": {"having": "", "where": ""},
+              "annotation_layers": [], "series_limit": 0, "order_desc": true,
+              "url_params": {}, "custom_params": {}, "custom_form_data": {},
+              "applied_time_extras": {}}]}
+```
+
+Os `adhoc_filters` do `params` (formato `{expressionType, subject, operator,
+comparator}`) viram `filters` do `query_context` (formato `{col, op, val}`).
+
+`mixed_timeseries` tem **duas** queries: uma para `metrics`/`adhoc_filters` e
+outra para `metrics_b`/`adhoc_filters_b`.
+
+As colunas saem de `entity` (mapas), de `x_axis` (séries) ou de `groupby`, nessa
+ordem de precedência.
+
+## Layout não é associação
+
+Um dashboard guarda os charts que exibe em **dois lugares independentes**, e
+escrever só um deles produz uma página vazia:
+
+- `position_json` — o **layout**: onde cada chart fica, em que linha, com que
+  largura. Referencia os charts por `meta.chartId`.
+- `dashboard_slices` — a **associação**: quais charts pertencem ao dashboard. A
+  API expõe isso como o campo `charts` do dashboard e o campo `dashboards` do
+  chart.
+
+Um dashboard criado com `position_json` correto e sem associação abre **vazio**:
+o layout aponta para charts que não estão anexados.
+
+Como conferir, e o sintoma quando falta:
+
+```
+dashboard novo:  charts associados=0   charts no position_json=8   <- vazio na tela
+dashboard bom:   charts associados=24  charts no position_json=24
+```
+
+A associação se escreve pelo chart: `PUT /api/v1/chart/<id>` com
+`{"dashboards": [...]}`.
+
+**Cuidado: esse PUT substitui a lista inteira.** Mandar `{"dashboards": [18]}`
+num chart que também estava no dashboard 3 o arranca do 3. Sempre ler a lista
+atual e acrescentar.
+
 ## `position_json`
 
 O front do Superset 6 lê `node.meta.width` ao montar a página. Ligar um chart
