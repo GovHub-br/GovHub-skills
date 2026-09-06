@@ -589,6 +589,29 @@ class SupersetClient:
             raise ChartNaoEncontrado(chart_id)
         return {"id": chart_id, "slice_name": chart.get("slice_name", "")}
 
+    def _associar_chart(self, chart_id: int, dashboard_id: int) -> None:
+        """Anexa o chart ao dashboard, acrescentando à lista existente.
+
+        Layout e associação são coisas separadas: o `position_json` diz onde o
+        chart fica, mas quem o anexa é `dashboard_slices` — sem isto o dashboard
+        abre vazio. Ver `references/superset-api.md`, "Layout não é associação".
+
+        Acrescenta, nunca substitui: `PUT {"dashboards": [novo]}` num chart que
+        também estava em outro dashboard o arrancaria de lá.
+        """
+        chart = self.get_chart(chart_id)
+        if chart is None:
+            raise ChartNaoEncontrado(chart_id)
+        atuais = [d.get("id") for d in (chart.get("dashboards") or [])
+                  if d.get("id") is not None]
+        if dashboard_id in atuais:
+            return
+        self.s.put(
+            f"{self.base}/api/v1/chart/{chart_id}",
+            json={"dashboards": atuais + [dashboard_id]},
+            timeout=TIMEOUT,
+        )
+
     def create_chart(self, payload: dict, dry_run: bool = False) -> dict:
         """POST idempotente: procura por slice_name + datasource_id.
 
@@ -683,6 +706,8 @@ class SupersetClient:
             novo = self.s.post(
                 f"{self.base}/api/v1/dashboard/", json=corpo, timeout=TIMEOUT
             ).json()
+            for cid in chart_ids:
+                self._associar_chart(cid, novo["id"])
             return {"acao": "criado", "slug": slug, "id": novo["id"]}
 
         id_ = existente.get("id")
@@ -720,6 +745,8 @@ class SupersetClient:
         corpo = dict(payload)
         corpo["position_json"] = json.dumps(pos)
         self.s.put(f"{self.base}/api/v1/dashboard/{id_}", json=corpo, timeout=TIMEOUT)
+        for cid in chart_ids:
+            self._associar_chart(cid, id_)
         return {"acao": "atualizado", "slug": slug, "id": id_}
 
     def add_chart_to_dashboard(self, dashboard_ref, chart_id: int,

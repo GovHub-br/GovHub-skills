@@ -8,6 +8,7 @@ import requests
 from superset_client import (
     LayoutSemLugarParaRow,
     SupersetClient,
+    _chart_ids_do_layout,
     build_position_json,
     build_query_context,
     inserir_chart_no_layout,
@@ -349,6 +350,10 @@ def test_create_dashboard_atualiza_quando_os_charts_mudaram():
                                    "position_json": json.dumps(
                                        build_position_json([{"id": 7, "slice_name": "A"}]))}}),
         resposta(corpo={"result": {"id": 9, "slice_name": "C"}}),
+        # D4: _associar_chart lê cada chart pedido para anexá-lo. Sem isto o
+        # chart 9 entra no layout e fica solto — o mesmo bug do ramo de criação.
+        resposta(corpo={"result": {"id": 7, "slice_name": "A", "dashboards": [{"id": 3}]}}),
+        resposta(corpo={"result": {"id": 9, "slice_name": "C", "dashboards": []}}),
     ]
     s.put.return_value = resposta(corpo={"id": 3})
 
@@ -356,7 +361,15 @@ def test_create_dashboard_atualiza_quando_os_charts_mudaram():
         {"dashboard_title": "Painel", "slug": "painel"}, [7, 9])
 
     assert r["acao"] == "atualizado"
-    s.put.assert_called_once()
+    # o PUT que importa continua sendo a árvore do dashboard, agora com os dois charts
+    puts = {c.args[0]: c.kwargs["json"] for c in s.put.call_args_list}
+    corpo_dash = puts["https://superset.exemplo/api/v1/dashboard/3"]
+    assert sorted(_chart_ids_do_layout(json.loads(corpo_dash["position_json"]))) == [7, 9]
+    # e o chart 9, que não estava anexado, foi anexado ao dashboard 3
+    assert "https://superset.exemplo/api/v1/chart/9" in puts
+    assert puts["https://superset.exemplo/api/v1/chart/9"]["dashboards"] == [3]
+    # o chart 7 já constava do dashboard 3: não é reanexado
+    assert "https://superset.exemplo/api/v1/chart/7" not in puts
 
 
 def test_create_dashboard_sem_slug_falha_alto():
@@ -892,3 +905,46 @@ def test_create_chart_atualiza_quando_so_o_query_context_falta():
 
     assert r["acao"] == "atualizado", "params igual mas query_context ausente é mudança"
     assert "query_context" in s.put.call_args[1]["json"]
+
+
+# --- associação chart <-> dashboard (D4) -----------------------------------
+
+def test_associar_chart_acrescenta_sem_remover_os_outros():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                                    "dashboards": [{"id": 3}]}})
+    s.put.return_value = resposta(corpo={"id": 7})
+
+    cliente(s)._associar_chart(7, 18)
+
+    enviado = s.put.call_args[1]["json"]["dashboards"]
+    assert sorted(enviado) == [3, 18], "substituir a lista arrancaria o chart do 3"
+
+
+def test_associar_chart_nao_repete_dashboard_ja_presente():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                                    "dashboards": [{"id": 18}]}})
+
+    cliente(s)._associar_chart(7, 18)
+
+    s.put.assert_not_called()
+
+
+def test_create_dashboard_associa_os_charts_depois_de_criar():
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(status=404),                                    # slug não existe
+        resposta(corpo={"result": {"id": 7, "slice_name": "A"}}),  # _resumo_do_chart
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": []}}),           # _associar_chart lê
+    ]
+    s.post.return_value = resposta(corpo={"id": 18})
+    s.put.return_value = resposta(corpo={"id": 7})
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "P", "slug": "p"}, [7])
+
+    assert r["acao"] == "criado"
+    assert s.put.call_args[1]["json"]["dashboards"] == [18], \
+        "sem isto o dashboard nasce vazio: layout aponta para chart não associado"
