@@ -720,7 +720,34 @@ class SupersetClient:
         titulo = payload.get("dashboard_title")
         titulo_igual = not titulo or existente.get("dashboard_title") == titulo
         if titulo_igual and not faltando:
-            return {"acao": "inalterado", "slug": slug, "id": id_}
+            # Layout completo não quer dizer "nada a fazer": o bug que
+            # `_associar_chart` corrige deixa dashboards com a `position_json`
+            # inteira e `dashboard_slices` vazio — abrem em branco. Re-rodar a
+            # tool nesse dashboard tem que reparar a associação, não devolver
+            # `inalterado` para sempre e nunca anexar nada (mesmo defeito, e
+            # mesma correção, do query_context ausente em `create_chart`).
+            try:
+                pendentes = []
+                for i in chart_ids:
+                    chart = self.get_chart(i)
+                    if chart is None:
+                        raise ChartNaoEncontrado(i)
+                    anexados = [d.get("id") for d in (chart.get("dashboards") or [])]
+                    if id_ not in anexados:
+                        pendentes.append(i)
+            except ChartNaoEncontrado:
+                return {"acao": "chart_nao_encontrado", "slug": slug, "id": id_}
+            if not pendentes:
+                return {"acao": "inalterado", "slug": slug, "id": id_}
+            if dry_run:
+                # Um dry-run não escreve nada nem aqui: só anuncia o reparo.
+                return {"acao": "associaria", "slug": slug, "id": id_}
+            for i in pendentes:
+                self._associar_chart(i, id_)
+            # `associado`, não `inalterado`: houve escrita e o dashboard saiu
+            # de "em branco" para populado. Reportar `inalterado` aqui seria a
+            # mesma mentira que escondeu o bug original.
+            return {"acao": "associado", "slug": slug, "id": id_}
 
         # Tenta a splice (ou o rebuild) antes do dry-run: um layout sem lugar
         # para ROW, ou um chart_id inexistente, têm que aparecer no dry-run

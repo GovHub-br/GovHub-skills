@@ -332,15 +332,22 @@ def test_create_chart_recusa_datasource_divergente():
 
 def test_create_dashboard_nao_recria_quando_o_slug_ja_existe():
     s = MagicMock()
-    s.get.return_value = resposta(corpo={"result": {
-        "id": 3, "slug": "painel", "dashboard_title": "Painel",
-        "position_json": json.dumps(build_position_json([{"id": 7, "slice_name": "A"}])),
-    }})
+    s.get.side_effect = [
+        resposta(corpo={"result": {
+            "id": 3, "slug": "painel", "dashboard_title": "Painel",
+            "position_json": json.dumps(
+                build_position_json([{"id": 7, "slice_name": "A"}])),
+        }}),
+        # o ramo `inalterado` agora confere a associação: chart 7 já anexado.
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": [{"id": 3}]}}),
+    ]
 
     r = cliente(s).create_dashboard({"dashboard_title": "Painel", "slug": "painel"}, [7])
 
     assert r == {"acao": "inalterado", "slug": "painel", "id": 3}
     s.post.assert_not_called()
+    s.put.assert_not_called()
 
 
 def test_create_dashboard_atualiza_quando_os_charts_mudaram():
@@ -391,6 +398,9 @@ def test_create_dashboard_normaliza_chart_ids_string():
     s.get.side_effect = [
         resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
                                    "position_json": json.dumps(layout)}}),
+        # o ramo `inalterado` agora confere a associação: chart 7 já anexado.
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": [{"id": 3}]}}),
     ]
 
     r = cliente(s).create_dashboard(
@@ -948,3 +958,53 @@ def test_create_dashboard_associa_os_charts_depois_de_criar():
     assert r["acao"] == "criado"
     assert s.put.call_args[1]["json"]["dashboards"] == [18], \
         "sem isto o dashboard nasce vazio: layout aponta para chart não associado"
+
+
+def test_create_dashboard_repara_associacao_quando_layout_bate_mas_chart_solto():
+    # O bug que `_associar_chart` corrige deixa dashboards com layout completo e
+    # `dashboard_slices` vazio. Re-rodar a tool nesse dashboard tem que reparar
+    # a associação — não reportar "inalterado" e nunca anexar nada. Mesmo
+    # defeito, e mesma correção, do query_context em create_chart.
+    s = MagicMock()
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(layout)}}),
+        # checagem de associação lê o chart 7: não está anexado a nenhum dashboard
+        resposta(corpo={"result": {"id": 7, "slice_name": "A", "dashboards": []}}),
+        # _associar_chart relê o chart 7 antes de anexar
+        resposta(corpo={"result": {"id": 7, "slice_name": "A", "dashboards": []}}),
+    ]
+    s.put.return_value = resposta(corpo={"id": 7})
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, [7])
+
+    assert r == {"acao": "associado", "slug": "painel", "id": 3}
+    # o PUT anexou o chart 7 ao dashboard 3 ...
+    assert s.put.call_args[0][0] == "https://superset.exemplo/api/v1/chart/7"
+    assert s.put.call_args[1]["json"]["dashboards"] == [3]
+    # ... e nenhum PUT tocou o layout do dashboard: ele já estava certo
+    assert all("/api/v1/dashboard/" not in c.args[0] for c in s.put.call_args_list)
+    s.post.assert_not_called()
+
+
+def test_create_dashboard_inalterado_quando_layout_bate_e_chart_ja_associado():
+    s = MagicMock()
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "dashboard_title": "Painel", "slug": "painel",
+                                   "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": [{"id": 3}]}}),
+    ]
+
+    r = cliente(s).create_dashboard(
+        {"dashboard_title": "Painel", "slug": "painel"}, [7])
+
+    assert r == {"acao": "inalterado", "slug": "painel", "id": 3}
+    # a associação foi de fato verificada (o chart 7 foi lido) — senão um
+    # dashboard em branco também sairia "inalterado"
+    assert any("/api/v1/chart/7" in c.args[0] for c in s.get.call_args_list)
+    s.put.assert_not_called()
+    s.post.assert_not_called()
