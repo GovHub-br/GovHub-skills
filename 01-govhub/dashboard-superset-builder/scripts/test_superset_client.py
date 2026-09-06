@@ -294,6 +294,28 @@ def test_params_equivalentes_com_chaves_reordenadas_nao_geram_put():
     s.put.assert_not_called()
 
 
+def test_create_chart_atualiza_quando_params_e_query_context_divergiram():
+    from superset_client import build_query_context
+
+    # o chart guardado tem query_context derivado do params NOVO, mas o params
+    # antigo — os dois campos do mesmo chart divergiram no Superset.
+    guardado_params = json.dumps({"datasource": "42__table", "viz_type": "pie",
+                                  "groupby": ["antiga"]})
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "Consumo Total",
+                                                "datasource_id": 42}]}),
+        resposta(corpo={"result": {"id": 5, "params": guardado_params,
+                                   "query_context": build_query_context(PAYLOAD)}}),
+    ]
+    s.put.return_value = resposta(corpo={"id": 5})
+
+    r = cliente(s).create_chart(PAYLOAD)
+
+    assert r["acao"] == "atualizado", \
+        "query_context bate mas params divergiu: sem a metade params isto passaria batido"
+
+
 def test_create_chart_recusa_datasource_divergente():
     s = MagicMock()
     ruim = dict(PAYLOAD)
@@ -771,6 +793,31 @@ def test_query_context_de_table_aggregate_usa_groupby():
     qc = json.loads(build_query_context(p))["queries"][0]
     assert qc["columns"] == [adhoc], "coluna adhoc passa adiante como está"
     assert qc["metrics"][0]["label"] == "Empreendimentos"
+
+
+def test_query_context_de_table_sem_query_mode_infere_raw_por_all_columns():
+    from superset_client import build_query_context
+
+    p = payload_xy("table", all_columns=["a", "b"], groupby=[],
+                   metrics=[{"expressionType": "SQL", "sqlExpression": "COUNT(x)",
+                             "label": "m"}])
+    fd = json.loads(p["params"])
+    assert "query_mode" not in fd, "o caso é justamente a ausência da chave"
+
+    qc = json.loads(build_query_context(p))["queries"][0]
+    assert qc["columns"] == ["a", "b"], "all_columns sem query_mode é modo raw"
+    assert qc["metrics"] == [], "modo raw não agrega"
+
+
+def test_query_context_de_table_sem_all_columns_segue_o_groupby():
+    from superset_client import build_query_context
+
+    p = payload_xy("table", all_columns=[], groupby=["uf"],
+                   metrics=[{"expressionType": "SQL", "sqlExpression": "COUNT(x)",
+                             "label": "m"}])
+    qc = json.loads(build_query_context(p))["queries"][0]
+    assert qc["columns"] == ["uf"]
+    assert qc["metrics"][0]["label"] == "m", "sem all_columns, agrega normalmente"
 
 
 def test_query_context_recusa_percent_metrics_nao_verificado():

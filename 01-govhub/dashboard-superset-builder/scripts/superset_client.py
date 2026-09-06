@@ -344,19 +344,38 @@ def _filtros_do_params(fd: dict, campo: str) -> list:
     return [_filtro_simples(a, campo) for a in fd.get(campo) or []]
 
 
+def _modo_raw(fd: dict) -> bool:
+    """`True` quando a tabela roda em modo `raw` (não agrega, colunas vêm de
+    `all_columns`).
+
+    Com `query_mode` explícito a resposta é ele mesmo. Sem a chave, espelha o
+    `get_query_mode` do Superset: um `all_columns` não-vazio é modo `raw`. O
+    `SKILL.md` orienta o autor a mexer em `groupby`/`all_columns` e nunca cita
+    `query_mode`, então tabelas raw reais chegam sem a chave — sem esta
+    inferência elas derivariam as colunas de `groupby` (vazio), manteriam as
+    métricas, e o chart abriria devolvendo as linhas erradas sem erro nenhum.
+    """
+    modo = fd.get("query_mode")
+    if modo:
+        return modo == "raw"
+    return bool(fd.get("all_columns"))
+
+
 def _colunas_do_params(fd: dict, chave_groupby: str = "groupby") -> list:
     """Colunas da query.
 
     Com `query_mode` (tabelas), ele manda: `raw` lê `all_columns`, `aggregate`
     lê o groupby — que pode trazer colunas adhoc (`{label, sqlExpression,
     expressionType}`), repassadas como estão porque o query_context as aceita.
-    Sem `query_mode`, vale a precedência `entity` (mapas) > `x_axis` (séries) >
-    groupby. `chave_groupby` existe para a série B do `mixed_timeseries`, que
-    agrupa por `groupby_b` — usar o groupby da série A agruparia a série B pela
-    dimensão errada.
+    Sem `query_mode`, um `all_columns` não-vazio ainda é modo `raw` (o Superset
+    infere assim); só então vale a precedência `entity` (mapas) > `x_axis`
+    (séries) > groupby. `chave_groupby` existe para a série B do
+    `mixed_timeseries`, que agrupa por `groupby_b` — usar o groupby da série A
+    agruparia a série B pela dimensão errada; a inferência de `raw` não se
+    aplica a ela.
     """
     modo = fd.get("query_mode")
-    if modo == "raw":
+    if modo == "raw" or (chave_groupby == "groupby" and _modo_raw(fd)):
         return list(fd.get("all_columns") or [])
     if modo == "aggregate":
         return list(fd.get(chave_groupby) or [])
@@ -432,8 +451,10 @@ def build_query_context(payload: dict) -> str:
         ]
     else:
         # Modo `raw` não agrega: o query_context real desses charts traz
-        # `metrics: []` mesmo quando o params carrega métricas de resto.
-        if fd.get("query_mode") == "raw":
+        # `metrics: []` mesmo quando o params carrega métricas de resto. Vale
+        # também para o `raw` inferido — `all_columns` não-vazio sem
+        # `query_mode` — senão a query sairia agregando o que o chart lista cru.
+        if _modo_raw(fd):
             metrics = []
         else:
             metrics = fd.get("metrics") or (

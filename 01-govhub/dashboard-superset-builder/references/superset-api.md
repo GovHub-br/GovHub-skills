@@ -162,10 +162,37 @@ Os `adhoc_filters` do `params` (formato `{expressionType, subject, operator,
 comparator}`) viram `filters` do `query_context` (formato `{col, op, val}`).
 
 `mixed_timeseries` tem **duas** queries: uma para `metrics`/`adhoc_filters` e
-outra para `metrics_b`/`adhoc_filters_b`.
+outra para `metrics_b`/`adhoc_filters_b`. As colunas da segunda saem de
+`groupby_b` — reaproveitar o `groupby` da primeira agruparia a série B pela
+dimensão errada, e o gráfico sairia plausível.
 
-As colunas saem de `entity` (mapas), de `x_axis` (séries) ou de `groupby`, nessa
-ordem de precedência.
+**De onde saem as colunas.** Para os `viz_type` sem `query_mode`, vale a
+precedência `entity` (mapas) > `x_axis` (séries) > `groupby` — a primeira chave
+preenchida ganha. `table` é diferente: tem dois modos.
+
+- `raw` — não agrega; as colunas vêm de `all_columns` e `metrics` vai vazio,
+  mesmo que o `params` traga métricas de resto (é o que o `query_context` real
+  desses charts mostra).
+- `aggregate` — as colunas vêm de `groupby` e as métricas de `metrics`.
+
+Quando `query_mode` **não está no `params`**, um `all_columns` não-vazio já
+significa `raw` — é o que o `get_query_mode` do próprio Superset infere, e o
+chart 344 da instância (um `table` raw de verdade) confirma que o `columns` do
+`query_context` é exatamente o `all_columns`. Sem essa inferência, uma tabela
+raw cujo autor omitiu a chave derivaria `columns: []` e manteria as métricas: o
+chart é criado, abre, e devolve as linhas erradas sem erro nenhum.
+
+O `groupby` pode conter, além de nomes de coluna, objetos de coluna adhoc
+(`{label, sqlExpression, expressionType}`); eles passam para o `columns` do
+`query_context` como estão, porque a API de dados os aceita nesse formato.
+
+**Quando a derivação recusa em vez de emitir.** Um `adhoc_filter` que não seja
+`SIMPLE` com `subject` e `operator` (um `sqlExpression`, por exemplo), ou um
+`percent_metrics` não-vazio cuja forma no `query_context` ninguém verificou num
+chart real, fazem `build_query_context` levantar erro antes de qualquer HTTP —
+em vez de emitir uma query pela metade. O motivo é o mesmo do resto desta
+seção: uma query pela metade abre sem erro e é indistinguível de uma certa até
+alguém conferir o número na mão.
 
 ## Layout não é associação
 
