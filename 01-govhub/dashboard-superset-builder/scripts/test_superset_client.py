@@ -9,6 +9,7 @@ from superset_client import (
     LayoutSemLugarParaRow,
     SupersetClient,
     build_position_json,
+    build_query_context,
     inserir_chart_no_layout,
     rison_q,
 )
@@ -174,7 +175,7 @@ PAYLOAD = {
     "viz_type": "table",
     "datasource_id": 42,
     "datasource_type": "table",
-    "params": json.dumps({"datasource": "42__table", "viz_type": "table"}),
+    "params": json.dumps({"datasource": "42__table", "viz_type": "pie"}),
 }
 
 
@@ -194,7 +195,8 @@ def test_create_chart_nao_faz_nada_quando_identico():
     s.get.side_effect = [
         resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "Consumo Total",
                                                 "datasource_id": 42}]}),
-        resposta(corpo={"result": {"id": 5, "params": PAYLOAD["params"]}}),
+        resposta(corpo={"result": {"id": 5, "params": PAYLOAD["params"],
+                                   "query_context": build_query_context(PAYLOAD)}}),
     ]
 
     r = cliente(s).create_chart(PAYLOAD)
@@ -272,11 +274,12 @@ def test_update_de_chart_manda_o_payload_completo():
 
 def test_params_equivalentes_com_chaves_reordenadas_nao_geram_put():
     s = MagicMock()
-    reordenado = json.dumps({"viz_type": "table", "datasource": "42__table"})
+    reordenado = json.dumps({"viz_type": "pie", "datasource": "42__table"})
     s.get.side_effect = [
         resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "Consumo Total",
                                                 "datasource_id": 42}]}),
-        resposta(corpo={"result": {"id": 5, "params": reordenado}}),
+        resposta(corpo={"result": {"id": 5, "params": reordenado,
+                                   "query_context": build_query_context(PAYLOAD)}}),
     ]
 
     r = cliente(s).create_chart(PAYLOAD)
@@ -619,3 +622,96 @@ def test_inserir_chart_ignora_no_chart_sem_chart_id():
     depois = inserir_chart_no_layout(quebrado, 8, "B")
 
     assert depois["CHART-8"]["meta"]["chartId"] == 8
+
+
+# --- build_query_context (D1) ----------------------------------------------
+
+def payload_xy(viz="big_number_total", **extra):
+    fd = {"datasource": "35__table", "viz_type": viz,
+          "metric": {"expressionType": "SQL", "sqlExpression": "SUM(total_uhs)",
+                     "label": "UHs"},
+          "adhoc_filters": [{"expressionType": "SIMPLE", "subject": "nivel",
+                             "operator": "==", "comparator": "uf", "clause": "WHERE"}]}
+    fd.update(extra)
+    return {"slice_name": "X", "viz_type": viz, "datasource_id": 35,
+            "datasource_type": "table", "params": json.dumps(fd)}
+
+
+def test_query_context_converte_adhoc_filter_para_col_op_val():
+    from superset_client import build_query_context
+
+    qc = json.loads(build_query_context(payload_xy()))
+    assert qc["queries"][0]["filters"] == [{"col": "nivel", "op": "==", "val": "uf"}]
+    assert qc["datasource"] == {"id": 35, "type": "table"}
+    assert qc["result_type"] == "full"
+
+
+def test_query_context_usa_entity_como_coluna_em_mapa():
+    from superset_client import build_query_context
+
+    qc = json.loads(build_query_context(payload_xy("country_map", entity="iso_3166_2")))
+    assert qc["queries"][0]["columns"] == ["iso_3166_2"]
+
+
+def test_query_context_usa_x_axis_como_coluna_em_serie():
+    from superset_client import build_query_context
+
+    qc = json.loads(build_query_context(
+        payload_xy("echarts_timeseries_bar", x_axis="regiao_nome")))
+    assert qc["queries"][0]["columns"] == ["regiao_nome"]
+
+
+def test_query_context_de_mixed_timeseries_tem_duas_queries():
+    from superset_client import build_query_context
+
+    p = payload_xy("mixed_timeseries", x_axis="mes",
+                   metrics=[{"expressionType": "SQL", "sqlExpression": "AVG(a)",
+                             "label": "A"}],
+                   metrics_b=[{"expressionType": "SQL", "sqlExpression": "AVG(b)",
+                               "label": "B"}],
+                   adhoc_filters_b=[])
+    qc = json.loads(build_query_context(p))
+    assert len(qc["queries"]) == 2
+    assert qc["queries"][0]["metrics"][0]["label"] == "A"
+    assert qc["queries"][1]["metrics"][0]["label"] == "B"
+    assert qc["queries"][1]["filters"] == []
+
+
+def test_query_context_recusa_viz_type_desconhecido():
+    from superset_client import build_query_context
+
+    with pytest.raises(ValueError) as erro:
+        build_query_context(payload_xy("deck_scatter"))
+    assert "deck_scatter" in str(erro.value)
+
+
+# --- create_chart grava e compara query_context (D1 + D2) ------------------
+
+def test_create_chart_grava_query_context_no_post():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"count": 0, "result": []})
+    s.post.return_value = resposta(corpo={"id": 99})
+
+    cliente(s).create_chart(payload_xy())
+
+    enviado = s.post.call_args[1]["json"]
+    qc = json.loads(enviado["query_context"])
+    assert qc["queries"][0]["filters"] == [{"col": "nivel", "op": "==", "val": "uf"}]
+
+
+def test_create_chart_atualiza_quando_so_o_query_context_falta():
+    p = payload_xy()
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "X",
+                                                "datasource_id": 35}]}),
+        # params idêntico, query_context ausente: é o chart quebrado do D2
+        resposta(corpo={"result": {"id": 5, "params": p["params"],
+                                   "query_context": None}}),
+    ]
+    s.put.return_value = resposta(corpo={"id": 5})
+
+    r = cliente(s).create_chart(p)
+
+    assert r["acao"] == "atualizado", "params igual mas query_context ausente é mudança"
+    assert "query_context" in s.put.call_args[1]["json"]

@@ -293,6 +293,98 @@ def _params_iguais(a, b) -> bool:
         return a == b
 
 
+VIZ_SUPORTADOS = {
+    "big_number_total",
+    "country_map",
+    "echarts_timeseries_bar",
+    "mixed_timeseries",
+    "pie",
+}
+
+BASE_QUERY = {
+    "annotation_layers": [],
+    "applied_time_extras": {},
+    "custom_form_data": {},
+    "custom_params": {},
+    "extras": {"having": "", "where": ""},
+    "order_desc": True,
+    "series_limit": 0,
+    "url_params": {},
+}
+
+
+def _filtro_simples(adhoc: dict):
+    """Converte um adhoc_filter SIMPLE para o `{col, op, val}` do query_context."""
+    if adhoc.get("expressionType") != "SIMPLE":
+        return None
+    if not adhoc.get("operator") or adhoc.get("subject") is None:
+        return None
+    return {"col": adhoc["subject"], "op": adhoc["operator"],
+            "val": adhoc.get("comparator")}
+
+
+def _colunas_do_params(fd: dict) -> list:
+    """Colunas da query: `entity` (mapas) > `x_axis` (séries) > `groupby`."""
+    if fd.get("entity"):
+        return [fd["entity"]]
+    colunas = list(fd.get("groupby") or [])
+    if fd.get("x_axis"):
+        colunas = [fd["x_axis"]] + [c for c in colunas if c != fd["x_axis"]]
+    return colunas
+
+
+def _query(metrics, colunas, filtros, row_limit=None) -> dict:
+    q = dict(BASE_QUERY)
+    q.update({"filters": filtros, "metrics": metrics, "columns": colunas})
+    if row_limit:
+        q["row_limit"] = row_limit
+    return q
+
+
+def build_query_context(payload: dict) -> str:
+    """Deriva o query_context do params.
+
+    Sem ele, a API de dados do Superset ignora os adhoc_filters: o chart é
+    criado, abre sem erro e devolve o número errado. Ver
+    `references/superset-api.md`, seção "query_context".
+    """
+    fd = json.loads(payload["params"])
+    viz = fd.get("viz_type")
+    if viz not in VIZ_SUPORTADOS:
+        raise ValueError(
+            f"viz_type {viz!r} não está na lista que sabemos montar "
+            f"({sorted(VIZ_SUPORTADOS)}). Confira a forma real de um chart desse "
+            f"tipo (get-chart num que já exista) antes de acrescentá-lo à lista — "
+            f"adivinhar gera uma query silenciosamente errada."
+        )
+    filtros = [f for f in (_filtro_simples(a)
+                           for a in fd.get("adhoc_filters") or []) if f]
+    colunas = _colunas_do_params(fd)
+    if viz == "mixed_timeseries":
+        filtros_b = [f for f in (_filtro_simples(a)
+                                 for a in fd.get("adhoc_filters_b") or []) if f]
+        queries = [
+            _query(fd.get("metrics") or [], colunas, filtros, fd.get("row_limit")),
+            _query(fd.get("metrics_b") or [], colunas, filtros_b,
+                   fd.get("row_limit_b")),
+        ]
+    else:
+        metrics = fd.get("metrics") or ([fd["metric"]] if fd.get("metric") else [])
+        queries = [_query(metrics, colunas, filtros, fd.get("row_limit"))]
+    return json.dumps(
+        {
+            "datasource": {"id": payload["datasource_id"],
+                           "type": payload.get("datasource_type", "table")},
+            "force": False,
+            "form_data": fd,
+            "queries": queries,
+            "result_format": "json",
+            "result_type": "full",
+        },
+        ensure_ascii=False,
+    )
+
+
 class SupersetClient:
     def __init__(self, base_url: str, username: str, password: str, session=None):
         self.base = base_url.rstrip("/")
@@ -417,6 +509,8 @@ class SupersetClient:
         aceita: um chart cujo dataset mudou é criado como novo, não atualizado.
         """
         self._validar_datasource(payload)
+        payload = dict(payload)
+        payload["query_context"] = build_query_context(payload)
         nome = payload["slice_name"]
         datasource_id = payload.get("datasource_id")
         atual = next(
@@ -437,7 +531,12 @@ class SupersetClient:
         # O dataset já bate (foi critério da busca); resta o conteúdo. Compara
         # como JSON: o Superset reserializa `params` e a comparação de string
         # crua forçaria um PUT a cada execução.
-        if _params_iguais(detalhe.get("params"), payload.get("params")):
+        # `query_context` entra na comparação: um chart com o contexto ausente
+        # ou velho tem params idêntico e mesmo assim precisa de PUT — sem isto,
+        # ele fica para sempre "inalterado" e nunca é reparado.
+        if (_params_iguais(detalhe.get("params"), payload.get("params"))
+                and _params_iguais(detalhe.get("query_context"),
+                                   payload.get("query_context"))):
             return {"acao": "inalterado", "slice_name": nome, "id": atual["id"]}
         if dry_run:
             return {"acao": "atualizaria", "slice_name": nome, "id": atual["id"]}
