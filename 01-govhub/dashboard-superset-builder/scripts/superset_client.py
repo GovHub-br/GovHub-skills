@@ -8,6 +8,7 @@ SUPERSET_URL, SUPERSET_USERNAME, SUPERSET_PASSWORD.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -299,6 +300,7 @@ VIZ_SUPORTADOS = {
     "echarts_timeseries_bar",
     "mixed_timeseries",
     "pie",
+    "table",
 }
 
 BASE_QUERY = {
@@ -313,28 +315,64 @@ BASE_QUERY = {
 }
 
 
-def _filtro_simples(adhoc: dict):
-    """Converte um adhoc_filter SIMPLE para o `{col, op, val}` do query_context."""
-    if adhoc.get("expressionType") != "SIMPLE":
-        return None
-    if not adhoc.get("operator") or adhoc.get("subject") is None:
-        return None
+def _filtro_simples(adhoc: dict, campo: str) -> dict:
+    """Converte um adhoc_filter SIMPLE para o `{col, op, val}` do query_context.
+
+    Recusa alto o que não sabe converter — expressão SQL (`expressionType:
+    "SQL"`), ou SIMPLE sem `subject`/`operator`. Descartar em silêncio (o
+    contrato anterior) era o mesmo defeito que o query_context existe para
+    evitar: o chart era criado, abria sem erro, o filtro não aplicava e o
+    número saía errado — e como o query_context derivado ficava estável, a
+    idempotência reportava "inalterado" para sempre e nunca reparava nada.
+    """
+    if (adhoc.get("expressionType") != "SIMPLE"
+            or not adhoc.get("operator")
+            or adhoc.get("subject") is None):
+        raise ValueError(
+            f"{campo} tem um filtro que não sabemos converter para o "
+            f"query_context: {json.dumps(adhoc, ensure_ascii=False)}. Só filtro "
+            f"SIMPLE com `subject` e `operator` vira `{{col, op, val}}` — um "
+            f"`sqlExpression` (expressionType SQL) precisa ser reescrito como "
+            f"filtro SIMPLE no params antes de criar o chart. Descartá-lo daria "
+            f"um chart que abre, não aplica o filtro e devolve o número errado."
+        )
     return {"col": adhoc["subject"], "op": adhoc["operator"],
             "val": adhoc.get("comparator")}
 
 
-def _colunas_do_params(fd: dict) -> list:
-    """Colunas da query: `entity` (mapas) > `x_axis` (séries) > `groupby`."""
+def _filtros_do_params(fd: dict, campo: str) -> list:
+    return [_filtro_simples(a, campo) for a in fd.get(campo) or []]
+
+
+def _colunas_do_params(fd: dict, chave_groupby: str = "groupby") -> list:
+    """Colunas da query.
+
+    Com `query_mode` (tabelas), ele manda: `raw` lê `all_columns`, `aggregate`
+    lê o groupby — que pode trazer colunas adhoc (`{label, sqlExpression,
+    expressionType}`), repassadas como estão porque o query_context as aceita.
+    Sem `query_mode`, vale a precedência `entity` (mapas) > `x_axis` (séries) >
+    groupby. `chave_groupby` existe para a série B do `mixed_timeseries`, que
+    agrupa por `groupby_b` — usar o groupby da série A agruparia a série B pela
+    dimensão errada.
+    """
+    modo = fd.get("query_mode")
+    if modo == "raw":
+        return list(fd.get("all_columns") or [])
+    if modo == "aggregate":
+        return list(fd.get(chave_groupby) or [])
     if fd.get("entity"):
         return [fd["entity"]]
-    colunas = list(fd.get("groupby") or [])
+    colunas = list(fd.get(chave_groupby) or [])
     if fd.get("x_axis"):
         colunas = [fd["x_axis"]] + [c for c in colunas if c != fd["x_axis"]]
     return colunas
 
 
 def _query(metrics, colunas, filtros, row_limit=None) -> dict:
-    q = dict(BASE_QUERY)
+    # deepcopy: `dict(BASE_QUERY)` é cópia rasa e todas as queries emitidas
+    # passariam a compartilhar o mesmo objeto `extras`, então um caller que
+    # mutasse uma query corromperia o global do módulo.
+    q = copy.deepcopy(BASE_QUERY)
     q.update({"filters": filtros, "metrics": metrics, "columns": colunas})
     if row_limit:
         q["row_limit"] = row_limit
@@ -347,7 +385,23 @@ def build_query_context(payload: dict) -> str:
     Sem ele, a API de dados do Superset ignora os adhoc_filters: o chart é
     criado, abre sem erro e devolve o número errado. Ver
     `references/superset-api.md`, seção "query_context".
+
+    Recusa alto tudo o que não sabe derivar (viz_type fora da lista, filtro que
+    não vira `{col, op, val}`, `percent_metrics` não verificado): como isto roda
+    antes de qualquer HTTP do `create_chart`, o chart errado nem chega a existir.
     """
+    if payload.get("params") is None:
+        raise ValueError(
+            "payload sem `params`: ele é obrigatório para montar o query_context "
+            "— colunas, métricas e filtros saem todos de lá. Inclua o `params` "
+            "(form_data do chart, como string JSON) no payload."
+        )
+    if payload.get("datasource_id") is None:
+        raise ValueError(
+            "payload sem `datasource_id`: ele é obrigatório para montar o "
+            "query_context — a API de dados precisa saber sobre qual dataset "
+            "rodar a query. Inclua o id do dataset no payload."
+        )
     fd = json.loads(payload["params"])
     viz = fd.get("viz_type")
     if viz not in VIZ_SUPORTADOS:
@@ -357,19 +411,33 @@ def build_query_context(payload: dict) -> str:
             f"tipo (get-chart num que já exista) antes de acrescentá-lo à lista — "
             f"adivinhar gera uma query silenciosamente errada."
         )
-    filtros = [f for f in (_filtro_simples(a)
-                           for a in fd.get("adhoc_filters") or []) if f]
+    if fd.get("percent_metrics"):
+        raise ValueError(
+            f"percent_metrics não-vazio "
+            f"({json.dumps(fd['percent_metrics'], ensure_ascii=False)}) e a forma "
+            f"dele no query_context não foi verificada em nenhum chart real. "
+            f"Tire-o do params, ou leia um chart existente que use percent_metrics "
+            f"(get-chart) e ensine a derivação antes de usá-lo — adivinhar gera "
+            f"uma query silenciosamente errada."
+        )
+    filtros = _filtros_do_params(fd, "adhoc_filters")
     colunas = _colunas_do_params(fd)
     if viz == "mixed_timeseries":
-        filtros_b = [f for f in (_filtro_simples(a)
-                                 for a in fd.get("adhoc_filters_b") or []) if f]
         queries = [
             _query(fd.get("metrics") or [], colunas, filtros, fd.get("row_limit")),
-            _query(fd.get("metrics_b") or [], colunas, filtros_b,
+            _query(fd.get("metrics_b") or [],
+                   _colunas_do_params(fd, "groupby_b"),
+                   _filtros_do_params(fd, "adhoc_filters_b"),
                    fd.get("row_limit_b")),
         ]
     else:
-        metrics = fd.get("metrics") or ([fd["metric"]] if fd.get("metric") else [])
+        # Modo `raw` não agrega: o query_context real desses charts traz
+        # `metrics: []` mesmo quando o params carrega métricas de resto.
+        if fd.get("query_mode") == "raw":
+            metrics = []
+        else:
+            metrics = fd.get("metrics") or (
+                [fd["metric"]] if fd.get("metric") else [])
         queries = [_query(metrics, colunas, filtros, fd.get("row_limit"))]
     return json.dumps(
         {

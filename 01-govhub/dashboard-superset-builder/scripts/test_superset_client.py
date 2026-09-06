@@ -172,7 +172,7 @@ def test_position_json_usa_duas_colunas_por_linha():
 
 PAYLOAD = {
     "slice_name": "Consumo Total",
-    "viz_type": "table",
+    "viz_type": "pie",
     "datasource_id": 42,
     "datasource_type": "table",
     "params": json.dumps({"datasource": "42__table", "viz_type": "pie"}),
@@ -256,20 +256,26 @@ def test_create_chart_dry_run_le_mas_nao_escreve():
 
 
 def test_update_de_chart_manda_o_payload_completo():
+    guardado = json.dumps({"datasource": "42__table", "viz_type": "pie",
+                           "groupby": ["outra_coluna"]})
     s = MagicMock()
     s.get.side_effect = [
         resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "Consumo Total",
                                                 "datasource_id": 42}]}),
-        resposta(corpo={"result": {"id": 5, "params": json.dumps({"datasource": "42__table",
-                                                                  "viz_type": "pie"})}}),
+        resposta(corpo={"result": {"id": 5, "params": guardado,
+                                   "query_context": build_query_context(
+                                       {**PAYLOAD, "params": guardado})}}),
     ]
     s.put.return_value = resposta(corpo={"id": 5})
 
     cliente(s).create_chart(PAYLOAD)
 
     enviado = s.put.call_args[1]["json"]
-    assert enviado["viz_type"] == "table", "viz_type alterado tem que ir no PUT"
+    # params diferente (groupby) tem que disparar o PUT, e o PUT leva o payload
+    # inteiro — não só datasource/params.
     assert enviado["slice_name"] == "Consumo Total"
+    assert enviado["viz_type"] == "pie"
+    assert json.loads(enviado["params"])["viz_type"] == "pie"
 
 
 def test_params_equivalentes_com_chaves_reordenadas_nao_geram_put():
@@ -291,7 +297,7 @@ def test_params_equivalentes_com_chaves_reordenadas_nao_geram_put():
 def test_create_chart_recusa_datasource_divergente():
     s = MagicMock()
     ruim = dict(PAYLOAD)
-    ruim["params"] = json.dumps({"datasource": "7__table", "viz_type": "table"})
+    ruim["params"] = json.dumps({"datasource": "7__table", "viz_type": "pie"})
 
     with pytest.raises(ValueError) as erro:
         cliente(s).create_chart(ruim)
@@ -683,6 +689,130 @@ def test_query_context_recusa_viz_type_desconhecido():
     with pytest.raises(ValueError) as erro:
         build_query_context(payload_xy("deck_scatter"))
     assert "deck_scatter" in str(erro.value)
+
+
+def test_query_context_recusa_filtro_que_nao_sabe_converter():
+    from superset_client import build_query_context
+
+    p = payload_xy()
+    fd = json.loads(p["params"])
+    fd["adhoc_filters"] = [{"expressionType": "SQL", "clause": "WHERE",
+                            "sqlExpression": "valor_1 > 0"}]
+    p["params"] = json.dumps(fd)
+
+    with pytest.raises(ValueError) as erro:
+        build_query_context(p)
+    assert "SQL" in str(erro.value) or "sqlExpression" in str(erro.value)
+
+
+def test_query_context_recusa_filtro_simple_sem_operator():
+    from superset_client import build_query_context
+
+    p = payload_xy()
+    fd = json.loads(p["params"])
+    fd["adhoc_filters"] = [{"expressionType": "SIMPLE", "subject": "nivel",
+                            "comparator": "uf", "clause": "WHERE"}]
+    p["params"] = json.dumps(fd)
+
+    with pytest.raises(ValueError):
+        build_query_context(p)
+
+
+def test_query_context_recusa_filtro_sql_da_serie_b():
+    from superset_client import build_query_context
+
+    p = payload_xy("mixed_timeseries", x_axis="mes",
+                   metrics=[{"expressionType": "SQL", "sqlExpression": "AVG(a)",
+                             "label": "A"}],
+                   metrics_b=[{"expressionType": "SQL", "sqlExpression": "AVG(b)",
+                               "label": "B"}],
+                   adhoc_filters_b=[{"expressionType": "SQL", "clause": "WHERE",
+                                     "sqlExpression": "valor_2 > 0"}])
+
+    with pytest.raises(ValueError) as erro:
+        build_query_context(p)
+    assert "adhoc_filters_b" in str(erro.value)
+
+
+def test_query_context_de_mixed_timeseries_respeita_groupby_b():
+    from superset_client import build_query_context
+
+    p = payload_xy("mixed_timeseries", x_axis="mes",
+                   metrics=[{"expressionType": "SQL", "sqlExpression": "AVG(a)",
+                             "label": "A"}],
+                   groupby=["a"],
+                   metrics_b=[{"expressionType": "SQL", "sqlExpression": "AVG(b)",
+                               "label": "B"}],
+                   groupby_b=["b"], adhoc_filters_b=[])
+    qc = json.loads(build_query_context(p))
+    assert qc["queries"][0]["columns"] == ["mes", "a"]
+    assert qc["queries"][1]["columns"] == ["mes", "b"], "série B agrupada errado"
+
+
+def test_query_context_de_table_raw_usa_all_columns():
+    from superset_client import build_query_context
+
+    p = payload_xy("table", query_mode="raw",
+                   all_columns=["indicador", "valor"], groupby=[], metrics=[])
+    qc = json.loads(build_query_context(p))["queries"][0]
+    assert qc["columns"] == ["indicador", "valor"]
+    assert qc["metrics"] == [], "modo raw não agrega"
+
+
+def test_query_context_de_table_aggregate_usa_groupby():
+    from superset_client import build_query_context
+
+    adhoc = {"label": "Situação", "sqlExpression": "semaforo_alerta",
+             "expressionType": "SQL"}
+    p = payload_xy("table", query_mode="aggregate", groupby=[adhoc],
+                   all_columns=[], metrics=[{"expressionType": "SQL",
+                                             "sqlExpression": "COUNT(apf)",
+                                             "label": "Empreendimentos"}])
+    qc = json.loads(build_query_context(p))["queries"][0]
+    assert qc["columns"] == [adhoc], "coluna adhoc passa adiante como está"
+    assert qc["metrics"][0]["label"] == "Empreendimentos"
+
+
+def test_query_context_recusa_percent_metrics_nao_verificado():
+    from superset_client import build_query_context
+
+    p = payload_xy("table", query_mode="aggregate", groupby=["a"],
+                   metrics=[], percent_metrics=[{"label": "%"}])
+    with pytest.raises(ValueError) as erro:
+        build_query_context(p)
+    assert "percent_metrics" in str(erro.value)
+
+
+def test_query_context_recusa_payload_sem_params():
+    from superset_client import build_query_context
+
+    p = payload_xy()
+    del p["params"]
+
+    with pytest.raises(ValueError) as erro:
+        build_query_context(p)
+    assert "params" in str(erro.value), "KeyError cru não diz o que fazer"
+
+
+def test_query_context_recusa_payload_sem_datasource_id():
+    from superset_client import build_query_context
+
+    p = payload_xy()
+    del p["datasource_id"]
+
+    with pytest.raises(ValueError) as erro:
+        build_query_context(p)
+    assert "datasource_id" in str(erro.value)
+
+
+def test_queries_nao_compartilham_os_dicts_aninhados_da_base():
+    from superset_client import BASE_QUERY, _query
+
+    a, b = _query([], [], []), _query([], [], [])
+    a["extras"]["where"] = "1=1"
+
+    assert b["extras"]["where"] == "", "duas queries não podem dividir `extras`"
+    assert BASE_QUERY["extras"]["where"] == "", "o global do módulo foi mutado"
 
 
 # --- create_chart grava e compara query_context (D1 + D2) ------------------
