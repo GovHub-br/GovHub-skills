@@ -612,7 +612,8 @@ class SupersetClient:
             timeout=TIMEOUT,
         )
 
-    def create_chart(self, payload: dict, dry_run: bool = False) -> dict:
+    def create_chart(self, payload: dict, dry_run: bool = False,
+                     fonte_id: int | None = None) -> dict:
         """POST idempotente: procura por slice_name + datasource_id.
 
         Só é "o mesmo chart" quando nome e dataset batem: um `slice_name`
@@ -640,6 +641,16 @@ class SupersetClient:
             return {"acao": "criado", "slice_name": nome, "id": novo["id"]}
 
         detalhe = self.get_chart(atual["id"]) or {}
+        # Re-derivar um dashboard propõe nomes parecidos com os do fonte. Como a
+        # idempotência casa por (nome + dataset), um nome repetido atualizaria o
+        # chart do fonte — alterando por dentro o dashboard que prometemos não
+        # tocar. O `dashboard alvo:` protege o objeto dashboard; isto protege os
+        # charts dele.
+        if fonte_id is not None:
+            donos = [d.get("id") for d in (detalhe.get("dashboards") or [])]
+            if fonte_id in donos:
+                return {"acao": "recusado_e_do_fonte", "slice_name": nome,
+                        "id": atual["id"]}
         # O dataset já bate (foi critério da busca); resta o conteúdo. Compara
         # como JSON: o Superset reserializa `params` e a comparação de string
         # crua forçaria um PUT a cada execução.
@@ -857,6 +868,8 @@ def main(argv=None) -> int:
     q = sub.add_parser("create-chart", help="Cria/atualiza um chart (idempotente).")
     q.add_argument("--file", required=True, help="JSON com o payload do chart.")
     q.add_argument("--dry-run", action="store_true")
+    q.add_argument("--fonte", help="slug ou id do dashboard fonte; recusa "
+                                   "sobrescrever um chart que pertença a ele.")
 
     q = sub.add_parser("create-dashboard", help="Cria um dashboard novo.")
     q.add_argument("--file", required=True,
@@ -885,8 +898,23 @@ def main(argv=None) -> int:
     elif args.comando == "get-chart":
         _imprimir(c.get_chart(args.id))
     elif args.comando == "create-chart":
+        fonte_id = None
+        if args.fonte:
+            fonte = c.get_dashboard(args.fonte)
+            if fonte is None:
+                sys.exit(f"dashboard fonte não encontrado: {args.fonte}")
+            fonte_id = fonte.get("id")
+            if fonte_id is None:
+                # `id` ausente desligaria a proteção contra reescrever um
+                # chart do fonte em silêncio (fonte_id=None equivale a "sem fonte").
+                sys.exit(
+                    f"dashboard fonte ({args.fonte}) resolveu mas o payload "
+                    "não trouxe `id`: não dá para proteger os charts do fonte "
+                    "contra reescrita sem ele"
+                )
         with open(args.file, encoding="utf-8") as fh:
-            _imprimir(c.create_chart(json.load(fh), dry_run=args.dry_run))
+            _imprimir(c.create_chart(json.load(fh), dry_run=args.dry_run,
+                                     fonte_id=fonte_id))
     elif args.comando == "create-dashboard":
         with open(args.file, encoding="utf-8") as fh:
             entrada = json.load(fh)

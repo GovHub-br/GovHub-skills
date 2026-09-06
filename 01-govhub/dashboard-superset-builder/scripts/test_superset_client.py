@@ -1008,3 +1008,22 @@ def test_create_dashboard_inalterado_quando_layout_bate_e_chart_ja_associado():
     assert any("/api/v1/chart/7" in c.args[0] for c in s.get.call_args_list)
     s.put.assert_not_called()
     s.post.assert_not_called()
+
+
+# --- create_chart recusa chart do dashboard fonte (D3) ---------------------
+
+def test_create_chart_recusa_sobrescrever_chart_do_fonte():
+    p = payload_xy()
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 64, "slice_name": "X",
+                                                "datasource_id": 35}]}),
+        resposta(corpo={"result": {"id": 64, "params": "{}",
+                                   "dashboards": [{"id": 3}]}}),
+    ]
+
+    r = cliente(s).create_chart(p, fonte_id=3)
+
+    assert r["acao"] == "recusado_e_do_fonte"
+    s.put.assert_not_called()
+    s.post.assert_not_called()
