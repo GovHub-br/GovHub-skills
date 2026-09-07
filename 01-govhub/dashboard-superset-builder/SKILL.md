@@ -173,13 +173,19 @@ Para cada componente aprovado, na ordem do esboço:
 2. Crie o chart (idempotente — rodar de novo não duplica):
 
    ```bash
-   # re-derivando de um fonte, passe --fonte: recusa sobrescrever um chart que
-   # pertença ao dashboard fonte (nomes parecidos colidem com facilidade)
+   # re-derivando de um fonte:
    python3 scripts/superset_client.py create-chart --file componente.json --fonte <slug ou id>
 
    # dashboard novo do zero, sem fonte:
    python3 scripts/superset_client.py create-chart --file componente.json
    ```
+
+   `--fonte` é **obrigatório** quando o `dashboard alvo:` é `novo a partir de:`.
+   A idempotência casa por `slice_name` + `datasource_id`, e re-derivar propõe
+   nomes parecidos com os do fonte: sem `--fonte`, um nome repetido atualiza o
+   chart do fonte e altera por dentro o dashboard que prometemos não tocar —
+   corrupção silenciosa, ninguém é avisado. Com ele, o comando recusa
+   (`recusado_e_do_fonte`) em vez de escrever.
 
    A resposta traz `acao`, o `id` e — quando houve escrita — `verificacao`, com o
    que o chart devolve de verdade:
@@ -229,14 +235,16 @@ verdade e só pula a escrita.
 
 ### Os valores de `acao` na resposta
 
-Toda escrita devolve `acao` e `id` (e, numa escrita de chart, `verificacao`). O
-que fazer com cada valor:
+Toda resposta devolve `acao`; `id` vem junto sempre que o objeto existe (nos
+caminhos de `--dry-run` que ainda iam criar, e em `chart_nao_encontrado` /
+`dashboard_nao_encontrado`, ele vem `null` — não há id para dar). Uma escrita de
+chart traz também `verificacao`. O que fazer com cada valor:
 
 | `acao` | quando aparece | o que fazer |
 |---|---|---|
 | `criado` | chart ou dashboard novo, escrito | siga; use o `id` no resumo. Numa escrita de chart, confira a `verificacao` |
 | `atualizado` | já existia, o conteúdo mudou, foi reescrito | siga; use o `id`. Numa escrita de chart, confira a `verificacao` |
-| `adicionado` | `add-chart-to-dashboard` inseriu o chart no layout publicado | siga; use o `id` |
+| `adicionado` | `add-chart-to-dashboard` inseriu o chart no layout publicado **e** o associou ao dashboard | siga; use o `id` |
 | `associado` | o dashboard já tinha o layout certo mas os charts não estavam anexados — o run reparou isso. **É escrita bem-sucedida**, não no-op: o dashboard abria em branco e agora não | siga; use o `id` |
 | `inalterado` | já estava exatamente como pedido | siga, nada a fazer |
 | `criaria` / `atualizaria` / `adicionaria` / `associaria` | só `--dry-run`: anuncia a escrita (ou o reparo) que faria | rode de novo sem `--dry-run` depois da aprovação |

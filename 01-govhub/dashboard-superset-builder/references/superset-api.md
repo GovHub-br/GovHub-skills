@@ -112,12 +112,21 @@ basta (ver a primeira armadilha):
    **dashboard**, pelo slug, com `GET /api/v1/dashboard/<slug>` — nunca pela
    listagem (ver a segunda armadilha), e por isso o slug é obrigatório.
 2. Se não existe → criar.
-3. Se existe → comparar o conteúdo relevante (para chart, `params`). Igual → não
-   fazer nada. Diferente → `PUT`.
+3. Se existe → comparar o conteúdo relevante (para chart, `params` **e**
+   `query_context`). Igual → não fazer nada. Diferente → `PUT`. O
+   `query_context` entra na comparação porque um chart com o contexto ausente
+   ou velho tem `params` idêntico e mesmo assim precisa de `PUT` — sem ele,
+   ficaria "inalterado" para sempre e nunca seria reparado (ver a seção
+   `query_context`).
 
 Consequência aceita da busca por nome + dataset: um chart cujo dataset mudou é
 criado como novo em vez de atualizado. É o lado seguro do erro — o chart antigo
 continua visível e auditável, em vez de ser sobrescrito.
+
+Erro HTTP na **escrita** também estoura, nunca vira sucesso: um `PUT` recusado
+com 422 (sessão expirada, CSRF vencido) que passasse em silêncio faria a
+ferramenta reportar `atualizado` e conferir o conteúdo **velho** — uma
+confirmação falsa, pior que nenhuma.
 
 E erro HTTP na busca **estoura**, nunca vira lista vazia: o corpo de erro do
 Superset não tem `result` nem `count`, então um 500 ou um 401 de sessão expirada
@@ -186,10 +195,12 @@ O `groupby` pode conter, além de nomes de coluna, objetos de coluna adhoc
 (`{label, sqlExpression, expressionType}`); eles passam para o `columns` do
 `query_context` como estão, porque a API de dados os aceita nesse formato.
 
-**Quando a derivação recusa em vez de emitir.** Um `adhoc_filter` que não seja
-`SIMPLE` com `subject` e `operator` (um `sqlExpression`, por exemplo), ou um
-`percent_metrics` não-vazio cuja forma no `query_context` ninguém verificou num
-chart real, fazem `build_query_context` levantar erro antes de qualquer HTTP —
+**Quando a derivação recusa em vez de emitir.** Um `viz_type` fora da lista dos
+que sabemos derivar (a recusa mais provável de encontrar, e a que o erro
+enumera), um `adhoc_filter` que não seja `SIMPLE` com `subject` e `operator` (um
+`sqlExpression`, por exemplo), ou um `percent_metrics` não-vazio cuja forma no
+`query_context` ninguém verificou num chart real, fazem `build_query_context`
+levantar erro antes de qualquer HTTP —
 em vez de emitir uma query pela metade. O motivo é o mesmo do resto desta
 seção: uma query pela metade abre sem erro e é indistinguível de uma certa até
 alguém conferir o número na mão.
@@ -216,7 +227,11 @@ dashboard bom:   charts associados=24  charts no position_json=24
 ```
 
 A associação se escreve pelo chart: `PUT /api/v1/chart/<id>` com
-`{"dashboards": [...]}`.
+`{"dashboards": [...]}`. Vale para **todo** caminho que põe um chart num
+dashboard: tanto `create-dashboard` quanto `add-chart-to-dashboard` escrevem o
+layout e, logo depois, a associação. Escrever só o `position_json` num
+dashboard existente entrega o mesmo sintoma — o chart aparece no layout e não
+renderiza.
 
 **Cuidado: esse PUT substitui a lista inteira.** Mandar `{"dashboards": [18]}`
 num chart que também estava no dashboard 3 o arranca do 3. Sempre ler a lista

@@ -331,6 +331,66 @@ def test_create_chart_recusa_datasource_divergente():
     assert "7__table" in str(erro.value) and "42" in str(erro.value)
 
 
+# --- escrita que falha estoura (C2) ----------------------------------------
+
+def resposta_ruim(status=422):
+    """Resposta de erro: `raise_for_status` levanta, como o `requests` faz."""
+    r = resposta(status=status)
+    r.raise_for_status.side_effect = requests.HTTPError(str(status))
+    return r
+
+
+def test_put_que_falha_nao_vira_atualizado():
+    # Sem `raise_for_status`, um 422 (sessão expirada, CSRF vencido) devolvia
+    # `atualizado` com uma `verificacao` lida do chart velho: a salvaguarda
+    # virava confirmação falsa, pior que o silêncio que ela substituiu.
+    p = payload_xy()
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 5, "slice_name": "X",
+                                                "datasource_id": 35}]}),
+        resposta(corpo={"result": {"id": 5, "params": "{}", "query_context": None}}),
+    ]
+    s.put.return_value = resposta_ruim()
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s).create_chart(p)
+
+
+def test_post_que_falha_estoura_em_vez_de_key_error():
+    # o corpo de erro do Superset não tem `id`: sem raise_for_status o POST
+    # recusado quebrava como `KeyError: 'id'` cru.
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"count": 0, "result": []})
+    s.post.return_value = resposta_ruim(500)
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s).create_chart(PAYLOAD)
+
+
+def test_put_do_dashboard_que_falha_estoura():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {
+        "id": 3, "dashboard_title": "Velho",
+        "position_json": json.dumps(build_position_json([{"id": 7, "slice_name": "A"}]))}})
+    s.put.return_value = resposta_ruim()
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s).create_dashboard({"dashboard_title": "Novo", "slug": "d"}, [7])
+
+
+def test_associacao_que_falha_estoura():
+    # a associação é a segunda metade da escrita: falhar em silêncio deixaria o
+    # dashboard com o layout certo e a página em branco (o D4).
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": {"id": 8, "slice_name": "B",
+                                                    "dashboards": []}})
+    s.put.return_value = resposta_ruim()
+
+    with pytest.raises(requests.HTTPError):
+        cliente(s)._associar_chart(8, 3)
+
+
 # --- create_dashboard ------------------------------------------------------
 
 def test_create_dashboard_nao_recria_quando_o_slug_ja_existe():
@@ -561,15 +621,73 @@ def test_add_chart_to_dashboard_faz_put_da_arvore_mutada():
         resposta(corpo={"result": {"id": 3,
                                    "position_json": json.dumps(layout_ajustado_na_interface())}}),
         resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B", "dashboards": []}}),
     ]
     s.put.return_value = resposta(corpo={"id": 3})
 
     r = cliente(s).add_chart_to_dashboard("3", 8)
 
     assert r["acao"] == "adicionado"
-    enviado = json.loads(s.put.call_args[1]["json"]["position_json"])
+    # o primeiro PUT é o do layout; o segundo é o da associação
+    enviado = json.loads(s.put.call_args_list[0][1]["json"]["position_json"])
     assert enviado["MARKDOWN-1"]["meta"]["code"] == "# Título", "markdown sumiu no PUT"
     assert enviado["CHART-8"]["meta"]["sliceName"] == "B"
+
+
+def test_add_chart_to_dashboard_associa_o_chart():
+    # D4 pela terceira forma de `dashboard alvo:` (`existente:`): só o layout,
+    # sem a associação, deixa o chart no position_json e fora do
+    # dashboard_slices — ele não renderiza.
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),      # chart novo
+        resposta(corpo={"result": {"id": 8, "slice_name": "B",
+                                   "dashboards": []}}),                # _associar_chart lê
+    ]
+    s.put.return_value = resposta(corpo={"id": 3})
+
+    r = cliente(s).add_chart_to_dashboard("3", 8)
+
+    assert r["acao"] == "adicionado"
+    urls = [c.args[0] for c in s.put.call_args_list]
+    assert any(u.endswith("/api/v1/chart/8") for u in urls), \
+        "sem associação o chart entra no layout e não renderiza — é o D4"
+
+
+def test_add_chart_to_dashboard_associacao_acrescenta_nunca_substitui():
+    # `_associar_chart` é a única fonte da regra: um chart que já pertence a
+    # outro dashboard não pode ser arrancado de lá.
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B",
+                                   "dashboards": [{"id": 99}]}}),
+    ]
+    s.put.return_value = resposta(corpo={"id": 3})
+
+    cliente(s).add_chart_to_dashboard("3", 8)
+
+    associacao = next(c for c in s.put.call_args_list
+                      if c.args[0].endswith("/api/v1/chart/8"))
+    assert associacao[1]["json"] == {"dashboards": [99, 3]}
+
+
+def test_add_chart_to_dashboard_dry_run_nao_associa():
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 8, "slice_name": "B"}}),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 8, dry_run=True)
+
+    assert r == {"acao": "adicionaria", "id": 3}
+    s.put.assert_not_called()
 
 
 def test_add_chart_to_dashboard_nao_repete_chart_ja_presente():
@@ -835,6 +953,24 @@ def test_query_context_de_table_sem_query_mode_infere_raw_por_all_columns():
     assert qc["metrics"] == [], "modo raw não agrega"
 
 
+def test_inferencia_de_raw_nao_vaza_para_outro_viz_type():
+    # I1: `_modo_raw` valia para qualquer viz_type. O Explore mantém chaves
+    # órfãs no form_data quando se troca o tipo de visualização, e o SKILL.md
+    # manda reaproveitar o `params` de um chart existente — então um `pie` com
+    # um `all_columns` perdido perdia a métrica e agrupava pela coluna errada:
+    # a classe do D1 por uma porta que a lista de viz_type não enxerga.
+    from superset_client import build_query_context
+
+    p = payload_xy("pie", groupby=["uf"], all_columns=["x"],
+                   metric={"expressionType": "SQL", "sqlExpression": "COUNT(x)",
+                           "label": "m"})
+    qc = json.loads(build_query_context(p))["queries"][0]
+
+    assert qc["metrics"] != [], "a métrica do pie não podia sumir"
+    assert qc["metrics"][0]["label"] == "m"
+    assert qc["columns"] == ["uf"], "o pie agrupa pelo groupby, não por all_columns"
+
+
 def test_query_context_de_table_sem_all_columns_segue_o_groupby():
     from superset_client import build_query_context
 
@@ -1032,6 +1168,48 @@ def test_create_chart_recusa_sobrescrever_chart_do_fonte():
     s.post.assert_not_called()
 
 
+def test_create_chart_recusa_chart_que_so_o_layout_do_fonte_conhece():
+    # I2: a guarda lia só a lista `dashboards`, justamente o campo que o D4
+    # esvaziava. Um dashboard construído por esta ferramenta antes daquele fix
+    # tem position_json cheio e dashboard_slices vazio: todos os charts dele
+    # reportam `dashboards: []` e o --fonte não dispararia — no caso em que
+    # re-derivar é mais provável.
+    p = payload_xy()
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 64, "slice_name": "X",
+                                                "datasource_id": 35}]}),
+        resposta(corpo={"result": {"id": 64, "params": "{}", "dashboards": []}}),
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(
+            build_position_json([{"id": 64, "slice_name": "X"}]))}}),
+    ]
+
+    r = cliente(s).create_chart(p, fonte_id=3)
+
+    assert r["acao"] == "recusado_e_do_fonte"
+    s.put.assert_not_called()
+    s.post.assert_not_called()
+
+
+def test_create_chart_escreve_quando_o_chart_nao_e_do_fonte():
+    # a guarda mais larga não pode recusar o que não é do fonte.
+    p = payload_xy()
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 1, "result": [{"id": 64, "slice_name": "X",
+                                                "datasource_id": 35}]}),
+        resposta(corpo={"result": {"id": 64, "params": "{}", "dashboards": []}}),
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(
+            build_position_json([{"id": 7, "slice_name": "outro"}]))}}),
+        resposta(corpo={"result": [{"rowcount": 1, "data": [{"UHs": 1}]}]}),
+    ]
+    s.put.return_value = resposta(corpo={"id": 64})
+
+    r = cliente(s).create_chart(p, fonte_id=3)
+
+    assert r["acao"] == "atualizado"
+
+
 # --- conferência pós-escrita (camada 2) ------------------------------------
 
 def test_dados_do_chart_resume_rowcount_e_amostra():
@@ -1097,23 +1275,41 @@ class ClienteFalso:
                {"column_name": "municipio", "type": "VARCHAR(60)"}]
 
     def __init__(self, total=7, filtrado=0, colunas=None, primeira_acao="criado",
-                 erro_no_dashboard=None, delete_falha=()):
+                 erro_no_dashboard=None, delete_falha=(), associa_no_add=True,
+                 acao_do_add="adicionado"):
         self.total, self.filtrado = total, filtrado
         self.colunas = self.COLUNAS if colunas is None else colunas
         self.primeira_acao = primeira_acao
         self.erro_no_dashboard = erro_no_dashboard
         self.delete_falha = delete_falha
+        # o D4 pela porta do `add-chart-to-dashboard`: layout escrito, chart
+        # nunca anexado ao dashboard.
+        self.associa_no_add = associa_no_add
+        self.acao_do_add = acao_do_add
         self.base = "https://superset.exemplo"
         self.s = self          # `_smoke` chama `c.s.delete(...)`
-        self.apagados, self.params_vistos = [], []
+        self.apagados, self.params_vistos, self.adicionados = [], [], []
+
+    # o segundo chart do ciclo (o do `add-chart-to-dashboard`) tem slice_name
+    # próprio: é assim que ele escapa da idempotência do primeiro.
+    def _e_o_segundo(self, payload):
+        return payload["slice_name"].endswith(" b")
 
     def create_chart(self, payload):
         self.params_vistos.append(json.loads(payload["params"]))
+        if self._e_o_segundo(payload):
+            return {"acao": "criado", "slice_name": payload["slice_name"], "id": 12,
+                    "verificacao": {"rowcount": 1, "amostra": {"linhas": self.total}}}
         primeiro = len(self.params_vistos) == 1
         valor = self.total if primeiro else self.filtrado
         return {"acao": self.primeira_acao if primeiro else "atualizado",
                 "slice_name": payload["slice_name"], "id": 11,
                 "verificacao": {"rowcount": 1, "amostra": {"linhas": valor}}}
+
+    def add_chart_to_dashboard(self, ref, chart_id):
+        if self.acao_do_add == "adicionado":
+            self.adicionados.append(chart_id)
+        return {"acao": self.acao_do_add, "id": 22}
 
     def get_dataset(self, id_):
         return {"id": id_, "columns": self.colunas}
@@ -1126,14 +1322,16 @@ class ClienteFalso:
     def get_dashboard(self, id_):
         if ("dashboard", id_) in self.apagados:
             return None
+        nos = {f"CHART-{i}": {"type": "CHART", "meta": {"chartId": i}}
+               for i in [11] + self.adicionados}
         return {"id": id_, "charts": ["__smoke__"],
-                "position_json": json.dumps(
-                    {"CHART-a": {"type": "CHART", "meta": {"chartId": 11}}})}
+                "position_json": json.dumps(nos)}
 
     def get_chart(self, id_):
         if ("chart", id_) in self.apagados:
             return None
-        return {"id": id_, "dashboards": [{"id": 22}]}
+        anexado = id_ != 12 or (self.associa_no_add and 12 in self.adicionados)
+        return {"id": id_, "dashboards": [{"id": 22}] if anexado else []}
 
     def delete(self, url, timeout=None):
         caminho, id_ = url.rsplit("/", 2)[-2:]
@@ -1152,7 +1350,7 @@ def test_smoke_caminho_feliz_passa_e_apaga_os_dois():
     r = _smoke(c, 35)
 
     assert r["ok"], [p for p in r["passos"] if not p["ok"]]
-    assert c.apagados == [("dashboard", 22), ("chart", 11)]
+    assert c.apagados == [("chart", 12), ("dashboard", 22), ("chart", 11)]
     # a segunda escrita é a que carrega o filtro, no mesmo chart
     assert c.params_vistos[0]["adhoc_filters"] == []
     assert c.params_vistos[1]["adhoc_filters"][0]["expressionType"] == "SIMPLE"
@@ -1167,7 +1365,7 @@ def test_smoke_falha_quando_o_filtro_e_ignorado():
 
     assert not r["ok"]
     assert passo(r, "filtro aplicou")["ok"] is False
-    assert c.apagados == [("dashboard", 22), ("chart", 11)]
+    assert c.apagados == [("chart", 12), ("dashboard", 22), ("chart", 11)]
 
 
 def test_smoke_nao_finge_sucesso_com_dataset_vazio():
@@ -1206,6 +1404,29 @@ def test_smoke_usa_a_primeira_coluna_quando_nao_ha_textual():
     assert c.params_vistos[1]["adhoc_filters"][0]["subject"] == "valor"
 
 
+def test_smoke_pega_o_d4_no_add_chart_to_dashboard():
+    # o subcomando escreve o position_json e não associa: o chart aparece no
+    # layout e não renderiza. Sem este passo a smoke não olhava para lá — foi
+    # por isso que o D4 sobreviveu nesse caminho.
+    c = ClienteFalso(associa_no_add=False)
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert passo(r, "segundo chart no layout")["ok"] is True
+    assert passo(r, "segundo chart associado")["ok"] is False
+    assert c.apagados == [("chart", 12), ("dashboard", 22), ("chart", 11)]
+
+
+def test_smoke_acusa_add_chart_que_nao_adicionou():
+    c = ClienteFalso(acao_do_add="layout_sem_lugar_para_row")
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert passo(r, "add-chart-to-dashboard")["ok"] is False
+
+
 def test_smoke_apaga_o_chart_quando_o_dashboard_estoura():
     c = ClienteFalso(erro_no_dashboard=RuntimeError("boom"))
 
@@ -1237,4 +1458,5 @@ def test_smoke_nao_apaga_chart_que_este_run_nao_criou():
     r = _smoke(c, 35)
 
     assert not r["ok"], "o passo `chart criado` tem que acusar"
-    assert c.apagados == [("dashboard", 22)]
+    assert ("chart", 11) not in c.apagados, "o chart é de outro run"
+    assert c.apagados == [("chart", 12), ("dashboard", 22)]

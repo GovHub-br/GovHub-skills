@@ -355,11 +355,20 @@ def _modo_raw(fd: dict) -> bool:
     `query_mode`, então tabelas raw reais chegam sem a chave — sem esta
     inferência elas derivariam as colunas de `groupby` (vazio), manteriam as
     métricas, e o chart abriria devolvendo as linhas erradas sem erro nenhum.
+
+    A inferência vale só para `table` — `query_mode` é chave de tabela, e o
+    `references/superset-api.md` já descreve o modo raw como coisa dela
+    ("`table` é diferente"). Sem essa condição a inferência vazava para todo
+    viz_type: um `pie` com um `all_columns` órfão (o Explore mantém chaves
+    estranhas no `form_data` quando se troca o tipo de visualização, e o
+    `SKILL.md` manda usar o `params` de um chart existente como referência)
+    perdia a métrica e agrupava pela coluna errada — query que abre sem erro e
+    devolve número errado.
     """
     modo = fd.get("query_mode")
     if modo:
         return modo == "raw"
-    return bool(fd.get("all_columns"))
+    return fd.get("viz_type") == "table" and bool(fd.get("all_columns"))
 
 
 def _colunas_do_params(fd: dict, chave_groupby: str = "groupby") -> list:
@@ -572,6 +581,24 @@ class SupersetClient:
 
     # --- escrita (nunca antes de uma aprovação humana explícita) -----------
 
+    def _escrever(self, metodo: str, caminho: str, corpo: dict):
+        """POST/PUT que **estoura** quando a API recusa.
+
+        Sem `raise_for_status`, um 422 (sessão expirada ou CSRF vencido no meio
+        de uma rodada de componentes) passava em silêncio e virava coisa pior
+        que silêncio: `create_chart` devolvia `atualizado` com uma `verificacao`
+        lida do chart **velho** — número plausível, conteúdo antigo — e o
+        `SKILL.md` diz ao agente que esse campo é a evidência de que a escrita
+        entrou. A salvaguarda confirmava a escrita que não aconteceu.
+
+        Vale também para os POSTs, que sem isto quebravam como `KeyError: 'id'`
+        cru ao tentar ler o corpo de erro.
+        """
+        r = getattr(self.s, metodo)(
+            f"{self.base}{caminho}", json=corpo, timeout=TIMEOUT)
+        r.raise_for_status()
+        return r
+
     @staticmethod
     def _validar_datasource(payload: dict) -> None:
         """`params.datasource` tem que bater com `datasource_id`.
@@ -610,6 +637,22 @@ class SupersetClient:
             raise ChartNaoEncontrado(chart_id)
         return {"id": chart_id, "slice_name": chart.get("slice_name", "")}
 
+    def _charts_do_fonte(self, fonte_id: int) -> set:
+        """Ids de chart que aparecem no `position_json` do dashboard fonte.
+
+        A lista `dashboards` do chart seria a fonte natural, mas é exatamente o
+        campo que o defeito D4 deixava vazio: um dashboard construído por esta
+        ferramenta **antes** daquele fix tem o layout cheio e o
+        `dashboard_slices` vazio, então todos os charts dele reportam
+        `dashboards: []` e a guarda do `--fonte` não dispararia — justo no caso
+        em que re-derivar é mais provável. O layout não depende da associação.
+        """
+        fonte = self.get_dashboard(fonte_id)
+        if fonte is None:
+            return set()
+        pos, valido = _layout_do_dashboard(fonte)
+        return _chart_ids_do_layout(pos) if valido else set()
+
     def _associar_chart(self, chart_id: int, dashboard_id: int) -> None:
         """Anexa o chart ao dashboard, acrescentando à lista existente.
 
@@ -627,11 +670,8 @@ class SupersetClient:
                   if d.get("id") is not None]
         if dashboard_id in atuais:
             return
-        self.s.put(
-            f"{self.base}/api/v1/chart/{chart_id}",
-            json={"dashboards": atuais + [dashboard_id]},
-            timeout=TIMEOUT,
-        )
+        self._escrever("put", f"/api/v1/chart/{chart_id}",
+                       {"dashboards": atuais + [dashboard_id]})
 
     def create_chart(self, payload: dict, dry_run: bool = False,
                      fonte_id: int | None = None) -> dict:
@@ -656,9 +696,7 @@ class SupersetClient:
         if atual is None:
             if dry_run:
                 return {"acao": "criaria", "slice_name": nome, "id": None}
-            novo = self.s.post(
-                f"{self.base}/api/v1/chart/", json=payload, timeout=TIMEOUT
-            ).json()
+            novo = self._escrever("post", "/api/v1/chart/", payload).json()
             return {"acao": "criado", "slice_name": nome, "id": novo["id"],
                     "verificacao": self._verificacao(novo["id"])}
 
@@ -670,7 +708,7 @@ class SupersetClient:
         # charts dele.
         if fonte_id is not None:
             donos = [d.get("id") for d in (detalhe.get("dashboards") or [])]
-            if fonte_id in donos:
+            if fonte_id in donos or atual["id"] in self._charts_do_fonte(fonte_id):
                 return {"acao": "recusado_e_do_fonte", "slice_name": nome,
                         "id": atual["id"]}
         # O dataset já bate (foi critério da busca); resta o conteúdo. Compara
@@ -687,11 +725,7 @@ class SupersetClient:
             return {"acao": "atualizaria", "slice_name": nome, "id": atual["id"]}
         # Payload inteiro: mandar só datasource/params deixaria viz_type,
         # slice_name e description velhos num run que se reporta "atualizado".
-        self.s.put(
-            f"{self.base}/api/v1/chart/{atual['id']}",
-            json=dict(payload),
-            timeout=TIMEOUT,
-        )
+        self._escrever("put", f"/api/v1/chart/{atual['id']}", dict(payload))
         return {"acao": "atualizado", "slice_name": nome, "id": atual["id"],
                 "verificacao": self._verificacao(atual["id"])}
 
@@ -737,9 +771,7 @@ class SupersetClient:
                 return {"acao": "chart_nao_encontrado", "slug": slug, "id": None}
             if dry_run:
                 return {"acao": "criaria", "slug": slug, "id": None}
-            novo = self.s.post(
-                f"{self.base}/api/v1/dashboard/", json=corpo, timeout=TIMEOUT
-            ).json()
+            novo = self._escrever("post", "/api/v1/dashboard/", corpo).json()
             for cid in chart_ids:
                 self._associar_chart(cid, novo["id"])
             return {"acao": "criado", "slug": slug, "id": novo["id"]}
@@ -805,7 +837,7 @@ class SupersetClient:
 
         corpo = dict(payload)
         corpo["position_json"] = json.dumps(pos)
-        self.s.put(f"{self.base}/api/v1/dashboard/{id_}", json=corpo, timeout=TIMEOUT)
+        self._escrever("put", f"/api/v1/dashboard/{id_}", corpo)
         for cid in chart_ids:
             self._associar_chart(cid, id_)
         return {"acao": "atualizado", "slug": slug, "id": id_}
@@ -839,11 +871,14 @@ class SupersetClient:
             return {"acao": "layout_sem_lugar_para_row", "id": dash["id"]}
         if dry_run:
             return {"acao": "adicionaria", "id": dash["id"]}
-        self.s.put(
-            f"{self.base}/api/v1/dashboard/{dash['id']}",
-            json={"position_json": json.dumps(pos)},
-            timeout=TIMEOUT,
-        )
+        self._escrever("put", f"/api/v1/dashboard/{dash['id']}",
+                       {"position_json": json.dumps(pos)})
+        # Layout primeiro, associação depois — a mesma ordem do
+        # `create_dashboard`. Só o `position_json` era o defeito D4 por outra
+        # porta: o chart entra no layout, o dashboard não o anexa em
+        # `dashboard_slices`, e ele não renderiza. `_associar_chart` é a única
+        # fonte da regra "acrescenta, nunca substitui".
+        self._associar_chart(chart_id, dash["id"])
         return {"acao": "adicionado", "id": dash["id"]}
 
 
@@ -889,9 +924,8 @@ def _coluna_para_filtro(dataset: dict):
     textuais = [c for c in colunas
                 if any(t in str(c.get("type") or "").upper()
                        for t in ("TEXT", "VARCHAR", "STRING"))]
-    for c in textuais + colunas:
-        return c["column_name"]
-    return None
+    candidatas = textuais + colunas
+    return candidatas[0]["column_name"] if candidatas else None
 
 
 def _valor_do_big_number(r: dict):
@@ -915,14 +949,14 @@ def _smoke_ciclo(c: "SupersetClient", dataset_id: int, marca: str,
     Separado de `_smoke` para poder desistir com um `return` (dataset vazio,
     dataset sem colunas) sem pular a limpeza nem o relatório.
     """
-    def payload(filtros):
+    def payload(filtros, nome=None):
         params = json.dumps({"datasource": f"{dataset_id}__table",
                              "viz_type": "big_number_total",
                              "metric": {"expressionType": "SQL",
                                         "sqlExpression": "COUNT(*)",
                                         "label": "linhas"},
                              "adhoc_filters": filtros}, ensure_ascii=False)
-        return {"slice_name": marca, "viz_type": "big_number_total",
+        return {"slice_name": nome or marca, "viz_type": "big_number_total",
                 "datasource_id": dataset_id, "datasource_type": "table",
                 "params": params}
 
@@ -998,6 +1032,28 @@ def _smoke_ciclo(c: "SupersetClient", dataset_id: int, marca: str,
     donos = [x.get("id") for x in (c.get_chart(chart_id) or {}).get("dashboards") or []]
     passos.append(("dashboard na lista do chart", dash_id in donos))
 
+    # 4. `add-chart-to-dashboard`, a terceira forma de `dashboard alvo:`
+    #    (`existente:`). Ela não tinha cobertura ao vivo, e foi por isso que o
+    #    D4 sobreviveu nela: o subcomando escrevia o `position_json` e nunca
+    #    associava, então o chart aparecia no layout e não renderizava. Este
+    #    passo confere as duas metades, como o passo do `create_dashboard`.
+    rb = c.create_chart(payload([], nome=f"{marca} b"))
+    chart_b = rb["id"]
+    if rb["acao"] == "criado" and ("chart", chart_b) not in limpar:
+        limpar.append(("chart", chart_b))
+    passos.append(("segundo chart criado", rb["acao"] == "criado"))
+    if chart_b is None:
+        return
+
+    a = c.add_chart_to_dashboard(dash_id, chart_b)
+    passos.append((f"add-chart-to-dashboard: {a['acao']}", a["acao"] == "adicionado"))
+
+    dash_b = c.get_dashboard(dash_id) or {}
+    pos_b = json.loads(dash_b.get("position_json") or "{}")
+    passos.append(("segundo chart no layout", chart_b in _chart_ids_do_layout(pos_b)))
+    donos_b = [x.get("id") for x in (c.get_chart(chart_b) or {}).get("dashboards") or []]
+    passos.append(("segundo chart associado", dash_id in donos_b))
+
 
 def _smoke(c: "SupersetClient", dataset_id: int) -> dict:
     """Exercita o ciclo inteiro contra o Superset real e limpa o que criou.
@@ -1009,8 +1065,11 @@ def _smoke(c: "SupersetClient", dataset_id: int) -> dict:
     sozinho não garante: que um filtro declarado no `params` **de fato aplicou**
     (o valor cai para 0 quando o filtro não casa nada — com o D1 ele não cairia)
     e que o chart ficou mesmo associado ao dashboard, não só desenhado no
-    layout. Não confere que os números estejam certos: isso ela continua sem
-    saber. Apaga tudo no fim, inclusive se um passo falhar.
+    layout. Um segundo chart descartável entra pelo `add-chart-to-dashboard`,
+    que é a terceira forma de `dashboard alvo:` e a única que não tinha
+    cobertura ao vivo — o D4 sobreviveu nela justamente por isso. Não confere
+    que os números estejam certos: isso ela continua sem saber. Apaga tudo no
+    fim, inclusive se um passo falhar.
     """
     marca = f"__smoke__ {int(time.time())}"
     passos, limpar = [], []
