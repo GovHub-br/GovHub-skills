@@ -872,53 +872,158 @@ def _imprimir(valor) -> None:
     print(json.dumps(valor, indent=2, ensure_ascii=False))
 
 
+_VALOR_INEXISTENTE = "__smoke_valor_inexistente__"
+
+
+def _coluna_para_filtro(dataset: dict):
+    """Escolhe, em tempo de execução, uma coluna do dataset para o filtro.
+
+    Fixar um nome no código amarraria a smoke a um dataset só. Prefere coluna
+    textual porque o comparador é uma string: num campo numérico ou de data o
+    banco pode recusar a comparação e devolver erro em vez do 0 que a asserção
+    espera. Sem coluna textual, a primeira serve. `None` quando o dataset não
+    declara coluna nenhuma — aí a smoke não tem como montar o filtro.
+    """
+    colunas = [c for c in (dataset or {}).get("columns") or []
+               if isinstance(c, dict) and c.get("column_name")]
+    textuais = [c for c in colunas
+                if any(t in str(c.get("type") or "").upper()
+                       for t in ("TEXT", "VARCHAR", "STRING"))]
+    for c in textuais + colunas:
+        return c["column_name"]
+    return None
+
+
+def _valor_do_big_number(r: dict):
+    """O número que um `big_number_total` devolveu, ou `None` se não deu para ler.
+
+    `verificacao.amostra` é a primeira linha como dict; num COUNT(*) ela tem uma
+    chave só, o rótulo da métrica.
+    """
+    amostra = (r.get("verificacao") or {}).get("amostra")
+    if not isinstance(amostra, dict) or len(amostra) != 1:
+        return None
+    valor = next(iter(amostra.values()))
+    return valor if isinstance(valor, (int, float)) else None
+
+
+def _smoke_ciclo(c: "SupersetClient", dataset_id: int, marca: str,
+                 passos: list, limpar: list) -> None:
+    """Corpo da smoke: acrescenta os passos em `passos`, e em `limpar` o que
+    este run criou.
+
+    Separado de `_smoke` para poder desistir com um `return` (dataset vazio,
+    dataset sem colunas) sem pular a limpeza nem o relatório.
+    """
+    def payload(filtros):
+        params = json.dumps({"datasource": f"{dataset_id}__table",
+                             "viz_type": "big_number_total",
+                             "metric": {"expressionType": "SQL",
+                                        "sqlExpression": "COUNT(*)",
+                                        "label": "linhas"},
+                             "adhoc_filters": filtros}, ensure_ascii=False)
+        return {"slice_name": marca, "viz_type": "big_number_total",
+                "datasource_id": dataset_id, "datasource_type": "table",
+                "params": params}
+
+    def rotulo(base: str, r: dict) -> str:
+        # A verificação já produz a mensagem quando a leitura de dados falha;
+        # jogá-la fora deixaria o operador com um `ok: false` sem motivo.
+        erro = (r.get("verificacao") or {}).get("erro")
+        return f"{base} — {erro}" if erro else base
+
+    # 1. COUNT(*) sem filtro: o valor de referência.
+    r = c.create_chart(payload([]))
+    chart_id = r["id"]
+    # Só apaga o que este run criou: numa colisão de `marca` no mesmo segundo,
+    # apagar por id arrancaria o chart do outro run.
+    if r["acao"] == "criado":
+        limpar.append(("chart", chart_id))
+    passos.append(("chart criado", r["acao"] == "criado"))
+
+    total = _valor_do_big_number(r)
+    passos.append((rotulo("dados do chart", r), total is not None))
+    if total is None:
+        return
+    if total <= 0:
+        passos.append((f"dataset tem linhas (COUNT(*) = {total}): dataset vazio: "
+                       "a smoke não consegue provar que o filtro aplicou", False))
+        return
+    passos.append((f"dataset tem linhas (COUNT(*) = {total})", True))
+
+    coluna = _coluna_para_filtro(c.get_dataset(dataset_id) or {})
+    if coluna is None:
+        passos.append((f"coluna para o filtro: o dataset {dataset_id} não declara "
+                       "coluna nenhuma: a smoke não consegue provar que o filtro "
+                       "aplicou", False))
+        return
+
+    # 2. Mesmo chart (mesmo slice_name + dataset => `atualizado`), agora com um
+    #    filtro SIMPLE que não casa nada — resultado previsível em qualquer
+    #    tabela não-vazia, sem precisar conhecer nenhum valor real.
+    filtro = {"expressionType": "SIMPLE", "subject": coluna, "operator": "==",
+              "comparator": _VALOR_INEXISTENTE, "clause": "WHERE"}
+    r2 = c.create_chart(payload([filtro]))
+    if r2["acao"] == "criado" and ("chart", r2["id"]) not in limpar:
+        limpar.append(("chart", r2["id"]))
+    passos.append(("mesmo chart atualizado com o filtro",
+                   r2["acao"] == "atualizado" and r2["id"] == chart_id))
+
+    # 3. O passo que dá sentido à smoke. Contar linhas não discriminava nada:
+    #    um big_number_total com COUNT(*) devolve sempre uma linha — com filtro,
+    #    sem filtro, ou com filtro que não casa nada. Comparar valores, sim: com
+    #    o D1 (query_context sem os filtros derivados) o filtro é ignorado e o
+    #    valor volta a ser `total`.
+    filtrado = _valor_do_big_number(r2)
+    passos.append((rotulo(f"filtro aplicou em `{coluna}`: {total} -> {filtrado}", r2),
+                   filtrado == 0 and filtrado != total))
+
+    d = c.create_dashboard({"dashboard_title": marca,
+                            "slug": marca.replace(" ", "-")}, [chart_id])
+    dash_id = d.get("id")
+    if d["acao"] == "criado" and dash_id is not None:
+        limpar.append(("dashboard", dash_id))
+    passos.append(("dashboard criado", d["acao"] == "criado"))
+    if dash_id is None:
+        return
+
+    dash = c.get_dashboard(dash_id) or {}
+    pos = json.loads(dash.get("position_json") or "{}")
+    no_layout = sum(1 for v in pos.values()
+                    if isinstance(v, dict) and v.get("type") == "CHART")
+    # As duas metades que o defeito D4 separou: layout e associação.
+    passos.append(("chart no layout", no_layout == 1))
+    passos.append(("chart associado", len(dash.get("charts") or []) == 1))
+
+    donos = [x.get("id") for x in (c.get_chart(chart_id) or {}).get("dashboards") or []]
+    passos.append(("dashboard na lista do chart", dash_id in donos))
+
+
 def _smoke(c: "SupersetClient", dataset_id: int) -> dict:
     """Exercita o ciclo inteiro contra o Superset real e limpa o que criou.
 
     Existe porque os quatro defeitos que a primeira execução real expôs passaram
     por uma suíte inteiramente mockada: nada nunca tinha falado com um Superset.
 
-    Cria um chart e um dashboard descartáveis, confere as duas coisas que o
-    `position_json` sozinho não garante (dados certos e associação de fato), e
-    apaga tudo — inclusive se um passo falhar.
+    Cria um chart e um dashboard descartáveis e confere o que o `position_json`
+    sozinho não garante: que um filtro declarado no `params` **de fato aplicou**
+    (o valor cai para 0 quando o filtro não casa nada — com o D1 ele não cairia)
+    e que o chart ficou mesmo associado ao dashboard, não só desenhado no
+    layout. Não confere que os números estejam certos: isso ela continua sem
+    saber. Apaga tudo no fim, inclusive se um passo falhar.
     """
     marca = f"__smoke__ {int(time.time())}"
-    params = json.dumps({"datasource": f"{dataset_id}__table",
-                         "viz_type": "big_number_total",
-                         "metric": {"expressionType": "SQL",
-                                    "sqlExpression": "COUNT(*)",
-                                    "label": "linhas"},
-                         "adhoc_filters": []}, ensure_ascii=False)
-    payload = {"slice_name": marca, "viz_type": "big_number_total",
-               "datasource_id": dataset_id, "datasource_type": "table",
-               "params": params}
-    passos, chart_id, dash_id = [], None, None
+    passos, limpar = [], []
     try:
-        r = c.create_chart(payload)
-        chart_id = r["id"]
-        passos.append(("chart criado", r["acao"] == "criado"))
-        passos.append(("dados do chart",
-                       (r.get("verificacao") or {}).get("rowcount") == 1))
-
-        d = c.create_dashboard({"dashboard_title": marca, "slug": marca.replace(" ", "-")},
-                               [chart_id])
-        dash_id = d["id"]
-        passos.append(("dashboard criado", d["acao"] == "criado"))
-
-        dash = c.get_dashboard(dash_id) or {}
-        pos = json.loads(dash.get("position_json") or "{}")
-        no_layout = sum(1 for v in pos.values()
-                        if isinstance(v, dict) and v.get("type") == "CHART")
-        # As duas metades que o defeito D4 separou: layout e associação.
-        passos.append(("chart no layout", no_layout == 1))
-        passos.append(("chart associado", len(dash.get("charts") or []) == 1))
-
-        donos = [x.get("id") for x in (c.get_chart(chart_id) or {}).get("dashboards") or []]
-        passos.append(("dashboard na lista do chart", dash_id in donos))
+        _smoke_ciclo(c, dataset_id, marca, passos, limpar)
+    except Exception as e:
+        # Sem isto, uma falha composta (um passo estoura E o DELETE seguinte
+        # também falha) descartaria o dict inteiro junto com a linha
+        # `LIMPEZA FALHOU`: o operador veria o traceback e nenhuma indicação de
+        # que sobrou um objeto `__smoke__`, nem o id dele.
+        passos.append((f"passo estourou: {type(e).__name__}: {e}", False))
     finally:
-        for caminho, id_ in (("dashboard", dash_id), ("chart", chart_id)):
-            if id_ is None:
-                continue
+        for caminho, id_ in reversed(limpar):
             try:
                 c.s.delete(f"{c.base}/api/v1/{caminho}/{id_}", timeout=TIMEOUT)
                 passos.append((f"{caminho} apagado",

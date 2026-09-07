@@ -9,6 +9,7 @@ from superset_client import (
     LayoutSemLugarParaRow,
     SupersetClient,
     _chart_ids_do_layout,
+    _smoke,
     build_position_json,
     build_query_context,
     inserir_chart_no_layout,
@@ -1077,3 +1078,163 @@ def test_dry_run_nao_tenta_verificar():
 
     assert r["acao"] == "criaria"
     assert "verificacao" not in r, "não há chart para conferir num dry-run"
+
+
+# --- smoke (ciclo completo) -------------------------------------------------
+
+class ClienteFalso:
+    """Cliente falso com só o que `_smoke` usa.
+
+    Escolhido em vez de injetar uma sessão fake num `SupersetClient` real: o
+    ciclo da smoke encadeia create_chart (duas vezes), get_dataset,
+    create_dashboard, get_dashboard e get_chart, o que daria uma dúzia de
+    respostas HTTP roteirizadas em ordem — e o que está sob teste aqui não é o
+    HTTP (já coberto), é a lógica de `_smoke`: agregação dos passos, fold do
+    `ok`, limpeza no `finally`.
+    """
+
+    COLUNAS = [{"column_name": "valor", "type": "DOUBLE PRECISION"},
+               {"column_name": "municipio", "type": "VARCHAR(60)"}]
+
+    def __init__(self, total=7, filtrado=0, colunas=None, primeira_acao="criado",
+                 erro_no_dashboard=None, delete_falha=()):
+        self.total, self.filtrado = total, filtrado
+        self.colunas = self.COLUNAS if colunas is None else colunas
+        self.primeira_acao = primeira_acao
+        self.erro_no_dashboard = erro_no_dashboard
+        self.delete_falha = delete_falha
+        self.base = "https://superset.exemplo"
+        self.s = self          # `_smoke` chama `c.s.delete(...)`
+        self.apagados, self.params_vistos = [], []
+
+    def create_chart(self, payload):
+        self.params_vistos.append(json.loads(payload["params"]))
+        primeiro = len(self.params_vistos) == 1
+        valor = self.total if primeiro else self.filtrado
+        return {"acao": self.primeira_acao if primeiro else "atualizado",
+                "slice_name": payload["slice_name"], "id": 11,
+                "verificacao": {"rowcount": 1, "amostra": {"linhas": valor}}}
+
+    def get_dataset(self, id_):
+        return {"id": id_, "columns": self.colunas}
+
+    def create_dashboard(self, payload, chart_ids):
+        if self.erro_no_dashboard is not None:
+            raise self.erro_no_dashboard
+        return {"acao": "criado", "slug": payload["slug"], "id": 22}
+
+    def get_dashboard(self, id_):
+        if ("dashboard", id_) in self.apagados:
+            return None
+        return {"id": id_, "charts": ["__smoke__"],
+                "position_json": json.dumps(
+                    {"CHART-a": {"type": "CHART", "meta": {"chartId": 11}}})}
+
+    def get_chart(self, id_):
+        if ("chart", id_) in self.apagados:
+            return None
+        return {"id": id_, "dashboards": [{"id": 22}]}
+
+    def delete(self, url, timeout=None):
+        caminho, id_ = url.rsplit("/", 2)[-2:]
+        if caminho in self.delete_falha:
+            raise requests.HTTPError(f"500 ao apagar {caminho} {id_}")
+        self.apagados.append((caminho, int(id_)))
+
+
+def passo(r, prefixo):
+    return next(p for p in r["passos"] if p["passo"].startswith(prefixo))
+
+
+def test_smoke_caminho_feliz_passa_e_apaga_os_dois():
+    c = ClienteFalso()
+
+    r = _smoke(c, 35)
+
+    assert r["ok"], [p for p in r["passos"] if not p["ok"]]
+    assert c.apagados == [("dashboard", 22), ("chart", 11)]
+    # a segunda escrita é a que carrega o filtro, no mesmo chart
+    assert c.params_vistos[0]["adhoc_filters"] == []
+    assert c.params_vistos[1]["adhoc_filters"][0]["expressionType"] == "SIMPLE"
+
+
+def test_smoke_falha_quando_o_filtro_e_ignorado():
+    # exatamente o D1: o query_context sai sem os filtros, o Superset devolve o
+    # mesmo número de antes. Contar linhas não pegava isto; comparar valores pega.
+    c = ClienteFalso(total=7, filtrado=7)
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert passo(r, "filtro aplicou")["ok"] is False
+    assert c.apagados == [("dashboard", 22), ("chart", 11)]
+
+
+def test_smoke_nao_finge_sucesso_com_dataset_vazio():
+    c = ClienteFalso(total=0)
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert "dataset vazio" in passo(r, "dataset tem linhas")["passo"]
+    assert len(c.params_vistos) == 1, "não adianta filtrar o que já é vazio"
+    assert c.apagados == [("chart", 11)]
+
+
+def test_smoke_sem_coluna_no_dataset_nao_finge_sucesso():
+    c = ClienteFalso(colunas=[])
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert "não declara coluna nenhuma" in passo(r, "coluna para o filtro")["passo"]
+
+
+def test_smoke_prefere_coluna_textual_para_o_filtro():
+    c = ClienteFalso()
+
+    _smoke(c, 35)
+
+    assert c.params_vistos[1]["adhoc_filters"][0]["subject"] == "municipio"
+
+
+def test_smoke_usa_a_primeira_coluna_quando_nao_ha_textual():
+    c = ClienteFalso(colunas=[{"column_name": "valor", "type": "DOUBLE PRECISION"}])
+
+    _smoke(c, 35)
+
+    assert c.params_vistos[1]["adhoc_filters"][0]["subject"] == "valor"
+
+
+def test_smoke_apaga_o_chart_quando_o_dashboard_estoura():
+    c = ClienteFalso(erro_no_dashboard=RuntimeError("boom"))
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert passo(r, "passo estourou")["passo"].endswith("RuntimeError: boom")
+    assert c.apagados == [("chart", 11)], "o finally tem que rodar mesmo assim"
+
+
+def test_smoke_reporta_o_vazamento_quando_o_delete_falha_durante_uma_excecao():
+    # falha composta: o passo estoura E o DELETE também. Sem o wrapper do
+    # `except`, a exceção original vencia o `return` e o operador não via nem
+    # que sobrou um `__smoke__`, nem o id dele.
+    c = ClienteFalso(erro_no_dashboard=RuntimeError("boom"),
+                     delete_falha=("chart",))
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"]
+    assert "11" in passo(r, "LIMPEZA FALHOU")["passo"]
+
+
+def test_smoke_nao_apaga_chart_que_este_run_nao_criou():
+    # colisão de `marca` no mesmo segundo: o chart é de outro run, apagá-lo
+    # arrancaria o objeto de quem está no meio do ciclo.
+    c = ClienteFalso(primeira_acao="atualizado")
+
+    r = _smoke(c, 35)
+
+    assert not r["ok"], "o passo `chart criado` tem que acusar"
+    assert c.apagados == [("dashboard", 22)]
