@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import time
 
 import requests
 
@@ -871,6 +872,66 @@ def _imprimir(valor) -> None:
     print(json.dumps(valor, indent=2, ensure_ascii=False))
 
 
+def _smoke(c: "SupersetClient", dataset_id: int) -> dict:
+    """Exercita o ciclo inteiro contra o Superset real e limpa o que criou.
+
+    Existe porque os quatro defeitos que a primeira execução real expôs passaram
+    por uma suíte inteiramente mockada: nada nunca tinha falado com um Superset.
+
+    Cria um chart e um dashboard descartáveis, confere as duas coisas que o
+    `position_json` sozinho não garante (dados certos e associação de fato), e
+    apaga tudo — inclusive se um passo falhar.
+    """
+    marca = f"__smoke__ {int(time.time())}"
+    params = json.dumps({"datasource": f"{dataset_id}__table",
+                         "viz_type": "big_number_total",
+                         "metric": {"expressionType": "SQL",
+                                    "sqlExpression": "COUNT(*)",
+                                    "label": "linhas"},
+                         "adhoc_filters": []}, ensure_ascii=False)
+    payload = {"slice_name": marca, "viz_type": "big_number_total",
+               "datasource_id": dataset_id, "datasource_type": "table",
+               "params": params}
+    passos, chart_id, dash_id = [], None, None
+    try:
+        r = c.create_chart(payload)
+        chart_id = r["id"]
+        passos.append(("chart criado", r["acao"] == "criado"))
+        passos.append(("dados do chart",
+                       (r.get("verificacao") or {}).get("rowcount") == 1))
+
+        d = c.create_dashboard({"dashboard_title": marca, "slug": marca.replace(" ", "-")},
+                               [chart_id])
+        dash_id = d["id"]
+        passos.append(("dashboard criado", d["acao"] == "criado"))
+
+        dash = c.get_dashboard(dash_id) or {}
+        pos = json.loads(dash.get("position_json") or "{}")
+        no_layout = sum(1 for v in pos.values()
+                        if isinstance(v, dict) and v.get("type") == "CHART")
+        # As duas metades que o defeito D4 separou: layout e associação.
+        passos.append(("chart no layout", no_layout == 1))
+        passos.append(("chart associado", len(dash.get("charts") or []) == 1))
+
+        donos = [x.get("id") for x in (c.get_chart(chart_id) or {}).get("dashboards") or []]
+        passos.append(("dashboard na lista do chart", dash_id in donos))
+    finally:
+        for caminho, id_ in (("dashboard", dash_id), ("chart", chart_id)):
+            if id_ is None:
+                continue
+            try:
+                c.s.delete(f"{c.base}/api/v1/{caminho}/{id_}", timeout=TIMEOUT)
+                passos.append((f"{caminho} apagado",
+                               (c.get_dashboard(id_) if caminho == "dashboard"
+                                else c.get_chart(id_)) is None))
+            except Exception as e:
+                passos.append((f"{caminho} apagado", False))
+                passos.append((f"LIMPEZA FALHOU ({caminho} {id_}): {e}", False))
+    return {"marca": marca,
+            "passos": [{"passo": p, "ok": ok} for p, ok in passos],
+            "ok": all(ok for _, ok in passos)}
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Cliente REST do Superset.")
     sub = p.add_subparsers(dest="comando", required=True)
@@ -906,6 +967,11 @@ def main(argv=None) -> int:
     q.add_argument("ref")
     q.add_argument("chart_id", type=int)
     q.add_argument("--dry-run", action="store_true")
+
+    q = sub.add_parser("smoke", help="Ciclo completo contra o Superset real "
+                                     "(cria, confere e apaga).")
+    q.add_argument("--dataset", required=True, type=int,
+                   help="id de um dataset qualquer, usado para um COUNT(*).")
 
     args = p.parse_args(argv)
     c = cliente_do_ambiente()
@@ -959,6 +1025,10 @@ def main(argv=None) -> int:
     elif args.comando == "add-chart-to-dashboard":
         _imprimir(c.add_chart_to_dashboard(args.ref, args.chart_id,
                                            dry_run=args.dry_run))
+    elif args.comando == "smoke":
+        r = _smoke(c, args.dataset)
+        _imprimir(r)
+        return 0 if r["ok"] else 1
     return 0
 
 
