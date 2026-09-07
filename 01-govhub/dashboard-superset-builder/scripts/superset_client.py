@@ -549,6 +549,26 @@ class SupersetClient:
     def get_chart(self, id_):
         return self._get_result(f"/api/v1/chart/{id_}")
 
+    def dados_do_chart(self, chart_id: int) -> dict:
+        """Lê o que o chart devolve de verdade, para conferir o que foi escrito.
+
+        `GET /api/v1/chart/<id>/data/` responde `result[0].rowcount` e
+        `result[0].data`. Timeout maior que o padrão: aqui roda uma consulta.
+        """
+        r = self.s.get(f"{self.base}/api/v1/chart/{chart_id}/data/", timeout=60)
+        r.raise_for_status()
+        primeiro = (r.json().get("result") or [{}])[0]
+        dados = primeiro.get("data") or []
+        return {"rowcount": primeiro.get("rowcount", len(dados)),
+                "amostra": dados[0] if dados else None}
+
+    def _verificacao(self, chart_id: int) -> dict:
+        """Confere o que o chart devolve; um erro aqui não invalida a escrita."""
+        try:
+            return self.dados_do_chart(chart_id)
+        except Exception as e:  # a escrita já aconteceu: reportar, não mascarar
+            return {"erro": f"{type(e).__name__}: {e}"}
+
     # --- escrita (nunca antes de uma aprovação humana explícita) -----------
 
     @staticmethod
@@ -638,7 +658,8 @@ class SupersetClient:
             novo = self.s.post(
                 f"{self.base}/api/v1/chart/", json=payload, timeout=TIMEOUT
             ).json()
-            return {"acao": "criado", "slice_name": nome, "id": novo["id"]}
+            return {"acao": "criado", "slice_name": nome, "id": novo["id"],
+                    "verificacao": self._verificacao(novo["id"])}
 
         detalhe = self.get_chart(atual["id"]) or {}
         # Re-derivar um dashboard propõe nomes parecidos com os do fonte. Como a
@@ -670,7 +691,8 @@ class SupersetClient:
             json=dict(payload),
             timeout=TIMEOUT,
         )
-        return {"acao": "atualizado", "slice_name": nome, "id": atual["id"]}
+        return {"acao": "atualizado", "slice_name": nome, "id": atual["id"],
+                "verificacao": self._verificacao(atual["id"])}
 
     def create_dashboard(self, payload: dict, chart_ids: list,
                          dry_run: bool = False, fonte_id: int | None = None) -> dict:

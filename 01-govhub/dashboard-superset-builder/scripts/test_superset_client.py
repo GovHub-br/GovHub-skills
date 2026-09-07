@@ -187,7 +187,8 @@ def test_create_chart_cria_quando_nao_existe():
 
     r = cliente(s).create_chart(PAYLOAD)
 
-    assert r == {"acao": "criado", "slice_name": "Consumo Total", "id": 99}
+    assert r == {"acao": "criado", "slice_name": "Consumo Total", "id": 99,
+                 "verificacao": {"rowcount": 0, "amostra": None}}
     assert s.post.call_args[0][0] == "https://superset.exemplo/api/v1/chart/"
 
 
@@ -217,7 +218,8 @@ def test_create_chart_cria_novo_quando_o_dataset_mudou():
 
     r = cliente(s).create_chart(PAYLOAD)
 
-    assert r == {"acao": "criado", "slice_name": "Consumo Total", "id": 123}
+    assert r == {"acao": "criado", "slice_name": "Consumo Total", "id": 123,
+                 "verificacao": {"rowcount": 0, "amostra": None}}
     s.put.assert_not_called()
 
 
@@ -1027,3 +1029,51 @@ def test_create_chart_recusa_sobrescrever_chart_do_fonte():
     assert r["acao"] == "recusado_e_do_fonte"
     s.put.assert_not_called()
     s.post.assert_not_called()
+
+
+# --- conferência pós-escrita (camada 2) ------------------------------------
+
+def test_dados_do_chart_resume_rowcount_e_amostra():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"result": [
+        {"rowcount": 1, "data": [{"UHs": 131499}]}]})
+
+    assert cliente(s).dados_do_chart(355) == {"rowcount": 1,
+                                              "amostra": {"UHs": 131499}}
+
+
+def test_create_chart_inclui_verificacao_no_retorno():
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"count": 0, "result": []}),                 # list_all
+        resposta(corpo={"result": [{"rowcount": 1,
+                                    "data": [{"UHs": 131499}]}]}),  # dados_do_chart
+    ]
+    s.post.return_value = resposta(corpo={"id": 99})
+
+    r = cliente(s).create_chart(payload_xy())
+
+    assert r["verificacao"] == {"rowcount": 1, "amostra": {"UHs": 131499}}
+
+
+def test_verificacao_que_falha_nao_derruba_a_criacao():
+    s = MagicMock()
+    erro = resposta(status=500)
+    erro.raise_for_status.side_effect = requests.HTTPError("500")
+    s.get.side_effect = [resposta(corpo={"count": 0, "result": []}), erro]
+    s.post.return_value = resposta(corpo={"id": 99})
+
+    r = cliente(s).create_chart(payload_xy())
+
+    assert r["acao"] == "criado", "o chart já foi criado; não dá para fingir que não"
+    assert "erro" in r["verificacao"]
+
+
+def test_dry_run_nao_tenta_verificar():
+    s = MagicMock()
+    s.get.return_value = resposta(corpo={"count": 0, "result": []})
+
+    r = cliente(s).create_chart(payload_xy(), dry_run=True)
+
+    assert r["acao"] == "criaria"
+    assert "verificacao" not in r, "não há chart para conferir num dry-run"
