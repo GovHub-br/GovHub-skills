@@ -51,6 +51,19 @@ python3 -c "import requests" || pip install requests
 Se faltar variável, o script sai com a lista do que falta. **Nunca** coloque
 credenciais em arquivo versionado — peça ao dev que exporte no ambiente.
 
+Se você mexeu no `superset_client.py`, rode o ciclo real antes de confiar nele:
+
+```bash
+python3 scripts/superset_client.py smoke --dataset <id de qualquer dataset>
+```
+
+Ele cria um chart e um dashboard descartáveis, confere que os dados voltam e que
+a associação existe, e apaga tudo. O `--dataset` precisa apontar para um dataset
+com ao menos uma linha e uma coluna — sem isso a smoke não tem como provar que um
+filtro aplicou, e ela mesma avisa que não conseguiu. Os testes de
+`test_superset_client.py` são todos mockados — foi assim que quatro defeitos
+chegaram a um Superset real.
+
 ## Fase 0-conector — perguntas específicas do Superset
 
 1. **Dataset alvo**, se já existir (nome ou ID). Se o dev não souber, a Fase 1
@@ -150,11 +163,37 @@ Para cada componente aprovado, na ordem do esboço:
    `adhoc_filters`, no formato que o chart de referência mostrar; não escreva SQL
    cru.
 
+   `create-chart` **recusa** um `viz_type` que não saiba transformar em
+   `query_context` e lista no erro os que aceita. É de propósito: um tipo sem a
+   derivação verificada geraria uma query silenciosamente errada. Para liberar um
+   tipo novo, confira a forma real dele contra um chart existente daquele tipo
+   (`get-chart`) e verifique a derivação antes de ampliar a lista — não contorne
+   o erro.
+
 2. Crie o chart (idempotente — rodar de novo não duplica):
 
    ```bash
+   # re-derivando de um fonte, passe --fonte: recusa sobrescrever um chart que
+   # pertença ao dashboard fonte (nomes parecidos colidem com facilidade)
+   python3 scripts/superset_client.py create-chart --file componente.json --fonte <slug ou id>
+
+   # dashboard novo do zero, sem fonte:
    python3 scripts/superset_client.py create-chart --file componente.json
    ```
+
+   A resposta traz `acao`, o `id` e — quando houve escrita — `verificacao`, com o
+   que o chart devolve de verdade:
+
+   ```json
+   {"acao": "criado", "id": 355, "slice_name": "…",
+    "verificacao": {"rowcount": 1, "amostra": {"UHs Contratadas": 131499}}}
+   ```
+
+   **Compare a amostra com o que você esperava.** Ela mostra o número que saiu,
+   não se ele está certo — é instrumentação, não oráculo. Um filtro que não pegou
+   costuma aparecer como um valor grande demais (uma soma que dobrou, por
+   exemplo). Se `verificacao` trouxer `erro`, o chart foi criado mesmo assim:
+   confira à mão antes de seguir.
 
    "O mesmo chart" é `slice_name` **mais** `datasource_id`: um chart homônimo
    sobre outro dataset é criado como novo, nunca sobrescrito.
@@ -190,21 +229,28 @@ verdade e só pula a escrita.
 
 ### Os valores de `acao` na resposta
 
-Toda escrita devolve `acao` e `id`. O que fazer com cada um:
+Toda escrita devolve `acao` e `id` (e, numa escrita de chart, `verificacao`). O
+que fazer com cada valor:
 
-| `acao` | significado | o que fazer |
+| `acao` | quando aparece | o que fazer |
 |---|---|---|
-| `criado` / `atualizado` / `adicionado` | escreveu | siga; use o `id` no resumo |
-| `inalterado` | já estava como pedido | siga, nada a fazer |
-| `criaria` / `atualizaria` / `adicionaria` | só `--dry-run` | rode de novo sem `--dry-run` depois da aprovação |
-| `chart_nao_encontrado` | o `chart_id` não existe | não escreveu nada; confira o id que a etapa 2 devolveu |
-| `dashboard_nao_encontrado` | o slug/id não existe | não escreveu nada; confira o `dashboard alvo:` com o dev |
-| `layout_invalido` | `position_json` publicado é ilegível | não escreveu nada — não dá para preservar o que não dá para ler; devolva ao dev |
-| `layout_sem_lugar_para_row` | layout publicado sem GRID nem TAB | não escreveu nada; inserir exigiria descartar o conteúdo publicado, o que está fora de escopo |
-| `recusado_e_o_fonte` | o alvo resolveu no dashboard fonte | não escreveu nada; escolha slug e título distintos do fonte e rode de novo |
+| `criado` | chart ou dashboard novo, escrito | siga; use o `id` no resumo. Numa escrita de chart, confira a `verificacao` |
+| `atualizado` | já existia, o conteúdo mudou, foi reescrito | siga; use o `id`. Numa escrita de chart, confira a `verificacao` |
+| `adicionado` | `add-chart-to-dashboard` inseriu o chart no layout publicado | siga; use o `id` |
+| `associado` | o dashboard já tinha o layout certo mas os charts não estavam anexados — o run reparou isso. **É escrita bem-sucedida**, não no-op: o dashboard abria em branco e agora não | siga; use o `id` |
+| `inalterado` | já estava exatamente como pedido | siga, nada a fazer |
+| `criaria` / `atualizaria` / `adicionaria` / `associaria` | só `--dry-run`: anuncia a escrita (ou o reparo) que faria | rode de novo sem `--dry-run` depois da aprovação |
+| `recusado_e_do_fonte` | o chart achado por (nome + dataset) pertence ao dashboard passado em `--fonte`. Nada foi escrito | renomeie o componente — prefixar com o nome do dashboard novo resolve — e rode de novo |
+| `recusado_e_o_fonte` | o alvo e o `--fonte` resolveram no **mesmo** dashboard: escrever reescreveria o fonte. Nada foi escrito | escolha slug e título distintos do fonte e rode de novo |
+| `chart_nao_encontrado` | algum `chart_id` passado não existe. Nada foi escrito | confira o `id` que a etapa 2 devolveu; não invente |
+| `dashboard_nao_encontrado` | o slug/id do `add-chart-to-dashboard` não existe. Nada foi escrito | confira o `dashboard alvo:` com o dev |
+| `layout_invalido` | o `position_json` publicado do dashboard é ilegível. Nada foi escrito | não dá para preservar o que não dá para ler; devolva ao dev |
+| `layout_sem_lugar_para_row` | o layout publicado não tem GRID nem TAB onde pendurar uma linha. Nada foi escrito | inserir exigiria descartar o conteúdo publicado, fora de escopo; devolva ao dev |
 
-Os cinco últimos **não** são sucesso: registre e devolva ao dev, não tente
-contornar.
+As seis últimas linhas — os dois `recusado_*`, os dois `*_nao_encontrado` e os
+dois `layout_*` — **não** são sucesso: registre e devolva ao dev, não tente
+contornar. `recusado_e_do_fonte` (o chart pertence ao fonte) e
+`recusado_e_o_fonte` (o dashboard **é** o fonte) são casos distintos.
 
 Se um componente falhar, registre o erro e continue nos demais. Ao final,
 devolva ao núcleo um resumo com o resultado de cada componente (ação, id e link)
