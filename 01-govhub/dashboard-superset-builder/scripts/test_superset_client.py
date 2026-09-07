@@ -691,14 +691,79 @@ def test_add_chart_to_dashboard_dry_run_nao_associa():
 
 
 def test_add_chart_to_dashboard_nao_repete_chart_ja_presente():
+    # Sob o contrato do Fix 1, "já presente" quer dizer no layout **e**
+    # associado: um chart no layout com `dashboards: []` é justamente a ruína
+    # que o Fix 1 repara. O mock descreve o chart 7 de fato anexado ao
+    # dashboard 3 — leituras roteiradas (dashboard, depois chart), não um
+    # `return_value` genérico que responde a qualquer GET.
     s = MagicMock()
-    s.get.return_value = resposta(corpo={"result": {
-        "id": 3, "position_json": json.dumps(layout_ajustado_na_interface())}})
+    s.get.side_effect = [
+        resposta(corpo={"result": {
+            "id": 3,
+            "position_json": json.dumps(layout_ajustado_na_interface())}}),
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": [{"id": 3}]}}),
+    ]
 
     r = cliente(s).add_chart_to_dashboard("3", 7)
 
     assert r == {"acao": "inalterado", "id": 3}
     s.put.assert_not_called()
+
+
+def test_add_chart_to_dashboard_repara_associacao_quando_no_layout_mas_solto():
+    # Até há pouco este subcomando escrevia só a position_json e nunca a
+    # associação: um chart no layout com `dashboards: []` é a ruína que ele
+    # deixava. Re-rodar tem que reparar — não devolver `inalterado` para
+    # sempre. Mesmo defeito, mesma correção, do `associado` do create_dashboard.
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": []}}),   # checagem no método
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": []}}),   # _associar_chart relê
+    ]
+    s.put.return_value = resposta(corpo={"id": 3})
+
+    r = cliente(s).add_chart_to_dashboard("3", 7)
+
+    assert r == {"acao": "associado", "id": 3}
+    urls = [c.args[0] for c in s.put.call_args_list]
+    assert len(urls) == 1 and urls[0].endswith("/api/v1/chart/7"), \
+        "só o PUT da associação, sem o do layout"
+    assert s.put.call_args_list[0][1]["json"] == {"dashboards": [3]}
+
+
+def test_add_chart_to_dashboard_inalterado_quando_no_layout_e_ja_associado():
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 7, "slice_name": "A",
+                                   "dashboards": [{"id": 3}]}}),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 7)
+
+    assert r == {"acao": "inalterado", "id": 3}
+    s.put.assert_not_called()
+
+
+def test_add_chart_to_dashboard_dry_run_no_layout_mas_solto_nao_escreve():
+    layout = build_position_json([{"id": 7, "slice_name": "A"}])
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {"id": 3, "position_json": json.dumps(layout)}}),
+        resposta(corpo={"result": {"id": 7, "slice_name": "A", "dashboards": []}}),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 7, dry_run=True)
+
+    assert r == {"acao": "associaria", "id": 3}
+    s.put.assert_not_called()
+    s.post.assert_not_called()
 
 
 def test_add_chart_to_dashboard_recusa_position_json_ilegivel():
@@ -726,6 +791,28 @@ def test_add_chart_to_dashboard_recusa_chart_inexistente():
     assert r["acao"] == "chart_nao_encontrado"
     # nó fantasma não pode entrar no layout
     s.put.assert_not_called()
+
+
+def test_add_chart_to_dashboard_chart_no_layout_mas_deletado_nao_mente():
+    # Um dashboard que referencia um chart já deletado é estado real: o chart
+    # aparece na position_json mas o GET dele dá 404. Antes o ramo do layout
+    # curto-circuitava para `inalterado` (mentira — nada está certo); agora o
+    # `get_chart` é lido antes, o 404 vira `chart_nao_encontrado`, e nada é
+    # escrito. `get_chart` só devolve None em 404 (qualquer outro erro HTTP
+    # estoura), então este ramo é inalcançável para um chart que existe.
+    s = MagicMock()
+    s.get.side_effect = [
+        resposta(corpo={"result": {
+            "id": 3,
+            "position_json": json.dumps(layout_ajustado_na_interface())}}),
+        resposta(status=404),
+    ]
+
+    r = cliente(s).add_chart_to_dashboard("3", 7)
+
+    assert r == {"acao": "chart_nao_encontrado", "id": None}
+    s.put.assert_not_called()
+    s.post.assert_not_called()
 
 
 def test_add_chart_to_dashboard_recusa_layout_sem_lugar_para_row():
@@ -969,6 +1056,24 @@ def test_inferencia_de_raw_nao_vaza_para_outro_viz_type():
     assert qc["metrics"] != [], "a métrica do pie não podia sumir"
     assert qc["metrics"][0]["label"] == "m"
     assert qc["columns"] == ["uf"], "o pie agrupa pelo groupby, não por all_columns"
+
+
+def test_query_mode_explicito_nao_vaza_para_outro_viz_type():
+    # I2: um `query_mode` explícito curto-circuitava ANTES da checagem de
+    # `table`, para qualquer tipo. Uma troca `table`→`pie` no Explore carrega
+    # `query_mode` junto de `all_columns`; o `pie` resultante perdia a métrica
+    # e lia as colunas de `all_columns` — a mesma query silenciosamente errada
+    # que o portão de `table` existe para barrar, alcançada pela outra porta.
+    from superset_client import build_query_context
+
+    p = payload_xy("pie", query_mode="raw", groupby=["uf"], all_columns=["x"],
+                   metric={"expressionType": "SQL", "sqlExpression": "COUNT(x)",
+                           "label": "m"})
+    qc = json.loads(build_query_context(p))["queries"][0]
+
+    assert qc["metrics"] != [], "query_mode não é chave de pie: a métrica fica"
+    assert qc["metrics"][0]["label"] == "m"
+    assert qc["columns"] == ["uf"], "o pie segue o groupby, não o all_columns"
 
 
 def test_query_context_de_table_sem_all_columns_segue_o_groupby():

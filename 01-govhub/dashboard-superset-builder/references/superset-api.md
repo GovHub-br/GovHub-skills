@@ -175,9 +175,13 @@ outra para `metrics_b`/`adhoc_filters_b`. As colunas da segunda saem de
 `groupby_b` — reaproveitar o `groupby` da primeira agruparia a série B pela
 dimensão errada, e o gráfico sairia plausível.
 
-**De onde saem as colunas.** Para os `viz_type` sem `query_mode`, vale a
+**De onde saem as colunas.** Para todo `viz_type` que não seja `table`, vale a
 precedência `entity` (mapas) > `x_axis` (séries) > `groupby` — a primeira chave
-preenchida ganha. `table` é diferente: tem dois modos.
+preenchida ganha, e as métricas ficam intactas. `query_mode` é controle **só de
+tabela**: um `query_mode` perdido no `params` de um `pie` ou de uma série (o
+Explore mantém chaves órfãs numa troca de tipo `table`→outro) é ignorado por
+completo — honrá-lo fora de `table` só geraria a query silenciosamente errada
+que o modo raw existe para descrever. `table` é diferente: tem dois modos.
 
 - `raw` — não agrega; as colunas vêm de `all_columns` e `metrics` vai vazio,
   mesmo que o `params` traga métricas de resto (é o que o `query_context` real

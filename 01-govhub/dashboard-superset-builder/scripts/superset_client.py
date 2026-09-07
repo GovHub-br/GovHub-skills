@@ -349,42 +349,48 @@ def _modo_raw(fd: dict) -> bool:
     """`True` quando a tabela roda em modo `raw` (não agrega, colunas vêm de
     `all_columns`).
 
-    Com `query_mode` explícito a resposta é ele mesmo. Sem a chave, espelha o
-    `get_query_mode` do Superset: um `all_columns` não-vazio é modo `raw`. O
-    `SKILL.md` orienta o autor a mexer em `groupby`/`all_columns` e nunca cita
-    `query_mode`, então tabelas raw reais chegam sem a chave — sem esta
-    inferência elas derivariam as colunas de `groupby` (vazio), manteriam as
-    métricas, e o chart abriria devolvendo as linhas erradas sem erro nenhum.
+    Só `table` tem modo `raw` — `query_mode` é controle de tabela no Superset, e
+    honrá-lo em qualquer outro viz_type não tem uso legítimo. Para todo tipo que
+    não seja `table` a resposta é `False`: `query_mode` é ignorado por completo e
+    a query segue a precedência normal `entity` > `x_axis` > `groupby` com as
+    métricas intactas. Sem essa porta fechada um `query_mode` órfão vazava para
+    outros tipos — o Explore mantém chaves estranhas no `form_data` quando se
+    troca o tipo de visualização, e uma troca `table`→`pie` carrega `query_mode`
+    junto de `all_columns`; o `SKILL.md` ainda manda usar o `params` de um chart
+    existente como referência. Um `pie` assim perdia a métrica e agrupava pela
+    coluna errada — query que abre sem erro e devolve número errado.
 
-    A inferência vale só para `table` — `query_mode` é chave de tabela, e o
-    `references/superset-api.md` já descreve o modo raw como coisa dela
-    ("`table` é diferente"). Sem essa condição a inferência vazava para todo
-    viz_type: um `pie` com um `all_columns` órfão (o Explore mantém chaves
-    estranhas no `form_data` quando se troca o tipo de visualização, e o
-    `SKILL.md` manda usar o `params` de um chart existente como referência)
-    perdia a métrica e agrupava pela coluna errada — query que abre sem erro e
-    devolve número errado.
+    Dentro de `table`: com `query_mode` explícito a resposta é ele mesmo. Sem a
+    chave, espelha o `get_query_mode` do Superset: um `all_columns` não-vazio é
+    modo `raw`. O `SKILL.md` orienta o autor a mexer em `groupby`/`all_columns` e
+    nunca cita `query_mode`, então tabelas raw reais chegam sem a chave — sem
+    esta inferência elas derivariam as colunas de `groupby` (vazio), manteriam as
+    métricas, e o chart abriria devolvendo as linhas erradas sem erro nenhum.
     """
+    if fd.get("viz_type") != "table":
+        return False
     modo = fd.get("query_mode")
     if modo:
         return modo == "raw"
-    return fd.get("viz_type") == "table" and bool(fd.get("all_columns"))
+    return bool(fd.get("all_columns"))
 
 
 def _colunas_do_params(fd: dict, chave_groupby: str = "groupby") -> list:
     """Colunas da query.
 
-    Com `query_mode` (tabelas), ele manda: `raw` lê `all_columns`, `aggregate`
-    lê o groupby — que pode trazer colunas adhoc (`{label, sqlExpression,
-    expressionType}`), repassadas como estão porque o query_context as aceita.
-    Sem `query_mode`, um `all_columns` não-vazio ainda é modo `raw` (o Superset
-    infere assim); só então vale a precedência `entity` (mapas) > `x_axis`
-    (séries) > groupby. `chave_groupby` existe para a série B do
+    `query_mode` só conta em `table` (é controle de tabela no Superset); em
+    qualquer outro viz_type a chave é ignorada por completo. Numa tabela ele
+    manda: `raw` lê `all_columns`, `aggregate` lê o groupby — que pode trazer
+    colunas adhoc (`{label, sqlExpression, expressionType}`), repassadas como
+    estão porque o query_context as aceita. Sem `query_mode` (ou fora de
+    `table`), um `all_columns` não-vazio numa tabela ainda é modo `raw` (o
+    Superset infere assim); só então vale a precedência `entity` (mapas) >
+    `x_axis` (séries) > groupby. `chave_groupby` existe para a série B do
     `mixed_timeseries`, que agrupa por `groupby_b` — usar o groupby da série A
     agruparia a série B pela dimensão errada; a inferência de `raw` não se
     aplica a ela.
     """
-    modo = fd.get("query_mode")
+    modo = fd.get("query_mode") if fd.get("viz_type") == "table" else None
     if modo == "raw" or (chave_groupby == "groupby" and _modo_raw(fd)):
         return list(fd.get("all_columns") or [])
     if modo == "aggregate":
@@ -855,13 +861,29 @@ class SupersetClient:
         pos, valido = _layout_do_dashboard(dash)
         if not valido:
             return {"acao": "layout_invalido", "id": dash.get("id")}
-        if chart_id in _chart_ids_do_layout(pos):
-            return {"acao": "inalterado", "id": dash["id"]}
         novo = self.get_chart(chart_id)
         if novo is None:
             # Sem isso o 404 vira um nó CHART fantasma no layout publicado, e
             # remover nó de layout está fora do escopo da skill.
             return {"acao": "chart_nao_encontrado", "id": None}
+        if chart_id in _chart_ids_do_layout(pos):
+            # O chart já está no layout, mas isso não quer dizer "nada a fazer":
+            # até há pouco este subcomando escrevia só a `position_json` e nunca
+            # a associação, deixando o chart no layout com `dashboards: []` — ele
+            # não renderiza. Re-rodar a tool nesse dashboard tem que reparar a
+            # associação, não devolver `inalterado` para sempre (mesmo defeito, e
+            # mesma correção, do branch `associado`/`associaria` do
+            # `create_dashboard`).
+            anexados = [d.get("id") for d in (novo.get("dashboards") or [])]
+            if dash["id"] in anexados:
+                return {"acao": "inalterado", "id": dash["id"]}
+            if dry_run:
+                # Um dry-run não escreve nada: só anuncia o reparo.
+                return {"acao": "associaria", "id": dash["id"]}
+            self._associar_chart(chart_id, dash["id"])
+            # `associado`, não `inalterado`: houve escrita e o chart saiu de
+            # "no layout mas não anexado" para renderizável.
+            return {"acao": "associado", "id": dash["id"]}
         # Tenta a splice antes do dry-run: um layout sem lugar para ROW tem
         # que aparecer no dry-run também — senão ele promete uma escrita que
         # o run de verdade recusa.
