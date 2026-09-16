@@ -10,6 +10,14 @@
 
 Spec: `docs/superpowers/specs/2026-09-16-govhub-graphic-elements-design.md`.
 
+> **Estado:** plano executado e revisado. A revisão final gerou o commit
+> `52df9c3` (estrutura `.gh-page-body` na marca d'água, tamanhos de fonte
+> maiores nos slides, zona de seção `right: 260px`, exemplo do catálogo com
+> rotação via CSS e logo, ponteiros em `editorial-report.md`,
+> `component-recipes.md` e `SKILL.md`). Os arquivos em
+> `01-govhub/govhub-visual-identity/` são a fonte da verdade; os blocos de
+> código abaixo refletem o estado anterior a esse commit.
+
 ## Global Constraints
 
 - URL-base do CDN (já publicada, HTTP 200 verificado): `https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/<nome>.svg`. Os 8 nomes: `capa`, `encerramento`, `capa-capitulo`, `capa-capitulo-alternativa`, `pagina-comum`, `pagina-comum-com-enfase`, `elementos-graficos`, `outros-elementos-graficos`.
