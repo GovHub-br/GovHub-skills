@@ -91,7 +91,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
   position: absolute; top: 220px; left: 120px; right: 120px; bottom: 100px;
   font-size: 30px; line-height: 1.45; color: var(--text-body);
 }
-.gh-slide--emphasis .gh-slide__body { right: 760px; bottom: 260px; }
+.gh-slide--emphasis .gh-slide__body { right: 760px; bottom: 300px; }
 .gh-slide__body h2 { font-family: var(--font-family-heading); text-transform: uppercase; font-size: 44px; color: var(--primary-purple); margin: 0 0 24px; }
 .gh-slide__body ul { margin: 0; padding-left: 1.1em; }
 .gh-slide__body li { margin-bottom: .5em; }
@@ -228,7 +228,7 @@ Derivadas da geometria dos SVGs. Texto **fora** delas colide com as formas.
 | `capa` | `x 120–1120`, altura toda | `x > 1280` (quarto de círculo roxo), topo `x 1107–1608, y < 274` (meio-anel), rodapé `x > 1167, y > 782` (pílula) |
 | `capa-capitulo` / `alternativa` | `x 160–1760, y 380–920` (dentro da moldura inset 75px) | canto superior esquerdo `x < 749, y < 283`; topo `x 510–995, y < 186`; canto inferior direito `x > 1670, y > 860` |
 | `pagina-comum` | título `x 60–660, y 74–147`; corpo `x 120–1800, y 220–980` | só a pílula do título |
-| `pagina-comum-com-enfase` | título `x 60–880, y 74–147`; corpo `x 120–1160, y 220–820` | canto superior direito `x > 1700, y < 250`; rodapé direito `x > 925, y > 798` |
+| `pagina-comum-com-enfase` | título `x 60–880, y 74–147`; corpo `x 120–1160, y 220–780` | canto superior direito `x > 1700, y < 250`; rodapé direito `x > 925, y > 798` |
 | `encerramento` | `x 900–1800`, altura toda | `x < 640` (quarto de círculo roxo), topo `x < 753, y < 298` (pílula), rodapé `x 312–813, y > 806` (meio-anel) |
 
 ## Tipografia e cor nos slides
@@ -251,7 +251,7 @@ python3 -m weasyprint deck.html deck.pdf
 Chrome headless, se disponível:
 
 ```bash
-chrome --headless --no-pdf-header-footer --print-to-pdf=deck.pdf deck.html
+chrome --headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf="deck.pdf" "file:///caminho/para/deck.html"
 ```
 
 ## Conferência visual obrigatória
@@ -279,5 +279,5 @@ consecutivas alternando `--section` / `--section-alt`.
 - Usar `elementos-graficos.svg` ou `outros-elementos-graficos.svg` como fundo de slide.
 - Título de conteúdo maior que a pílula (reduzir o texto, não a fonte).
 - Dois slides de ênfase seguidos, ou ênfase sem número/citação (vira slide comum).
-- Texto do slide de ênfase passando de `x 1160` ou `y 820`.
+- Texto do slide de ênfase passando de `x 1160` ou `y 780`.
 - `var()` dentro de `url()`: os motores de PDF não resolvem; use a URL literal.
