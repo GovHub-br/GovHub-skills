@@ -65,7 +65,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 /* ---- abertura de seção ---- */
 .gh-slide--section .gh-slide__block,
 .gh-slide--section-alt .gh-slide__block {
-  position: absolute; left: 160px; right: 160px; top: 380px; bottom: 160px;
+  position: absolute; left: 160px; right: 260px; top: 380px; bottom: 160px;
 }
 .gh-slide__num {
   font-family: var(--font-family-heading); font-weight: 700;
@@ -73,7 +73,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 }
 .gh-slide__eyebrow {
   font-size: 28px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-  margin: 0 0 16px; opacity: .85;
+  margin: 0 0 24px; opacity: .85;
 }
 .gh-slide--section .gh-slide__h1,
 .gh-slide--section-alt .gh-slide__h1 { font-size: 88px; max-width: 18ch; }
@@ -89,13 +89,13 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 .gh-slide--emphasis .gh-slide__title { max-width: 820px; }
 .gh-slide__body {
   position: absolute; top: 220px; left: 120px; right: 120px; bottom: 100px;
-  font-size: 30px; line-height: 1.45; color: var(--text-body);
+  font-size: 36px; line-height: 1.45; color: var(--text-body);
 }
 .gh-slide--emphasis .gh-slide__body { right: 760px; bottom: 300px; }
-.gh-slide__body h2 { font-family: var(--font-family-heading); text-transform: uppercase; font-size: 44px; color: var(--primary-purple); margin: 0 0 24px; }
+.gh-slide__body h2 { font-family: var(--font-family-heading); text-transform: uppercase; font-size: 52px; color: var(--primary-purple); margin: 0 0 24px; }
 .gh-slide__body ul { margin: 0; padding-left: 1.1em; }
 .gh-slide__body li { margin-bottom: .5em; }
-.gh-slide__body table { border-collapse: collapse; width: 100%; font-size: 26px; background: #fff; }
+.gh-slide__body table { border-collapse: collapse; width: 100%; font-size: 30px; background: #fff; }
 .gh-slide__body th { background: var(--primary-purple); color: #fff; text-align: left; padding: 14px 20px; }
 .gh-slide__body td { padding: 12px 20px; border-bottom: 1px solid rgba(10,0,90,.12); }
 .gh-slide__kpi {
@@ -115,6 +115,12 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 Um deck sem seções (curto) é `--cover` → `--content` × N → `--closing`.
 
 ## HTML de cada tipo (copie e troque só o texto)
+
+Os `src="logo/..."` dos exemplos abaixo pressupõem a pasta `references/logo/`
+desta skill copiada para dentro da pasta do deck, como `logo/` irmã do
+arquivo HTML (mesma convenção de `print-pages.md`, seção "Caminho dos
+assets (logo e ícones)"), e os arquivos de logo ainda são a versão antiga,
+pendente de atualização (mesma nota que o `SKILL.md` traz).
 
 Capa. Logo branca (`references/logo/`, versão light) acima do título, como
 na capa PDF:
@@ -226,7 +232,7 @@ Derivadas da geometria dos SVGs. Texto **fora** delas colide com as formas.
 | Template | Zona de texto | Ocupada pelas formas |
 |---|---|---|
 | `capa` | `x 120–1120`, altura toda | `x > 1280` (quarto de círculo roxo), topo `x 1107–1608, y < 274` (meio-anel), rodapé `x > 1167, y > 782` (pílula) |
-| `capa-capitulo` / `alternativa` | `x 160–1760, y 380–920` (dentro da moldura inset 75px) | canto superior esquerdo `x < 749, y < 283`; topo `x 510–995, y < 186`; canto inferior direito `x > 1670, y > 860` |
+| `capa-capitulo` / `alternativa` | `x 160–1660, y 380–920`, texto alinhado à esquerda (encolhida pra não invadir o canto) | canto superior esquerdo `x < 749, y < 283`; topo `x 510–995, y < 186`; canto inferior direito `x > 1670, y > 860` |
 | `pagina-comum` | título `x 60–660, y 74–147`; corpo `x 120–1800, y 220–980` | só a pílula do título |
 | `pagina-comum-com-enfase` | título `x 60–880, y 74–147`; corpo `x 120–1160, y 220–780` | canto superior direito `x > 1700, y < 250`; rodapé direito `x > 925, y > 798` |
 | `encerramento` | `x 900–1800`, altura toda | `x < 640` (quarto de círculo roxo), topo `x < 753, y < 298` (pílula), rodapé `x 312–813, y > 806` (meio-anel) |

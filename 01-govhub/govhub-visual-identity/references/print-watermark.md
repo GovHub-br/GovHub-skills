@@ -27,7 +27,7 @@ leitura: é um leve relevo de marca, não uma ilustração.
 
 ```css
 .gh-page { position: relative; overflow: hidden; }
-.gh-page__content { position: relative; z-index: 1; }
+.gh-band, .gh-page-body, .gh-footer-bar, .gh-footer { z-index: 1; }
 
 .gh-watermark {
   position: absolute; z-index: 0; pointer-events: none;
@@ -41,13 +41,25 @@ leitura: é um leve relevo de marca, não uma ilustração.
 .gh-page--peach .gh-watermark { opacity: .05; }                               /* sobre fundo pêssego */
 ```
 
+`.gh-page--peach` é um hook: acrescente essa classe na `.gh-page` específica
+cuja página tem fundo pêssego. Nenhum arquivo desta skill declara
+`.gh-page--peach` sozinho, é o autor do documento que soma essa classe à
+página quando o fundo for pêssego.
+
 ## HTML (por página de conteúdo)
 
 ```html
 <section class="gh-page">
   <svg class="gh-watermark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a100 100 0 0 1-100 100zM0 0h48.7a48.7 48.7 0 0 1-48.7 48.7z"/></svg>
-  <div class="gh-page__content">
+  <div class="gh-band">
+    <!-- cabeçalho de capítulo, opcional só na 1ª página; ver print-header.md -->
+  </div>
+  <div class="gh-page-body">
     <!-- CONTEÚDO -->
+  </div>
+  <div class="gh-footer-bar"></div>
+  <div class="gh-footer">
+    <!-- nome do documento + logo; ver print-footer.md -->
   </div>
 </section>
 ```
@@ -69,11 +81,12 @@ troque o `d` por `M0 0h100a100 100 0 0 1-100 100z` (sem `fill-rule`).
 - Página que é só uma tabela larga: use `gh-watermark--topo` (canto superior
   direito) para não competir com as últimas linhas; a tabela cobrindo parte
   da forma é aceitável.
-- Cabeçalho de capítulo (`.gh-band`, `print-header.md`) e rodapé
-  (`.gh-footer-bar` / `.gh-footer`, `print-footer.md`) já são `position:
-  absolute` mas não declaram `z-index`; acrescente `z-index: 1` a eles
-  (`.gh-band, .gh-footer-bar, .gh-footer { z-index: 1; }`) para ficarem por
-  cima da marca d'água. Sem isso a ordem de empilhamento depende só da
+- `.gh-band` (cabeçalho de capítulo, `print-header.md`), `.gh-page-body`
+  (corpo da página, `print-header.md`) e o rodapé (`.gh-footer-bar` /
+  `.gh-footer`, `print-footer.md`) já são `position: absolute` mas não
+  declaram `z-index`; acrescente `z-index: 1` a eles (`.gh-band,
+  .gh-page-body, .gh-footer-bar, .gh-footer { z-index: 1; }`) para ficarem
+  por cima da marca d'água. Sem isso a ordem de empilhamento depende só da
   ordem no DOM.
 
 ## Conferência
@@ -87,4 +100,4 @@ tabela ficou com contraste reduzido; a forma não aparece em capa/índice.
 - Aplicar sem perguntar, ou por "tanto faz".
 - Opacidade acima de `.10` ("pra aparecer mais"): vira ilustração e compete com o conteúdo.
 - Mosaico `outros-elementos-graficos.svg` de fundo em documento: não é o padrão; se o usuário pedir, `opacity` ≤ `.04`.
-- Esquecer `z-index: 1` no conteúdo: a forma passa por cima de imagens e tabelas.
+- Esquecer `z-index: 1` em `.gh-page-body` e no cabeçalho/rodapé: a forma passa por cima de imagens e tabelas.

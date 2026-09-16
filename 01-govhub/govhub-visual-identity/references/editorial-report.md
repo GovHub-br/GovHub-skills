@@ -218,8 +218,9 @@ container pai.
 
 ## 7. Quando NÃO usar este estilo
 
-- Dashboards, telas de app, e-mails, slides de reunião → use
-  `component-recipes.md` (roxo+laranja, cards sólidos, tabela zebrada).
+- Dashboards, telas de app, e-mails → use `component-recipes.md`
+  (roxo+rosa, cards sólidos, tabela zebrada).
+- Slides → `slides.md` (templates oficiais do CDN, um por slide).
 - Documentos de 1–3 páginas sem seções numeradas → a rampa editorial é
   exagero; um único acento roxo+laranja já resolve.
 - Qualquer contexto onde a marca precisa ser reconhecida instantaneamente

@@ -146,13 +146,14 @@ Exemplo de feed quadrado (1080×1080):
 
 ```html
 <div class="gh-post" style="position:relative;width:1080px;height:1080px;overflow:hidden;background:#0A005A;color:#fff;font-family:'Reddit Sans',sans-serif">
-  <svg class="gh-shape" viewBox="0 0 100 100" style="position:absolute;right:-10%;top:-10%;width:48%;color:#613EFF"><path fill="currentColor" d="M0 0h100a100 100 0 0 1-100 100z" transform="rotate(90 50 50)"/></svg>
-  <svg class="gh-shape" viewBox="0 0 100 50" style="position:absolute;left:8%;bottom:0;width:26%;color:#EF41FF"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a50 50 0 0 1-100 0zM25.6 0h48.8a24.4 24.4 0 0 1-48.8 0z" transform="rotate(180 50 25)"/></svg>
+  <svg class="gh-shape" viewBox="0 0 100 100" style="position:absolute;right:-10%;top:-10%;width:48%;color:#613EFF;transform:rotate(90deg)"><path fill="currentColor" d="M0 0h100a100 100 0 0 1-100 100z"/></svg>
+  <svg class="gh-shape" viewBox="0 0 100 50" style="position:absolute;left:8%;bottom:0;width:26%;color:#EF41FF;transform:rotate(180deg)"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a50 50 0 0 1-100 0zM25.6 0h48.8a24.4 24.4 0 0 1-48.8 0z"/></svg>
   <svg class="gh-shape" viewBox="0 0 197 100" style="position:absolute;right:0;bottom:14%;width:22%;color:#FFE7E1"><path fill="currentColor" d="M197 0H50a50 50 0 0 0 0 100h147z"/></svg>
   <div style="position:absolute;left:80px;top:120px;width:560px">
     <h1 style="font:700 88px/1.05 'Oswald',sans-serif;text-transform:uppercase;margin:0 0 24px">Chamada da arte</h1>
     <p style="font-size:30px;line-height:1.4;margin:0;opacity:.92">Texto de apoio curto, uma ou duas linhas.</p>
   </div>
+  <img src="logo/horizontal-light.svg" alt="Gov Hub" style="position:absolute;left:80px;bottom:80px;height:56px">
 </div>
 ```
 

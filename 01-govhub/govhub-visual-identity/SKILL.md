@@ -137,7 +137,8 @@ arquitetura de página (`.gh-page` full-bleed) que capa e cabeçalho de
 capítulo usam **sempre**, mesmo quando o corpo do documento é longo demais
 pra paginar à mão — nesse caso a dificuldade está em paginar o corpo, não
 em desenhar a capa/cabeçalho, e o próprio arquivo documenta uma técnica
-validada pra isso.
+validada pra isso. Antes de gerar, pergunte também sobre a marca d'água
+(padrão: não), ver [`references/print-watermark.md`](references/print-watermark.md).
 
 ### 1. HTML / relatório já existente
 
