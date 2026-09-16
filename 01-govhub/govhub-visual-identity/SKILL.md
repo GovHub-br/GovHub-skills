@@ -10,9 +10,12 @@ description: >-
   visual govhub", "estilo govhub", "cores do govhub", "paleta govhub", "deixar
   com a cara do govhub", "aplicar a marca govhub", "deixar no padrão govhub",
   "estilizar como o govhub", "usar o roxo #7A34F3", "relatório/framework no
-  estilo do livro do Gov Hub", "e-book com capítulos Gov Hub". Cobre
-  estilização de relatório, site, PDF, e-book, framework numerado, slide,
-  componente, e-mail e dashboard.
+  estilo do livro do Gov Hub", "e-book com capítulos Gov Hub", "slides Gov Hub",
+  "apresentação govhub", "post instagram govhub", "poster govhub",
+  "elementos gráficos govhub", "marca d'água govhub". Cobre estilização de
+  relatório, site, PDF, e-book, framework numerado, slides (templates
+  oficiais), peças de comunicação (Instagram, poster, banner), componente,
+  e-mail e dashboard.
 ---
 
 # Gov Hub — Identidade Visual
@@ -29,8 +32,10 @@ por:
   (principal — Open Sans no Canva gratuito) + **Oswald** (apoio, só títulos/
   chamadas de impacto, uppercase + bold).
 - **Elementos gráficos de apoio:** círculo, anel/donut, semicírculo, quarto
-  de círculo e pílula (retângulo 100% arredondado) — nunca ilustrações
-  figurativas.
+  de círculo e pílula (retângulo 100% arredondado), nunca ilustrações
+  figurativas. Os arquivos oficiais (6 templates de slide + folha de formas
+  + padrão) são servidos por CDN e catalogados em
+  [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md).
 
 > **Nota de versão:** esta é a paleta/tipografia atualizadas do MIV mais
 > recente, que **substituem totalmente** o roxo/laranja e a fonte Inter de
@@ -152,8 +157,13 @@ Reddit Sans + Oswald e o `body` base). Depois use as receitas de
 
 ### 3. Slides / e-mail / dashboard
 
-- **Slides:** capa com o gradiente da marca + Reddit Sans no corpo, Oswald uppercase nos títulos de impacto; roxo nos títulos; rosa num único destaque por slide.
-- **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS) — use os hexadecimais literais: cabeçalho `#613EFF`, texto `#2D3748`, botão CTA `#F9006F`.
+- **Slides:** siga [`references/slides.md`](references/slides.md) ao pé da
+  letra. **Todo slide usa um dos 6 templates oficiais** do CDN como fundo
+  (`capa`, `capa-capitulo`, `capa-capitulo-alternativa`, `pagina-comum`,
+  `pagina-comum-com-enfase`, `encerramento`); o nome diz o papel. Sem
+  gradiente, sem fundo inventado. HTML 1920×1080 por slide → PDF, com
+  conferência visual de todas as páginas.
+- **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS): use os hexadecimais literais: cabeçalho `#613EFF`, texto `#2D3748`, botão CTA `#F9006F`.
 - **Dashboard:** roxo nos headers/KPIs principais; verde `#10B981` para positivo; fundos `#F7F7F7`/`#F8F9FA`/`#FFE7E1`.
 
 ### 4. Relatório longo / e-book / framework numerado (estilo do livro Gov Hub)
@@ -173,6 +183,11 @@ na prática com o Framework de Briefing:
    instituições/responsáveis, dados do projeto/entrega, autores) antes de
    escrever a página. Código exato e a lista completa do que perguntar em
    [`references/print-frontmatter.md`](references/print-frontmatter.md).
+0b. **Pergunte também** se quer marca d'água com os elementos gráficos do
+   Gov Hub nas páginas de conteúdo ("Quer marca d'água com os elementos
+   gráficos do Gov Hub nas páginas de conteúdo? (padrão: não)"). Só aplique
+   com "sim" explícito; código, opacidade e restrições em
+   [`references/print-watermark.md`](references/print-watermark.md).
 1. Capa com fundo **sólido** na cor exata da logo (`--logo-purple`,
    *pendente* — placeholder `#613EFF` até a nova exportação chegar),
    logo oficial (`references/logo/`, também pendente de atualização) +
@@ -195,6 +210,16 @@ na prática com o Framework de Briefing:
 
 Essa rampa multicor é exclusiva para este tipo de documento. Produto, site e
 dashboard continuam só com roxo+rosa (`--primary-purple` + `--accent-pink`).
+
+### 5. Comunicação: Instagram, poster, banner
+
+Peças fora do 16:9 **não esticam** os templates de slide: recomponha com as
+formas isoladas (snippets prontos) e as regras de composição da seção
+"Comunicação" de
+[`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md):
+fundo sólido navy/roxo/pêssego, 2 a 4 formas sangrando pelas bordas, forma
+principal com 40 a 50 % do lado menor, texto na zona livre, Oswald na
+chamada e Reddit Sans no apoio.
 
 ## Acessibilidade (obrigatório)
 
@@ -230,7 +255,7 @@ dashboard continuam só com roxo+rosa (`--primary-purple` + `--accent-pink`).
 - **Roxo (`#613EFF`) = assinatura** (domina a identidade). **Rosa (`#F9006F`) = acento** (~10%, só CTA/destaque; **não abusar**). Magenta e navy são acentos secundários.
 - **Fundos claros** (neutros ou pêssego `#FFE7E1`) para respiro. **Reddit Sans** no corpo/logotipo; **Oswald** só em títulos/chamadas de impacto (uppercase + bold).
 - Verde/amarelo apenas como status semântico, nunca como cor de marca.
-- Elementos gráficos de apoio: círculo, anel/donut, semicírculo, quarto de círculo e pílula — derivados de "círculos, semicírculos e retângulos arredondados" (ver `component-recipes.md`).
+- Elementos gráficos de apoio: círculo, anel/donut, semicírculo, quarto de círculo e pílula, derivados de "círculos, semicírculos e retângulos arredondados" (ver `component-recipes.md`). Arquivos oficiais e snippets em `graphic-elements-catalog.md`; em documento, só como marca d'água opcional (`print-watermark.md`).
 
 ## Referências (progressive disclosure)
 
@@ -244,5 +269,8 @@ dashboard continuam só com roxo+rosa (`--primary-purple` + `--accent-pink`).
 - [`references/print-header.md`](references/print-header.md) — cabeçalho de capítulo em PDF (faixa full-bleed, numeral/eyebrow/título, chip de ícone opcional), código exato validado com o usuário.
 - [`references/print-footer.md`](references/print-footer.md) — rodapé de PDF (repete em toda página, barra alinhada à margem do conteúdo, não à borda física), código exato validado, com os erros já cometidos documentados (barra até a borda física em vez da margem, logo grande demais, barra colada no texto).
 - [`references/print-table.md`](references/print-table.md) — tabela de dados em PDF: legenda numerada + header sólido na cor da seção atual + linhas com zebra sutil, sem cartão/sombra ao redor. Use sempre que o PDF tiver uma tabela de dados — não invente um componente "cartão de tabela" novo.
+- [`references/print-watermark.md`](references/print-watermark.md) — marca d'água **opcional** em páginas de conteúdo de PDF (uma forma isolada no canto, roxo a 7 %). Pergunte antes; padrão sem. Nunca em capa, folha de identificação, índice ou encerramento.
+- [`references/slides.md`](references/slides.md) — **comece por aqui para qualquer apresentação**: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
+- [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — os 8 elementos gráficos oficiais (**servidos por CDN** a partir de `GovHub-br/skills-assets`, não são arquivos locais): tabela de quando usar cada um, snippets SVG das formas isoladas, formatos e regras de recomposição para Instagram/poster/banner, e como adicionar um elemento novo.
 - [`references/logo/`](references/logo/) — logo oficial Gov Hub em 3 orientações (horizontal, vertical, símbolo isolado) × 4 cores (primary, light, dark, colourfull), SVG, pronta para usar. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre, UnB), já em versão branca/transparente, usadas no rodapé da capa (ver `print-cover.md`) — ordem fixa: Lab Livre primeiro, UnB depois.
 - [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca completa de ícones de produto Gov Hub (332 nomes × variantes `default`/`orange`/`purple`), **servida por CDN** a partir do repo `GovHub-br/skills-assets` — não são arquivos locais. O catálogo traz a URL-base jsDelivr, o padrão `<nome>-<variante>.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Para capas/callouts de relatório use a variante `default`. Escolha o ícone **pelo nome** (são descritivos, ex.: `document-check`, `shield-check`, `chart-bar`) — a biblioteca é grande demais pra um mapeamento fixo; há um subconjunto curado só para os callouts do Framework de Briefing em `editorial-report.md` seção 5. **Nunca** use os ícones sobre fundo diferente de branco/roxo Gov Hub/laranja Gov Hub — ver regra completa e a borda do badge em `editorial-report.md` seção 5.
