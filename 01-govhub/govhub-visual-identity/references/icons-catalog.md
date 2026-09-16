@@ -12,16 +12,17 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>
 ```
 
 - `<nome>` — um dos 332 nomes listados abaixo (descritivos do conceito).
-- `<variante>` — `default` (duotone roxo+laranja, para fundo branco),
-  `orange` (fundo sólido `#F19F42`) ou `purple` (fundo sólido `#7A34F3` —
-  tom antigo, ainda próximo o bastante do novo `--primary-purple` `#613EFF`
-  pra usar sem destoar). Para relatório/e-book use quase sempre `default`.
-  Regra completa de qual variante sobre qual fundo: `editorial-report.md`
-  seção 5.
+- `<variante>` — cada uma traz o **fundo embutido** no próprio SVG, na
+  paleta atual (repo regerado em 2026-09-16, mesma nomenclatura de antes):
+  `default` (fundo pêssego `#FFE7E1`, contorno navy, sombra rosa),
+  `purple` (fundo navy `#0A005A`, contorno pêssego, sombra rosa) e
+  `orange` (fundo rosa `#F9006F`, contorno navy, sombra pêssego). Os nomes
+  `purple`/`orange` são históricos; o que vale é a cor do fundo embutido.
+  Para relatório/e-book use quase sempre `default`. Regra completa de qual
+  variante sobre qual fundo: `editorial-report.md` seção 5.
 
-  > **Pendente:** este repositório de ícones ainda não foi regerado com a
-  > paleta oficial atual (ver `palette.md`). A variante `orange` não tem
-  > mais um fundo correspondente na marca — evite usá-la até a atualização.
+  > A CDN (`@main`) guarda cache de ~12 h; logo após uma regeração, baixe
+  > pelo `raw.githubusercontent.com` ou fixe o SHA do commit na URL.
 
 Exemplo:
 

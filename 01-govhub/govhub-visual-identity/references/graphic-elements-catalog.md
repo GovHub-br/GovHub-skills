@@ -153,7 +153,7 @@ Exemplo de feed quadrado (1080×1080):
     <h1 style="font:700 88px/1.05 'Oswald',sans-serif;text-transform:uppercase;margin:0 0 24px">Chamada da arte</h1>
     <p style="font-size:30px;line-height:1.4;margin:0;opacity:.92">Texto de apoio curto, uma ou duas linhas.</p>
   </div>
-  <img src="logo/horizontal-light.svg" alt="Gov Hub" style="position:absolute;left:80px;bottom:80px;height:56px">
+  <img src="logo/logomarca-horizontal-white.svg" alt="Gov Hub" style="position:absolute;left:80px;bottom:80px;height:56px">
 </div>
 ```
 

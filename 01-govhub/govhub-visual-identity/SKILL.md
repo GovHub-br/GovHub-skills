@@ -1,21 +1,14 @@
 ---
 name: govhub-visual-identity
 description: >-
-  Especialista em aplicar a identidade visual oficial do Gov Hub (gov-hub.io e
-  o livro "Gov Hub: um guia prático") em qualquer artefato — relatórios
-  HTML/PDF, e-books, frameworks numerados, páginas web, componentes, slides,
-  dashboards, e-mails, temas CSS. Use SEMPRE que o usuário pedir para aplicar,
-  usar ou trazer a identidade visual, cores, paleta, tema, estilo, marca ou
-  "cara" do Gov Hub. Dispara com: "roxo do govhub", "tema govhub", "identidade
-  visual govhub", "estilo govhub", "cores do govhub", "paleta govhub", "deixar
-  com a cara do govhub", "aplicar a marca govhub", "deixar no padrão govhub",
-  "estilizar como o govhub", "usar o roxo #7A34F3", "relatório/framework no
-  estilo do livro do Gov Hub", "e-book com capítulos Gov Hub", "slides Gov Hub",
-  "apresentação govhub", "post instagram govhub", "poster govhub",
-  "elementos gráficos govhub", "marca d'água govhub". Cobre estilização de
-  relatório, site, PDF, e-book, framework numerado, slides (templates
-  oficiais), peças de comunicação (Instagram, poster, banner), componente,
-  e-mail e dashboard.
+  Use quando o usuário pedir para aplicar a identidade visual, cores, paleta,
+  tema, estilo, marca ou "cara" do Gov Hub em qualquer artefato: relatório
+  HTML/PDF, e-book ou framework numerado no estilo do livro Gov Hub, slides,
+  post ou carrossel de Instagram/LinkedIn, poster, banner, página web,
+  componente, dashboard, e-mail, tema CSS. Dispara com: "identidade visual
+  govhub", "tema govhub", "cores/paleta do govhub", "roxo do govhub", "deixar
+  com a cara do govhub", "padrão govhub", "slides govhub", "post instagram
+  govhub", "elementos gráficos govhub", "marca d'água govhub", "logo govhub".
 ---
 
 # Gov Hub — Identidade Visual
@@ -40,8 +33,10 @@ por:
 > **Nota de versão:** esta é a paleta/tipografia atualizadas do MIV mais
 > recente, que **substituem totalmente** o roxo/laranja e a fonte Inter de
 > versões anteriores desta skill. Os arquivos de logo em `references/logo/`
-> ainda são os antigos — a nova versão da logo (assinaturas horizontal/
-> vertical, tipográfica e ícone) será atualizada quando o arquivo chegar.
+> já são a nova exportação (2026-09-16): `logomarca-horizontal-*`,
+> `logomarca-vertical-*`, `assinatura-*` (tipográfica) e `icone-none-*`,
+> cada um em `default`/`navy`/`peach`/`white`/`black`. Os ícones de produto
+> do CDN também já estão na paleta atual.
 
 ## Antes de começar: pergunte pelo formato dos arquivos de origem
 
@@ -190,10 +185,9 @@ na prática com o Framework de Briefing:
      aplique com "sim" explícito; código, opacidade e restrições em
      [`references/print-watermark.md`](references/print-watermark.md).
 1. Capa com fundo **sólido** na cor exata da logo (`--logo-purple`,
-   *pendente* — placeholder `#613EFF` até a nova exportação chegar),
-   logo oficial (`references/logo/`, também pendente de atualização) +
-   moldura arredondada fina, sem onda decorativa, sem pílula, sem
-   subtítulo — versão limpa.
+   `#613EFF`, confirmado na nova exportação), logo oficial
+   (`references/logo/logomarca-horizontal-white.svg`) + moldura arredondada
+   fina, sem onda decorativa, sem pílula, sem subtítulo — versão limpa.
 2. Cada seção ganha uma cor sólida da **rampa editorial** (navy → roxo →
    magenta → rosa → pêssego, ver `palette.md`) numa **faixa full-bleed que
    começa no topo da página e vai de ponta a ponta**, não uma faixa
@@ -221,6 +215,14 @@ formas isoladas (snippets prontos) e as regras de composição da seção
 fundo sólido navy/roxo/pêssego, 2 a 4 formas sangrando pelas bordas, forma
 principal com 40 a 50 % do lado menor, texto na zona livre, Oswald na
 chamada e Reddit Sans no apoio.
+
+**Post ou carrossel de feed (1080×1350):** não componha do zero. Use uma
+das **5 estruturas de quadro validadas** em
+[`references/social-posts.md`](references/social-posts.md) (capa,
+conteúdo com 3 variantes de bloco, ênfase, convite, fechamento), na ordem
+canônica `capa → conteúdo → ênfase → conteúdo → convite → fechamento`.
+Texto corrido justificado, sem travessão e sem traço decorativo; cards
+no padrão "título forte + descrição discreta + ícone de produto em chip".
 
 ## Acessibilidade (obrigatório)
 
@@ -272,6 +274,7 @@ chamada e Reddit Sans no apoio.
 - [`references/print-table.md`](references/print-table.md) — tabela de dados em PDF: legenda numerada + header sólido na cor da seção atual + linhas com zebra sutil, sem cartão/sombra ao redor. Use sempre que o PDF tiver uma tabela de dados — não invente um componente "cartão de tabela" novo.
 - [`references/print-watermark.md`](references/print-watermark.md) — marca d'água **opcional** em páginas de conteúdo de PDF (uma forma isolada no canto, roxo a 7 %). Pergunte antes; padrão sem. Nunca em capa, folha de identificação, índice ou encerramento.
 - [`references/slides.md`](references/slides.md) — **comece por aqui para qualquer apresentação**: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
+- [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: as 5 estruturas de quadro 1080×1350 (capa, conteúdo, ênfase, convite, fechamento) com código exato validado, posições das formas, zonas de texto, limites de linhas, mapeamento ícone↔chip e a lista de erros já cometidos.
 - [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — os 8 elementos gráficos oficiais (**servidos por CDN** a partir de `GovHub-br/skills-assets`, não são arquivos locais): tabela de quando usar cada um, snippets SVG das formas isoladas, formatos e regras de recomposição para Instagram/poster/banner, e como adicionar um elemento novo.
-- [`references/logo/`](references/logo/) — logo oficial Gov Hub em 3 orientações (horizontal, vertical, símbolo isolado) × 4 cores (primary, light, dark, colourfull), SVG, pronta para usar. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre, UnB), já em versão branca/transparente, usadas no rodapé da capa (ver `print-cover.md`) — ordem fixa: Lab Livre primeiro, UnB depois.
-- [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca completa de ícones de produto Gov Hub (332 nomes × variantes `default`/`orange`/`purple`), **servida por CDN** a partir do repo `GovHub-br/skills-assets` — não são arquivos locais. O catálogo traz a URL-base jsDelivr, o padrão `<nome>-<variante>.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Para capas/callouts de relatório use a variante `default`. Escolha o ícone **pelo nome** (são descritivos, ex.: `document-check`, `shield-check`, `chart-bar`) — a biblioteca é grande demais pra um mapeamento fixo; há um subconjunto curado só para os callouts do Framework de Briefing em `editorial-report.md` seção 5. **Nunca** use os ícones sobre fundo diferente de branco/roxo Gov Hub/laranja Gov Hub — ver regra completa e a borda do badge em `editorial-report.md` seção 5.
+- [`references/logo/`](references/logo/) — logo oficial Gov Hub (nova exportação do MIV): `logomarca-horizontal-*`, `logomarca-vertical-*`, `assinatura-horizontal-*`/`assinatura-vertical-*` (só o nome) e `icone-none-*` (só o ícone), cada uma em `default`/`navy`/`peach`/`white`/`black`, SVG. Tabela de qual arquivo usar onde em `editorial-report.md` seção 1. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre, UnB), já em versão branca/transparente, usadas no rodapé da capa (ver `print-cover.md`) — ordem fixa: Lab Livre primeiro, UnB depois.
+- [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca completa de ícones de produto Gov Hub (332 nomes × variantes `default`/`orange`/`purple`, regeradas na paleta atual em 2026-09-16), **servida por CDN** a partir do repo `GovHub-br/skills-assets` — não são arquivos locais. O catálogo traz a URL-base jsDelivr, o padrão `<nome>-<variante>.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Para capas/callouts de relatório use a variante `default`. Escolha o ícone **pelo nome** (são descritivos, ex.: `document-check`, `shield-check`, `chart-bar`) — a biblioteca é grande demais pra um mapeamento fixo; há um subconjunto curado só para os callouts do Framework de Briefing em `editorial-report.md` seção 5. Cada variante traz o fundo embutido na paleta atual (`default` pêssego, `purple` navy, `orange` rosa); **nunca** use um ícone sobre fundo diferente do da sua variante — ver regra completa em `editorial-report.md` seção 5.

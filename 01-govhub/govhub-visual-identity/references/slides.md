@@ -119,16 +119,16 @@ Um deck sem seções (curto) é `--cover` → `--content` × N → `--closing`.
 Os `src="logo/..."` dos exemplos abaixo pressupõem a pasta `references/logo/`
 desta skill copiada para dentro da pasta do deck, como `logo/` irmã do
 arquivo HTML (mesma convenção de `print-pages.md`, seção "Caminho dos
-assets (logo e ícones)"), e os arquivos de logo ainda são a versão antiga,
-pendente de atualização (mesma nota que o `SKILL.md` traz).
+assets (logo e ícones)"). Nomes dos arquivos em `editorial-report.md`
+seção 1.
 
-Capa. Logo branca (`references/logo/`, versão light) acima do título, como
-na capa PDF:
+Capa. Logomarca branca (`logomarca-horizontal-white.svg`) acima do título,
+como na capa PDF:
 
 ```html
 <section class="gh-slide gh-slide--cover">
   <div class="gh-slide__block">
-    <img class="gh-slide__logo-big" src="logo/horizontal-light.svg" alt="Gov Hub">
+    <img class="gh-slide__logo-big" src="logo/logomarca-horizontal-white.svg" alt="Gov Hub">
     <h1 class="gh-slide__h1">Título da apresentação</h1>
     <p class="gh-slide__lead">Subtítulo ou contexto em uma ou duas linhas. Evento, data, equipe.</p>
   </div>
@@ -174,7 +174,7 @@ Oswald 34px; se passar disso, encurte o título, não diminua a fonte):
       <li>Terceiro ponto. No máximo cinco por slide.</li>
     </ul>
   </div>
-  <img class="gh-slide__logo-small" src="logo/horizontal-dark.svg" alt="">
+  <img class="gh-slide__logo-small" src="logo/logomarca-horizontal-navy.svg" alt="">
 </section>
 ```
 
@@ -193,7 +193,7 @@ Conteúdo com tabela (mesmo template; tabela com fundo branco sobre o pêssego):
       </tbody>
     </table>
   </div>
-  <img class="gh-slide__logo-small" src="logo/horizontal-dark.svg" alt="">
+  <img class="gh-slide__logo-small" src="logo/logomarca-horizontal-navy.svg" alt="">
 </section>
 ```
 

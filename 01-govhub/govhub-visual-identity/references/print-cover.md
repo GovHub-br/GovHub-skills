@@ -8,9 +8,8 @@ sem alterar.
 
 ## O que é
 
-Fundo **sólido** `--logo-purple` (placeholder `#613EFF`, pendente
-confirmação com a nova exportação da logo — ver nota em `palette.md`), sem
-gradiente, sem onda
+Fundo **sólido** `--logo-purple` (`#613EFF`, o fill exato da nova logo;
+ver `palette.md`), sem gradiente, sem onda
 decorativa. Moldura arredondada fina inset 10mm. Logo Gov Hub branca **no
 fluxo normal**, alinhada à esquerda junto com o resto do texto (não
 posicionada solta no canto) — direto acima do título, sem kicker entre os
@@ -67,7 +66,7 @@ logos dos parceiros institucionais, centralizadas.
 <div class="gh-page gh-cover">
   <div class="gh-cover__border"></div>
   <div class="gh-cover__content">
-    <img class="gh-cover__logo" alt="Gov Hub" src="logo/horizontal-light.svg">
+    <img class="gh-cover__logo" alt="Gov Hub" src="logo/logomarca-horizontal-white.svg">
     <h1 class="gh-cover__title">Título do documento em uma ou duas linhas</h1>
     <p class="gh-cover__subtitle">Subtítulo de uma frase explicando o documento.</p>
   </div>

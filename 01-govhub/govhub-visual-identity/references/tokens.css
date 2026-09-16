@@ -7,9 +7,8 @@
    ATUALIZAÇÃO: paleta e tipografia trocadas para os valores oficiais
    do MIV. O roxo/laranja antigo (#7A34F3 / #F97316) foi DESCONTINUADO
    — substituição total, não uso em paralelo. Os arquivos de logo em
-   references/logo/ ainda são os antigos (aguardando nova exportação);
-   quando chegar a nova versão, `--logo-purple` deve ser conferido
-   contra o hex exato do SVG novo.
+   references/logo/ já são a nova exportação (2026-09-16): o fill da
+   variante `default` é #613EFF, o mesmo do --primary-purple.
    ============================================================ */
 
 /* Fontes da marca: Reddit Sans (principal) + Oswald (apoio, títulos) */
@@ -90,9 +89,8 @@
   --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */
 
   /* ---------- Roxo exato da logo (capas de documento) ----------
-     PENDENTE: valor copiado do --primary-purple como placeholder até a
-     nova exportação do logo (aguardando arquivo do usuário). Quando
-     chegar, confira o fill= exato do SVG e atualize aqui. */
+     Confirmado na nova exportação (logomarca-*-default.svg usa
+     fill="#613EFF"): igual ao --primary-purple. */
   --logo-purple: #613EFF;
 }
 
