@@ -18,15 +18,28 @@ não são arquivos locais.
 
 ## 1. Logo — qual arquivo usar onde
 
-`references/logo/` tem a logo em 3 orientações (`horizontal`, `vertical`,
-`none` = só o símbolo circular) × 4 cores (`primary` roxo, `light` branco,
-`dark`, `colourfull`). Regra prática:
+`references/logo/` tem a nova exportação da marca (MIV atual, 2026-09-16)
+em 3 assinaturas × 5 cores, padrão `<assinatura>-<orientacao>-<cor>.svg`:
+
+| Assinatura | Arquivos | O que é |
+|---|---|---|
+| `logomarca-horizontal-*` | `default`, `navy`, `peach`, `white`, `black` | Ícone + "Gov Hub" lado a lado (viewBox 1104×257). A de uso geral. |
+| `logomarca-vertical-*` | idem | Ícone sobre o nome (714×336). Espaços quadrados. |
+| `assinatura-horizontal-*` / `assinatura-vertical-*` | idem | Só o nome tipográfico, sem ícone (825×160 / 384×336). |
+| `icone-none-*` | idem | Só o ícone (291×333). Rodapés e marcas pequenas. |
+
+Cores: `default` = roxo `#613EFF` no nome e ícone colorido (o ícone da
+variante `default` embute 3 PNGs pequenos; evite `default` acima de ~200px
+de altura, use `navy`/`white` em tamanhos grandes); `navy` `#0A005A` e
+`black` para fundo claro; `white` e `peach` `#FFE7E1` para fundo escuro.
+Regra prática:
 
 | Contexto | Arquivo | Tamanho de referência |
 |---|---|---|
-| Capa, fundo colorido/escuro | `horizontal-light.svg` (logotipo completo, branco) | ~64px de altura |
-| Rodapé de página, fundo branco | `none-primary.svg` (só o símbolo, roxo) | ~45px de altura |
-| Rodapé sobre fundo colorido | `none-light.svg` (símbolo branco) | ~45px de altura |
+| Capa, fundo colorido/escuro | `logomarca-horizontal-white.svg` | ~64px de altura |
+| Rodapé de página, fundo branco | `icone-none-default.svg` (ícone colorido) | ~45px de altura |
+| Rodapé sobre fundo colorido | `icone-none-white.svg` | ~45px de altura |
+| Barra inferior de post sobre pêssego | `logomarca-horizontal-navy.svg` | 44px de altura |
 
 Os arquivos atuais já vêm com o *viewBox* ajustado rente ao desenho (sem
 sobra de espaço em branco nas bordas) — é seguro colocar `height` direto no
@@ -37,7 +50,7 @@ para dentro do que o texto ao lado — nesse caso, ajuste o `viewBox` para o
 bounding box real do desenho, não tente compensar só no CSS.
 
 ```html
-<img src="logo/horizontal-light.svg" alt="Gov Hub" style="height:64px; width:auto;">
+<img src="logo/logomarca-horizontal-white.svg" alt="Gov Hub" style="height:64px; width:auto;">
 ```
 
 Não escreva "Gov Hub" como texto ao lado da logo (ex. "· Lab Livre") a menos
@@ -85,20 +98,15 @@ continuam normais — a regra é só sobre o travessão longo usado como pausa.
 
 ## 5. Ícones de produto Gov Hub (não são os ícones de linha genéricos)
 
-Os ícones oficiais reais do Gov Hub são ilustrações
-"duotone" com contorno roxo e uma sombra/silhueta laranja atrás, variante
-`default` (pensada para fundo branco). Use estes, não ícones de linha
-genéricos desenhados à mão — o efeito de marca é bem mais forte.
+Os ícones oficiais reais do Gov Hub são ilustrações "duotone": contorno
+numa cor da paleta e uma sombra/silhueta deslocada em outra, sobre um
+fundo embutido no próprio SVG (variante `default`: contorno navy, sombra
+rosa, fundo pêssego). Use estes, não ícones de linha genéricos desenhados
+à mão — o efeito de marca é bem mais forte.
 
-> **Atenção — descompasso de paleta pendente:** a paleta oficial da marca
-> mudou (ver `palette.md`: roxo agora é `#613EFF`, e o laranja foi
-> descontinuado). O repositório externo de ícones (`GovHub-br/skills-assets`)
-> ainda não foi regerado com as novas cores — os arquivos que chegam pelo CDN
-> continuam desenhados no roxo/laranja antigos. Até a equipe de design
-> regerar esse repositório: use a variante `-default.svg` (fundo branco) e
-> `-purple.svg` (fundo roxo — o roxo antigo do ícone é próximo o bastante do
-> novo `#613EFF` pra não destoar); **evite a variante `-orange.svg`**, já que
-> não existe mais um fundo laranja oficial pra ela combinar.
+> O repositório `GovHub-br/skills-assets` foi regerado na paleta atual em
+> 2026-09-16, mantendo os nomes de variante antigos (`default`, `purple`,
+> `orange`). O nome não descreve mais a cor: veja a tabela de fundos abaixo.
 
 Os SVGs **não ficam nesta skill** — são servidos por CDN a partir do repo
 `GovHub-br/skills-assets`. Ver [`icons-catalog.md`](icons-catalog.md) para a
@@ -124,30 +132,34 @@ nome em todas as ocorrências desse conceito no documento — não alterne
 entre sinônimos próximos (`folder` num capítulo, `folder-open` noutro)
 para a mesma ideia.
 
-**Fundo permitido — até a atualização do repositório de ícones.** Os
-ícones têm três variantes de arquivo, uma por fundo, desenhadas para a
-paleta antiga:
+**Fundo permitido: o fundo embutido da variante.** O repositório de ícones
+foi regerado na paleta atual (2026-09-16) mantendo a nomenclatura antiga;
+cada variante já vem com o fundo pintado dentro do SVG, então o chip/fundo
+ao redor precisa ter exatamente essa cor:
 
-| Fundo | Variante (sufixo na URL) | Status |
-|---|---|---|
-| Branco / claro | `-default.svg` (duotone roxo+laranja) | OK, usar |
-| Roxo Gov Hub (`--primary-purple`, agora `#613EFF`) | `-purple.svg` | OK, usar — tom próximo o bastante do roxo antigo |
-| ~~Laranja~~ | `-orange.svg` | **Evitar** — não existe mais fundo laranja oficial; sem substituto até o repo ser regerado |
+| Fundo | Variante (sufixo na URL) |
+|---|---|
+| Pêssego `#FFE7E1` (`--bg-peach`) | `-default.svg` (contorno navy, sombra rosa) |
+| Navy `#0A005A` (`--dark-navy`) | `-purple.svg` (contorno pêssego, sombra rosa) |
+| Rosa `#F9006F` (`--accent-pink`) | `-orange.svg` (contorno navy, sombra pêssego) |
+
+Sobre **branco** (corpo de relatório, callouts) não existe variante:
+coloque o ícone dentro de um chip pêssego (`background: var(--bg-peach)`)
+com a variante `-default`. Ver o chip em `social-posts.md`.
 
 Para **criar um ícone novo** que ainda não existe na biblioteca, esta skill
 não cobre isso — use a skill separada `govhub-icon-creation`, dedicada à
 técnica duotone exata (camadas, offset, cores por variante) e ao workflow
 de construção no Figma.
 
-Nunca coloque um ícone (nenhuma variante) sobre outra cor — inclusive as
-cores da rampa editorial (navy, magenta, rosa, pêssego) ou o `--accent-pink`
-(`#F9006F`, cor de CTA). Não existe arquivo desenhado para essas cores, e o
-duotone/fundo sólido do ícone destoa visualmente quando forçado sobre uma
-cor pra qual ele não foi feito. É por isso que o chip do ícone no
-cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`) é sempre um
-quadrado **branco**, mesmo quando a faixa atrás dele é magenta/rosa/coral —
-o chip branco garante que o ícone sempre está sobre um dos três fundos
-permitidos, não sobre a cor variável da faixa.
+Nunca coloque um ícone sobre cor diferente do fundo embutido da sua
+variante — inclusive roxo `#613EFF`, magenta e branco. O fundo pintado do
+ícone destoa quando forçado sobre outra cor. É por isso que o chip do
+ícone no cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`)
+tem sempre a cor de uma variante (pêssego + `-default` por padrão), mesmo
+quando a faixa atrás dele é de outra cor da rampa: o chip garante que o
+ícone está sobre um dos três fundos permitidos, não sobre a cor variável
+da faixa.
 
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 
@@ -218,10 +230,11 @@ container pai.
 
 ## 7. Quando NÃO usar este estilo
 
-- Dashboards, telas de app, e-mails, slides de reunião → use
-  `component-recipes.md` (roxo+laranja, cards sólidos, tabela zebrada).
+- Dashboards, telas de app, e-mails → use `component-recipes.md`
+  (roxo+rosa, cards sólidos, tabela zebrada).
+- Slides → `slides.md` (templates oficiais do CDN, um por slide).
 - Documentos de 1–3 páginas sem seções numeradas → a rampa editorial é
-  exagero; um único acento roxo+laranja já resolve.
+  exagero; um único acento roxo+rosa já resolve.
 - Qualquer contexto onde a marca precisa ser reconhecida instantaneamente
   como "produto Gov Hub" (não como "publicação/relatório Gov Hub") → prefira
-  roxo+laranja puro (`--primary-purple`, não `--logo-purple`).
+  roxo puro (`--primary-purple`, não `--logo-purple`).

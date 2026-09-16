@@ -37,7 +37,7 @@ abaixo dela, nome curto do documento à esquerda + marca circular da Gov Hub
 <div class="gh-footer-bar"></div>
 <div class="gh-footer">
   <span class="gh-footer__text">Nome curto do documento &middot; Nome curto do projeto/frente &middot; Gov Hub &middot; Lab Livre - UnB</span>
-  <img class="gh-footer__logo" alt="" src="logo/none-primary.svg">
+  <img class="gh-footer__logo" alt="" src="logo/icone-none-default.svg">
 </div>
 ```
 

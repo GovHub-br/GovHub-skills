@@ -236,7 +236,7 @@ menores por sub-relação em vez de um único diagrama gigante.
 pasta do projeto onde o HTML do documento vai morar**, como `logo/` irmã do
 arquivo HTML — não recrie os SVGs. Os `src=` de logo nos exemplos deste
 arquivo e de `print-cover.md`/`print-header.md`/`print-footer.md`
-(ex: `logo/horizontal-light.svg`) já assumem essa cópia local, relativa ao HTML.
+(ex: `logo/logomarca-horizontal-white.svg`) já assumem essa cópia local, relativa ao HTML.
 
 **Ícones:** não são copiados — os `src=` nos exemplos apontam direto para a
 CDN (`https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/...`).

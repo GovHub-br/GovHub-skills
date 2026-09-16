@@ -73,7 +73,7 @@ se precisar de uma versão mais suave do acento pontual.
 | Token | Hex | Uso |
 |---|---|---|
 | `--primary-purple` | `#613EFF` | Roxo oficial do MIV. Use em produto, UI, dashboards, texto. |
-| `--logo-purple` | `#613EFF` *(placeholder)* | **Pendente.** A nova exportação do logotipo ainda não chegou (arquivo será enviado separadamente). Por ora, usa o mesmo valor do primário; quando a nova logo chegar, confira o hex exato do fill do SVG e atualize este token e `references/logo/`. |
+| `--logo-purple` | `#613EFF` | Confirmado na nova exportação da logo (2026-09-16): `logomarca-*-default.svg` usa `fill="#613EFF"`, o mesmo do primário. Mantido como token separado só por compatibilidade com `print-cover.md`. |
 
 ## Rampa editorial — relatórios longos com capítulos (livro Gov Hub)
 

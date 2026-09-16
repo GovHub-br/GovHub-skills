@@ -144,6 +144,12 @@ Copie o componente desejado e ajuste o conteúdo. Nomes de classe em inglês.
 
 ## Padronagem e elementos gráficos (MIV)
 
+Para post, poster ou slide, prefira os snippets SVG prontos de
+`graphic-elements-catalog.md` (seção "Formas isoladas"); as receitas CSS
+abaixo (anel via `border`, quarto de círculo via `overflow: hidden`) servem
+para compor a mesma forma direto em componentes HTML/CSS de produto,
+dashboard ou site.
+
 O manual define três formas geométricas simples como recursos de apoio da
 marca — **círculos, semicírculos e retângulos arredondados** — usados como
 fundo, divisor, moldura ou detalhe decorativo. Nunca ilustrações
