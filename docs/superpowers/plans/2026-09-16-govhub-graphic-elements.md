@@ -653,13 +653,13 @@ html=re.findall(r'```html\n(.*?)```', src, re.S)
 assert html, 'sem bloco html no arquivo'
 assert 'opacity: .07' in css or 'opacity:.07' in css, 'opacidade padrão deve ser .07'
 assert 'Quer marca d' in src, 'falta a pergunta obrigatória'
-base="""@page{size:210mm 297mm;margin:0}html,body{margin:0}
+base=""":root{--primary-purple:#613EFF;--dark-navy:#0A005A}@page{size:210mm 297mm;margin:0}html,body{margin:0}
 .gh-page{position:relative;width:210mm;height:297mm;overflow:hidden;page-break-after:always;background:#fff;font-family:sans-serif;color:#2D3748}
 .gh-page__content{position:relative;z-index:1;padding:25mm 20mm;font-size:11pt;line-height:1.5}
 table{border-collapse:collapse;width:100%}th{background:#613EFF;color:#fff;padding:6px}td{padding:6px;border-bottom:1px solid #ddd}"""
 lorem='<p>'+('Texto corrido de exemplo para conferir a legibilidade sobre a marca d\'água. '*12)+'</p>'
-rows=''.join(f'<tr><td>Linha {i}</td><td>{i*3}</td><td>ok</td></tr>' for i in range(1,30))
-p1=html[0].replace('<!-- CONTEÚDO -->', lorem*4)
+rows=''.join(f'<tr><td>Linha {i}</td><td>{i*3}</td><td>ok</td></tr>' for i in range(1,22))
+p1=html[0].replace("<!-- CONTEÚDO -->", lorem*2)
 p2=html[0].replace('<!-- CONTEÚDO -->', f'<table><tr><th>Item</th><th>Valor</th><th>Status</th></tr>{rows}</table>').replace('gh-watermark"','gh-watermark gh-watermark--topo"')
 open(f'{OUT}/wm/wm.html','w').write(f"<!doctype html><html><head><meta charset='utf-8'><style>{base}{css}</style></head><body>{p1}{p2}</body></html>")
 subprocess.run(['python3','-m','weasyprint',f'{OUT}/wm/wm.html',f'{OUT}/wm/wm.pdf'],check=True)
@@ -713,11 +713,11 @@ leitura: é um leve relevo de marca, não uma ilustração.
 
 .gh-watermark {
   position: absolute; z-index: 0; pointer-events: none;
-  right: -15%; bottom: -15%; width: 55%;
+  right: -10%; bottom: -7%; width: 55%;   /* % de largura e de altura da página: com mais deslocamento o furo do anel sai da página e vira quarto de círculo cheio */
   color: var(--primary-purple);
   opacity: .07;                         /* padrão; máximo .10 */
 }
-.gh-watermark--topo { bottom: auto; top: -15%; transform: rotate(-90deg); }   /* página só de tabela larga */
+.gh-watermark--topo { bottom: auto; top: -7%; transform: rotate(-90deg); }   /* página só de tabela larga */
 .gh-watermark--navy { color: var(--dark-navy); }
 .gh-page--peach .gh-watermark { opacity: .05; }                               /* sobre fundo pêssego */
 ```

@@ -31,11 +31,11 @@ leitura: é um leve relevo de marca, não uma ilustração.
 
 .gh-watermark {
   position: absolute; z-index: 0; pointer-events: none;
-  right: -15%; bottom: -15%; width: 55%;
+  right: -10%; bottom: -7%; width: 55%;   /* % de largura e de altura da página: com mais deslocamento o furo do anel sai da página e vira quarto de círculo cheio */
   color: var(--primary-purple);
   opacity: .07;                         /* padrão; máximo .10 */
 }
-.gh-watermark--topo { bottom: auto; top: -15%; transform: rotate(-90deg); }   /* página só de tabela larga */
+.gh-watermark--topo { bottom: auto; top: -7%; transform: rotate(-90deg); }   /* página só de tabela larga */
 .gh-watermark--navy { color: var(--dark-navy); }
 .gh-page--peach .gh-watermark { opacity: .05; }                               /* sobre fundo pêssego */
 ```
