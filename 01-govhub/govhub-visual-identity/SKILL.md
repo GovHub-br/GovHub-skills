@@ -183,11 +183,11 @@ na prática com o Framework de Briefing:
    instituições/responsáveis, dados do projeto/entrega, autores) antes de
    escrever a página. Código exato e a lista completa do que perguntar em
    [`references/print-frontmatter.md`](references/print-frontmatter.md).
-0b. **Pergunte também** se quer marca d'água com os elementos gráficos do
-   Gov Hub nas páginas de conteúdo ("Quer marca d'água com os elementos
-   gráficos do Gov Hub nas páginas de conteúdo? (padrão: não)"). Só aplique
-   com "sim" explícito; código, opacidade e restrições em
-   [`references/print-watermark.md`](references/print-watermark.md).
+   - **Pergunte também** se quer marca d'água com os elementos gráficos do
+     Gov Hub nas páginas de conteúdo ("Quer marca d'água com os elementos
+     gráficos do Gov Hub nas páginas de conteúdo? (padrão: não)"). Só
+     aplique com "sim" explícito; código, opacidade e restrições em
+     [`references/print-watermark.md`](references/print-watermark.md).
 1. Capa com fundo **sólido** na cor exata da logo (`--logo-purple`,
    *pendente* — placeholder `#613EFF` até a nova exportação chegar),
    logo oficial (`references/logo/`, também pendente de atualização) +

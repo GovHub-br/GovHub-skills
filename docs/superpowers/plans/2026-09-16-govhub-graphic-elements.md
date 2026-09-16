@@ -915,11 +915,11 @@ chamada e Reddit Sans no apoio.
 Logo após o item `0.` (que termina em `[`references/print-frontmatter.md`](references/print-frontmatter.md).`), inserir um novo item antes do `1.`:
 
 ```
-0b. **Pergunte também** se quer marca d'água com os elementos gráficos do
-   Gov Hub nas páginas de conteúdo ("Quer marca d'água com os elementos
-   gráficos do Gov Hub nas páginas de conteúdo? (padrão: não)"). Só aplique
-   com "sim" explícito; código, opacidade e restrições em
-   [`references/print-watermark.md`](references/print-watermark.md).
+   - **Pergunte também** se quer marca d'água com os elementos gráficos do
+     Gov Hub nas páginas de conteúdo ("Quer marca d'água com os elementos
+     gráficos do Gov Hub nas páginas de conteúdo? (padrão: não)"). Só
+     aplique com "sim" explícito; código, opacidade e restrições em
+     [`references/print-watermark.md`](references/print-watermark.md).
 ```
 
 - [ ] **Step 7: Atualizar o último bullet de "Diretrizes de marca" e a lista de referências**
