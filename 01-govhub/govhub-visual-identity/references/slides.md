@@ -97,7 +97,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 .gh-slide__body li { margin-bottom: .5em; }
 .gh-slide__body table { border-collapse: collapse; width: 100%; font-size: 26px; background: #fff; }
 .gh-slide__body th { background: var(--primary-purple); color: #fff; text-align: left; padding: 14px 20px; }
-.gh-slide__body td { padding: 12px 20px; border-bottom: 1px solid #e6dcd8; }
+.gh-slide__body td { padding: 12px 20px; border-bottom: 1px solid rgba(10,0,90,.12); }
 .gh-slide__kpi {
   font-family: var(--font-family-heading); font-weight: 700;
   font-size: 150px; line-height: 1; color: var(--accent-pink); margin: 0 0 16px;
