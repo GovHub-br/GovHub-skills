@@ -34,8 +34,9 @@ leitura: é um leve relevo de marca, não uma ilustração.
   right: -10%; bottom: -7%; width: 55%;   /* % de largura e de altura da página: com mais deslocamento o furo do anel sai da página e vira quarto de círculo cheio */
   color: var(--primary-purple);
   opacity: .07;                         /* padrão; máximo .10 */
+  transform: rotate(180deg);            /* canto reto do quarto de anel vai para o inferior direito */
 }
-.gh-watermark--topo { bottom: auto; top: -7%; transform: rotate(-90deg); }   /* página só de tabela larga */
+.gh-watermark--topo { bottom: auto; top: -7%; transform: rotate(90deg); }    /* página só de tabela larga: canto reto no superior direito */
 .gh-watermark--navy { color: var(--dark-navy); }
 .gh-page--peach .gh-watermark { opacity: .05; }                               /* sobre fundo pêssego */
 ```
@@ -44,16 +45,18 @@ leitura: é um leve relevo de marca, não uma ilustração.
 
 ```html
 <section class="gh-page">
-  <svg class="gh-watermark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a100 100 0 0 1-100 100zM0 0h48.7a48.7 48.7 0 0 1-48.7 48.7z" transform="rotate(180 50 50)"/></svg>
+  <svg class="gh-watermark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a100 100 0 0 1-100 100zM0 0h48.7a48.7 48.7 0 0 1-48.7 48.7z"/></svg>
   <div class="gh-page__content">
     <!-- CONTEÚDO -->
   </div>
 </section>
 ```
 
-O `rotate(180 50 50)` vira o quarto de anel para o canto reto ficar no
-inferior direito. Para o quarto de círculo cheio troque o `d` por
-`M0 0h100a100 100 0 0 1-100 100z` (sem `fill-rule`).
+A rotação fica **só no CSS** (`transform: rotate(180deg)` na classe base,
+`rotate(90deg)` no `--topo`); não use o atributo `transform` do SVG junto,
+porque nos navegadores o `transform` do CSS substitui o atributo em vez de
+somar, e a forma vira para o canto errado. Para o quarto de círculo cheio
+troque o `d` por `M0 0h100a100 100 0 0 1-100 100z` (sem `fill-rule`).
 
 ## Restrições
 
@@ -66,9 +69,12 @@ inferior direito. Para o quarto de círculo cheio troque o `d` por
 - Página que é só uma tabela larga: use `gh-watermark--topo` (canto superior
   direito) para não competir com as últimas linhas; a tabela cobrindo parte
   da forma é aceitável.
-- Cabeçalho de capítulo (`print-header.md`) e rodapé (`print-footer.md`)
-  ficam por cima da marca d'água: mantenha-os com `position: relative;
-  z-index: 1` como o `.gh-page__content`.
+- Cabeçalho de capítulo (`.gh-band`, `print-header.md`) e rodapé
+  (`.gh-footer-bar` / `.gh-footer`, `print-footer.md`) já são `position:
+  absolute` mas não declaram `z-index`; acrescente `z-index: 1` a eles
+  (`.gh-band, .gh-footer-bar, .gh-footer { z-index: 1; }`) para ficarem por
+  cima da marca d'água. Sem isso a ordem de empilhamento depende só da
+  ordem no DOM.
 
 ## Conferência
 
