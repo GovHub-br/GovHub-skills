@@ -63,13 +63,22 @@ claude plugin install govhub-core@govhub
 
 Dentro de uma sessão do Claude Code dá para fazer o mesmo pelo comando `/plugin`, que abre o navegador de marketplaces e mostra as skills de cada plugin antes de instalar.
 
-**Manter atualizado** — quando o repositório receber skills novas:
+**Manter atualizado** — os plugins não declaram `version` de propósito: o Claude Code usa o commit do repositório como versão, então **todo push na `main` é uma atualização** (skill nova ou skill editada). Para receber:
 
 ```bash
-claude plugin marketplace update govhub
+claude plugin marketplace update govhub   # baixa o commit mais novo
+claude plugin update govhub-core@govhub   # aplica ao plugin instalado (ou govhub-skills@govhub)
 ```
 
-Depois de instalar, reinicie a sessão do Claude Code para ele reconhecer as skills novas. Para conferir o que entrou (e quanto custa de contexto):
+Dentro de uma sessão, `/plugin marketplace update` e `/plugin update` fazem o mesmo, e o Claude Code também checa o marketplace em segundo plano. Depois de atualizar, reinicie a sessão (ou `/reload-plugins`) para ele reler as skills.
+
+**Quem edita as skills** (mantenedores): não instale o plugin na sua máquina; aponte um symlink de `~/.claude/skills/` para a pasta da skill no seu clone. Cada edição vale na próxima sessão, sem commit nem update (registrar o clone como marketplace local não serve: por ser um repositório git, o Claude Code copia o plugin para o cache e o prende ao commit):
+
+```bash
+ln -s ~/GovHub-skills/01-govhub/govhub-visual-identity ~/.claude/skills/govhub-visual-identity
+```
+
+Não tenha a mesma skill instalada por plugin **e** em `~/.claude/skills/`, senão ela entra duas vezes. Para conferir o que entrou (e quanto custa de contexto):
 
 ```bash
 claude plugin details govhub-skills@govhub

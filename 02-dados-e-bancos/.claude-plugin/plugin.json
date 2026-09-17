@@ -1,6 +1,5 @@
 {
   "name": "govhub-dados",
-  "version": "1.0.0",
   "description": "Engenharia e ciência de dados, Postgres (schema, boas práticas, otimização), SQL, BigQuery, Jupyter e extração de PDF para banco. (9 skills)",
   "author": {
     "name": "GovHub BR / lablivre",

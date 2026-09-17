@@ -1,6 +1,5 @@
 {
   "name": "govhub-qualidade",
-  "version": "1.0.0",
   "description": "TDD, testes em Python, depuração sistemática, clean code, arquitetura (ADR, DDD, padrões), performance, segurança e gestão de segredos. (18 skills)",
   "author": {
     "name": "GovHub BR / lablivre",

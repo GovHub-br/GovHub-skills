@@ -1,6 +1,5 @@
 {
   "name": "govhub-infra",
-  "version": "1.0.0",
   "description": "Docker, IaC, GitHub Actions, shell scripting e observabilidade com Prometheus e Grafana. (8 skills)",
   "author": {
     "name": "GovHub BR / lablivre",

@@ -1,6 +1,5 @@
 {
   "name": "govhub-docs",
-  "version": "1.0.0",
   "description": "Geração de documentos e relatórios: docx, xlsx, PDF, planilhas, README, changelog, diagramas Mermaid e conversão de web para Markdown. (7 skills)",
   "author": {
     "name": "GovHub BR / lablivre",

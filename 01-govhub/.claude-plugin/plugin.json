@@ -1,6 +1,5 @@
 {
   "name": "govhub-core",
-  "version": "1.0.0",
   "description": "Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (3 skills)",
   "author": {
     "name": "GovHub BR / lablivre",

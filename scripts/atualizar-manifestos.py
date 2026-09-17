@@ -3,6 +3,10 @@
 import json, os, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+# Versão só do marketplace. Os plugin.json NÃO declaram "version" de propósito:
+# versão declarada fixa o plugin (quem instalou fica na cópia em cache até a
+# string mudar). Sem ela, o Claude Code usa o SHA do commit e cada push vira
+# atualização em `claude plugin marketplace update` / auto-update.
 VERSION = "1.0.0"
 AUTHOR = {"name": "GovHub BR / lablivre", "url": "https://github.com/GovHub-br"}
 REPO = "https://github.com/GovHub-br/GovHub-skills"
@@ -77,7 +81,6 @@ for cat in CATS:
         cat_dir / ".claude-plugin" / "plugin.json",
         {
             "name": cat["name"],
-            "version": VERSION,
             "description": f"{cat['description']} ({len(skills)} skills)",
             "author": AUTHOR,
             "homepage": REPO,
@@ -100,7 +103,6 @@ escrever(
     ROOT / ".claude-plugin" / "plugin.json",
     {
         "name": "govhub-skills",
-        "version": VERSION,
         "description": f"Coleção completa de skills do GovHub BR / lablivre — as {len(todas)} skills de todas as categorias em um único plugin.",
         "author": AUTHOR,
         "homepage": REPO,
