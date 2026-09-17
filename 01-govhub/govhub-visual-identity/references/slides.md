@@ -210,7 +210,9 @@ Conteúdo com tabela (mesmo template; tabela com fundo branco sobre o pêssego):
 ```
 
 Encerramento (texto na metade direita; logos dos parceiros na ordem fixa
-Lab Livre → UnB, de `references/logo/parceiros/`):
+Lab Livre → UnB, de `references/logo/parceiros/`; Ipea e ministério do
+projeto entram depois, se houver, na versão `negativo` — ver
+[`partners.md`](partners.md)):
 
 ```html
 <section class="gh-slide gh-slide--closing">
@@ -219,8 +221,8 @@ Lab Livre → UnB, de `references/logo/parceiros/`):
     <p class="gh-slide__lead">gov-hub.io<br>contato@gov-hub.io</p>
   </div>
   <div class="gh-slide__partners">
-    <img src="logo/parceiros/lab-livre.png" alt="Lab Livre">
-    <img src="logo/parceiros/unb.png" alt="UnB">
+    <img src="logo/parceiros/lab-livre-white.svg" alt="Lab Livre">
+    <img src="logo/parceiros/unb-light.svg" alt="UnB">
   </div>
 </section>
 ```
