@@ -71,16 +71,19 @@ logos dos parceiros institucionais, centralizadas.
     <p class="gh-cover__subtitle">Subtítulo de uma frase explicando o documento.</p>
   </div>
   <div class="gh-cover__footer">
-    <img src="logo/parceiros/lab-livre.png" alt="Lab Livre">
-    <img src="logo/parceiros/unb.png" alt="UnB">
+    <img src="logo/parceiros/lab-livre-white.svg" alt="Lab Livre">
+    <img src="logo/parceiros/unb-light.svg" alt="UnB">
   </div>
 </div>
 ```
 
-As imagens `logo/parceiros/lab-livre.png` e `logo/parceiros/unb.png` já são
-versões brancas (fundo transparente), prontas para fundo sólido colorido —
-não precisam de nenhum tratamento adicional. **Ordem fixa: Lab Livre
-primeiro, UnB depois.** Copie a pasta `references/logo/` inteira (incluindo
+Os arquivos `logo/parceiros/lab-livre-white.svg` e `logo/parceiros/unb-light.svg`
+são as versões brancas (fundo transparente), prontas para fundo sólido
+colorido — não precisam de nenhum tratamento adicional. **Ordem fixa: Lab Livre
+primeiro, UnB depois**; se o documento for de um projeto com o Ipea ou com
+um ministério, a logo dele entra depois, na versão `negativo` (texto
+branco) — catálogo, lacunas e regra do defeso eleitoral em
+[`partners.md`](partners.md). Copie a pasta `references/logo/` inteira (incluindo
 `logo/parceiros/`) para o projeto, como de costume (ver `print-pages.md`).
 Os ícones não são copiados — vêm por CDN (ver `icons-catalog.md`).
 

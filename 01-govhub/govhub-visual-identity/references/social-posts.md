@@ -332,7 +332,8 @@ Espelho da capa: quarto de círculo roxo no canto superior **esquerdo**,
 meio-anel magenta sangrando pela base à direita, semi-pílula pêssego
 sangrando pela esquerda. Conteúdo centralizado abaixo do quarto de círculo
 (logo grande, site, tagline em Oswald) e a assinatura institucional
-("Uma iniciativa de" + logos dos parceiros) em y 1000. Sem "Arraste".
+("Uma iniciativa de" + logos dos parceiros, ordem e versões em
+[`partners.md`](partners.md)) em y 1000. Sem "Arraste".
 
 ```html
 <div class="gh-post gh-post--navy" lang="pt-BR">
@@ -351,8 +352,8 @@ sangrando pela esquerda. Conteúdo centralizado abaixo do quarto de círculo
   <div style="position:absolute; left:88px; right:88px; top:1000px; display:flex; flex-direction:column; align-items:center; gap:28px;">
     <div style="font-size:22px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.75);">Uma iniciativa de</div>
     <div style="display:flex; align-items:center; justify-content:center; gap:48px;">
-      <img src="logo/parceiros/lab-livre.png" alt="Lab Livre" style="height:60px; width:auto;">
-      <img src="logo/parceiros/unb.png" alt="UnB" style="height:60px; width:auto;">
+      <img src="logo/parceiros/lab-livre-white.svg" alt="Lab Livre" style="height:60px; width:auto;">
+      <img src="logo/parceiros/unb-light.svg" alt="UnB" style="height:60px; width:auto;">
     </div>
   </div>
 </div>
