@@ -24,6 +24,11 @@ proporções, paleta) estão na seção "Comunicação" de
 Ordem canônica de um carrossel: `capa → conteúdo × N → ênfase → conteúdo × N
 → convite → fechamento`. Um post único usa só a **capa** (ou só a **ênfase**).
 
+Os fundos da tabela são os padrão. Cada estrutura também existe nos outros
+4 fundos da paleta e em 3 composições alternativas de formas, como
+**arquivos HTML prontos no CDN**: ver "Variações: fundos e composições"
+no fim deste arquivo antes de recompor qualquer coisa à mão.
+
 ## Base compartilhada
 
 Tokens, fontes e os helpers que todas as estruturas usam. Texto corrido é
@@ -358,6 +363,59 @@ sangrando pela esquerda. Conteúdo centralizado abaixo do quarto de círculo
   </div>
 </div>
 ```
+
+## Variações: fundos e composições (100 templates prontos)
+
+Validadas com o usuário em 2026-09-17 numa galeria com as 100 combinações
+(5 estruturas × 4 composições × 5 fundos). Todas foram aprovadas. Os
+arquivos vivem em `GovHub-br/skills-assets`, pasta `post-templates/`, um
+HTML por combinação, com texto de exemplo no lugar do conteúdo:
+
+```
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/post-templates/<estrutura>-<composição>-<fundo>.html
+```
+
+`estrutura` ∈ `capa | conteudo | enfase | convite | fechamento`;
+`composição` ∈ `A | B | C | D` (A é a deste arquivo, só com a cor trocada);
+`fundo` ∈ `purple | navy | peach | pink | magenta`. A galeria interativa é o
+`index.html` da mesma pasta. Para gerar uma peça numa variação: baixe o
+arquivo, troque os textos de exemplo e os ícones (chips levam o símbolo
+branco do Gov Hub como stand-in; substitua pelo ícone de produto da
+variante certa), mantenha formas e posições. Não recomponha do zero.
+
+### Composições por estrutura
+
+| Estrutura | B | C | D |
+|---|---|---|---|
+| Capa | círculo grande sangrando TL + pílula à direita + quarto de anel BL; logo no topo direito; texto na metade inferior | semicírculo largo no topo + anel à direita + círculo pequeno BL; logo na barra inferior | pílula vertical colada à esquerda + quarto BR + meio-anel no topo; texto no topo à direita (x 260), "Arraste" à esquerda |
+| Conteúdo | quarto TL + anel à direita; rótulo pela **direita**, contador na barra, título ao lado do quarto (x 418) | cacho de 3 formas pequenas no canto superior direito; contador na barra; título até 560 px | círculo grande BR **atrás dos cards** + meio-anel no topo; título na largura toda; barra alinhada à esquerda |
+| Ênfase | círculo de 800 px centrado atrás do texto (cor segura) + anel TL; **número-chave** (190 px) + frase, centralizados | quartos TL e BR em diagonal; chip 120 px e texto na faixa central (y 470–890); barra à esquerda | meio-anel grande sangrando pela direita + pílula na base esquerda; texto até 700 px |
+| Convite | semicírculo largo na base + anel à direita; conteúdo no topo; sem "Arraste" | círculo sangrando TR + pílula BL; contador na barra | quatro formas pequenas nos cantos; sem rótulo e sem contador; conteúdo começa em y 300 |
+| Fechamento | espelho da capa B (círculo TR, pílula à esquerda, quarto de anel BR) | anel de 800 px centrado atrás da logo (cor segura) + círculo TR | semicírculo no topo + semi-pílula na base à direita |
+
+Posições exatas: no HTML de cada arquivo (e na spec de `index.html`).
+
+### Regras de cor por fundo
+
+Texto, logo, formas e componentes trocam juntos quando o fundo muda:
+
+| Fundo | Texto | Logo | Formas (principal, secundária, detalhe) | Pílula de rótulo | Chip | Botão CTA | Parceiros |
+|---|---|---|---|---|---|---|---|
+| navy | branco | white | roxo, magenta, pêssego (rosa só como 4ª, pequena) | magenta / texto navy | roxo | rosa | brancas |
+| roxo | branco | white | navy, pêssego, magenta | pêssego / navy | navy | rosa | brancas |
+| pêssego | navy | navy | roxo, navy, magenta | magenta / navy | rosa | rosa | `lab-livre-blue` + `unb-dark` |
+| rosa | branco (peso ≥ 600) | white | navy, roxo, pêssego | navy / branco | navy | **navy** | brancas |
+| magenta | navy | navy | navy, roxo, pêssego | pêssego / navy | navy | **navy** | `lab-livre-blue` + `unb-dark` |
+
+- **Cor segura** (forma grande atrás de texto, ênfase B e fechamento C):
+  navy→roxo, roxo→navy, pêssego→magenta, rosa→navy, magenta→pêssego.
+- **Numeral da ênfase B** sobre a cor segura: rosa em navy/roxo, navy em
+  pêssego/magenta, branco em rosa.
+- Pares evitados: rosa sobre magenta e vice-versa; pêssego como forma
+  principal sobre rosa. Rosa continua acento: no máximo uma forma pequena
+  por quadro, salvo quando é o próprio fundo.
+- Fundo rosa em área grande foge da regra "rosa = acento"; está disponível,
+  mas prefira navy/roxo/pêssego em capa e conteúdo.
 
 ## Padrão de escrita nos posts
 

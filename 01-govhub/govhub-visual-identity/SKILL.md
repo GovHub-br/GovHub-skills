@@ -223,6 +223,10 @@ conteúdo com 3 variantes de bloco, ênfase, convite, fechamento), na ordem
 canônica `capa → conteúdo → ênfase → conteúdo → convite → fechamento`.
 Texto corrido justificado, sem travessão e sem traço decorativo; cards
 no padrão "título forte + descrição discreta + ícone de produto em chip".
+Cada estrutura existe também nos 5 fundos da paleta e em 4 composições de
+formas, como **100 HTMLs prontos no CDN** (`post-templates/` do
+`skills-assets`, seção "Variações" de `social-posts.md`): parta de um
+deles em vez de recompor.
 
 ## Acessibilidade (obrigatório)
 

@@ -47,9 +47,10 @@ A **borboleta** é só o ícone do Lab Livre: use-a apenas onde a logo
 completa não cabe (chip, favicon, rodapé muito baixo), e mesmo assim com a
 UnB ao lado. Em capa, encerramento e fechamento vai a logo completa.
 
-Em fundo claro, prefira as versões coloridas (`lab-livre-blue` +
-`unb-colourfull`); as pretas (`lab-livre-black`, `unb-dark`) são para
-impressão monocromática ou quando o usuário pedir. O azul do Lab Livre
+Em fundo claro (pêssego, magenta, branco), use `lab-livre-blue` +
+`unb-dark`: a UnB colorida (`unb-colourfull`) foi testada nos posts em
+2026-09-17 e reprovada pelo usuário ao lado da paleta Gov Hub; fica só
+para quando ele pedir. `lab-livre-black` é para impressão monocromática. O azul do Lab Livre
 (`#080056`) é da marca dele, não é o navy do Gov Hub (`#0A005A`); não
 recolorir um pelo outro.
 
@@ -63,7 +64,7 @@ ou aplicar filtro CSS na logo de um parceiro.
   encerramento e fechamento de carrossel (regra já fixada em
   `print-cover.md`). Em fundo escuro: `lab-livre-white.svg` +
   `unb-light.svg`; em fundo claro: `lab-livre-blue.svg` +
-  `unb-colourfull.svg`.
+  `unb-dark.svg`.
 - **Ipea:** só quando o documento é de um projeto/frente com o Ipea. Entra
   depois da UnB.
 - **Ministérios:** só o ministério do projeto/frente a que o documento
