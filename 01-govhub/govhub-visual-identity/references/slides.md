@@ -1,7 +1,13 @@
-# Slides Gov Hub: código exato validado
+# Slides Gov Hub, variante colorida: código exato validado
 
-Toda apresentação Gov Hub é um **HTML com uma `section.gh-slide` por
-slide**, cada uma com **um dos seis templates** do
+> Existe também a **variante sóbria** (fundo branco, navy + roxo + pêssego,
+> sem os templates do CDN), em [`slides-sober.md`](slides-sober.md). Ela é
+> a escolha para apresentação institucional ou que acompanha um relatório
+> de entrega; esta aqui é para evento, divulgação, aula. Pergunte qual o
+> usuário quer se o pedido não deixar claro.
+
+Toda apresentação Gov Hub na variante colorida é um **HTML com uma
+`section.gh-slide` por slide**, cada uma com **um dos seis templates** do
 [catálogo de elementos gráficos](graphic-elements-catalog.md) como fundo,
 exportado para PDF. Sem gradiente, sem fundo sólido inventado, sem
 `elementos-graficos.svg` / `outros-elementos-graficos.svg` como fundo.

@@ -153,12 +153,19 @@ Reddit Sans + Oswald e o `body` base). Depois use as receitas de
 
 ### 3. Slides / e-mail / dashboard
 
-- **Slides:** siga [`references/slides.md`](references/slides.md) ao pé da
-  letra. **Todo slide usa um dos 6 templates oficiais** do CDN como fundo
-  (`capa`, `capa-capitulo`, `capa-capitulo-alternativa`, `pagina-comum`,
-  `pagina-comum-com-enfase`, `encerramento`); o nome diz o papel. Sem
-  gradiente, sem fundo inventado. HTML 1920×1080 por slide → PDF, com
-  conferência visual de todas as páginas.
+- **Slides:** há duas variantes, e as duas são HTML 1920×1080 por slide
+  → PDF, com conferência visual de todas as páginas. **Pergunte qual**
+  quando o pedido não deixar claro; não misture as duas no mesmo deck.
+  - **Sóbria** ([`references/slides-sober.md`](references/slides-sober.md)):
+    fundo branco, navy + roxo + pêssego, cabeçalho e tabela iguais aos do
+    relatório em PDF, formas oficiais só na capa/seção/encerramento. Para
+    apresentação institucional (ministério, banca, comitê) ou que
+    acompanha um relatório de entrega. Validada em 2026-09-18.
+  - **Colorida** ([`references/slides.md`](references/slides.md)): **todo
+    slide usa um dos 6 templates oficiais** do CDN como fundo (`capa`,
+    `capa-capitulo`, `capa-capitulo-alternativa`, `pagina-comum`,
+    `pagina-comum-com-enfase`, `encerramento`); o nome diz o papel. Sem
+    gradiente, sem fundo inventado. Para evento, divulgação, aula.
 - **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS): use os hexadecimais literais: cabeçalho `#613EFF`, texto `#2D3748`, botão CTA `#F9006F`.
 - **Dashboard:** roxo nos headers/KPIs principais; verde `#10B981` para positivo; fundos `#F7F7F7`/`#F8F9FA`/`#FFE7E1`.
 
@@ -280,7 +287,8 @@ deles em vez de recompor.
 - [`references/print-footer.md`](references/print-footer.md) — rodapé de PDF (repete em toda página, barra alinhada à margem do conteúdo, não à borda física), código exato validado, com os erros já cometidos documentados (barra até a borda física em vez da margem, logo grande demais, barra colada no texto).
 - [`references/print-table.md`](references/print-table.md) — tabela de dados em PDF: legenda numerada + header sólido navy + linhas com zebra sutil, sem cartão/sombra ao redor. Use sempre que o PDF tiver uma tabela de dados — não invente um componente "cartão de tabela" novo.
 - [`references/print-watermark.md`](references/print-watermark.md) — marca d'água **opcional** em páginas de conteúdo de PDF (uma forma isolada no canto, roxo a 7 %). Pergunte antes; padrão sem. Nunca em capa, folha de identificação, índice ou encerramento.
-- [`references/slides.md`](references/slides.md) — **comece por aqui para qualquer apresentação**: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
+- [`references/slides.md`](references/slides.md) — **variante colorida** de apresentação: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
+- [`references/slides-sober.md`](references/slides-sober.md) — **variante sóbria** de apresentação (branca, navy + roxo + pêssego, a linguagem do relatório em PDF no canvas 16:9): código exato validado em 2026-09-18 de capa, seção, conteúdo (tópicos, duas colunas, cards, tabela), ênfase (número-chave, citação) e encerramento, rodapé só com número + símbolo, e as armadilhas do WeasyPrint com SVG inline (`currentColor`/`transform` não funcionam).
 - [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: as 5 estruturas de quadro 1080×1350 (capa, conteúdo, ênfase, convite, fechamento) com código exato validado, posições das formas, zonas de texto, limites de linhas, mapeamento ícone↔chip e a lista de erros já cometidos.
 - [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — os 8 elementos gráficos oficiais (**servidos por CDN** a partir de `GovHub-br/skills-assets`, não são arquivos locais): tabela de quando usar cada um, snippets SVG das formas isoladas, formatos e regras de recomposição para Instagram/poster/banner, e como adicionar um elemento novo.
 - [`references/logo/`](references/logo/) — logo oficial Gov Hub (nova exportação do MIV): `logomarca-horizontal-*`, `logomarca-vertical-*`, `assinatura-horizontal-*`/`assinatura-vertical-*` (só o nome) e `icone-none-*` (só o ícone), cada uma em `default`/`navy`/`peach`/`white`/`black`, SVG. Tabela de qual arquivo usar onde em `editorial-report.md` seção 1. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre e UnB, que andam sempre juntas e nessa ordem porque o Lab Livre é o dono dos projetos e fica dentro da UnB; Ipea; e os ministérios MGI, MIR, Cidades e Cultura), usadas no rodapé da capa, no encerramento de slides e no fechamento de carrossel — ordem fixa: Lab Livre → UnB → Ipea (se houver) → ministério do projeto (se houver). Qual arquivo usar em cada fundo (`positivo`/`negativo`), quais faltam, e a regra do **período de defeso eleitoral** (sufixo `-defeso`) estão em [`references/partners.md`](references/partners.md).
