@@ -52,7 +52,7 @@ página quando o fundo for pêssego.
 <section class="gh-page">
   <svg class="gh-watermark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a100 100 0 0 1-100 100zM0 0h48.7a48.7 48.7 0 0 1-48.7 48.7z"/></svg>
   <div class="gh-band">
-    <!-- cabeçalho de capítulo, opcional só na 1ª página; ver print-header.md -->
+    <!-- cabeçalho de capítulo (branco, navy, barra abaixo), só na 1ª página; ver print-header.md -->
   </div>
   <div class="gh-page-body">
     <!-- CONTEÚDO -->

@@ -1,79 +1,74 @@
 # Cabeçalho de capítulo em PDF — código exato validado
 
 Pressupõe a arquitetura de [`print-pages.md`](print-pages.md) (`.gh-page`
-fixa 210×297mm, `@page { margin: 0 }`). Validado com o usuário em agosto de
-2026. Só aparece na **primeira página de cada capítulo** — páginas de
-continuação do mesmo capítulo não têm essa faixa (ver
-[`print-footer.md`](print-footer.md) para o rodapé, que aparece em toda
-página, com ou sem cabeçalho).
+fixa 210×297mm, `@page { margin: 0 }`). Validado com o usuário em
+2026-09-17 (simulação do Relatório de Diagnóstico com a IDV nova). Só
+aparece na **primeira página de cada capítulo**; páginas de continuação
+do mesmo capítulo não têm cabeçalho (ver [`print-footer.md`](print-footer.md)
+para o rodapé, que aparece em toda página, com ou sem cabeçalho).
+
+> Este cabeçalho **substitui** a faixa colorida full-bleed da versão
+> anterior. O usuário a achou "muito forte" e pediu fundo branco, tudo em
+> navy e uma barra abaixo, igual à do rodapé. Se encontrar
+> `.gh-band { background: var(--section-color) ... color: #fff }` em algum
+> documento antigo, é a faixa velha; não a reproduza em documento novo.
 
 ## O que é
 
-Faixa colorida sólida **full-bleed**: cobre 100% da largura e começa
-exatamente no topo físico da página, sem nenhuma margem branca ao redor
-(isso sai de graça aqui porque a página inteira já não tem margem — ver
-`print-pages.md` para o porquê de NÃO tentar isso com margem negativa).
-Dentro: numeral grande translúcido + eyebrow (rótulo pequeno em
-maiúsculas) + título, e opcionalmente um chip branco com ícone de produto
-Gov Hub à direita.
+Cabeçalho **sóbrio, sobre o branco da página**, alinhado às margens do
+conteúdo (20mm): numeral grande em navy translúcido + eyebrow (rótulo
+pequeno em maiúsculas) em navy + **título em roxo** (`--primary-purple`,
+o único roxo da página de texto), e uma **barra de 2px na cor da barra do
+rodapé** (`--border-soft`) fechando o bloco por baixo, da margem esquerda
+à direita. Sem fundo, sem formas, sem chip de ícone. O roxo no título é
+deliberado (testado e aprovado em 2026-09-18): com os `h3` do corpo em
+navy, ele marca o topo da página como o nível mais alto da hierarquia.
 
-**Numeração sempre começa em 1** (não em 0) — "01", "02", "03"...
+**Numeração sempre começa em 1** (não em 0): "01", "02", "03"...
 
 ## CSS
 
 ```css
 .gh-band {
-  position: absolute; top: 0; left: 0; right: 0;
-  background: var(--section-color, var(--primary-purple));  /* cor do capítulo, ver rampa editorial em palette.md */
-  color: #fff;
-  padding: 17mm 20mm 14mm;
+  position: absolute; top: 0; left: 20mm; right: 20mm;   /* mesma margem do conteúdo, NÃO left/right:0 */
+  padding: 22mm 0 9mm;
+  border-bottom: 2px solid var(--border-soft);           /* mesma barra do rodapé (print-footer.md) */
+  color: var(--dark-navy);
 }
 .gh-band__row { display: flex; align-items: center; gap: 8mm; }
 
 .gh-band__num {
   font-size: 56px; font-weight: 800; line-height: 1;
-  color: rgba(255,255,255,0.72);
+  color: var(--dark-navy); opacity: .45;
   min-width: 34mm;
 }
 .gh-band__eyebrow {
   text-transform: uppercase; letter-spacing: 2px;
-  font-size: 11px; font-weight: 700; opacity: .85;
+  font-size: 11px; font-weight: 700;
+  color: var(--dark-navy); opacity: .7;
   margin-bottom: 7px;
 }
-.gh-band__title { color: #fff; font-size: 22pt; font-weight: 800; line-height: 1.2; margin: 0; }  /* título principal (H1); color explícito — não confie na herança de .gh-band, um reset global tipo h1,h2,h3,h4{color:...} no projeto sobrescreve o branco silenciosamente */
-
-/* chip do ícone — opcional, mas inclua no exemplo/template para não esquecer como fica */
-.gh-band__icon {
-  margin-left: auto; flex-shrink: 0;
-  width: 60px; height: 60px;
-  background: #fff; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+.gh-band__title {
+  color: var(--primary-purple);  /* explícito: um reset global tipo h2{color:...} no projeto sobrescreve a herança */
+  font-size: 22pt; font-weight: 800; line-height: 1.2; margin: 0;
 }
-.gh-band__icon img, .gh-band__icon svg { width: 42px; height: 42px; }
 ```
 
-Se o **título e/ou eyebrow crescerem** (título de capítulo mais longo, por
-exemplo), é esperado que a faixa fique um pouco mais alta — `padding` não é
-fixo em altura, ela cresce com o conteúdo. Não force uma altura fixa na
-faixa por causa disso.
+Se o **título e/ou eyebrow crescerem** (título de duas linhas), o bloco
+fica um pouco mais alto e a barra desce junto; `padding` não é altura
+fixa. Não force uma altura fixa por causa disso; ajuste o `top` do corpo
+(fórmula abaixo).
 
 ## HTML
 
 ```html
-<div class="gh-page">
-  <div class="gh-band" style="--section-color:var(--editorial-01-purple)">
+<div class="gh-page" style="--section-color:var(--editorial-00-navy)">
+  <div class="gh-band">
     <div class="gh-band__row">
       <div class="gh-band__num">01</div>
       <div>
         <div class="gh-band__eyebrow">Sobre este documento</div>
         <h2 class="gh-band__title">Introdução</h2>
-      </div>
-      <!-- ícone opcional: remova o bloco inteiro se o capítulo não tiver um.
-           Use <img>, não SVG inline colado — mesmo padrão dos callouts em
-           editorial-report.md seção 6, mais simples de manter consistente. -->
-      <div class="gh-band__icon">
-        <img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/workflow-default.svg" alt="">
       </div>
     </div>
   </div>
@@ -84,85 +79,104 @@ faixa por causa disso.
 </div>
 ```
 
-**Nome exato do token de cor**: é `--editorial-01-purple`,
-`--editorial-02-magenta`, `--editorial-03-pink`, `--editorial-04-coral` (com
-o sufixo da cor, definidos em `tokens.css`) — não `--editorial-01` sem
-sufixo. Um `var()` apontando para um nome que não existe não dá erro
-visível: ele silenciosamente cai no fallback (`var(--primary-purple)` aqui),
-e a faixa fica na cor errada sem avisar nada. Confira o nome exato em
-`tokens.css` antes de usar.
+`--section-color` fica no `.gh-page` (não no `.gh-band`) porque quem a
+consome são a tabela e os callouts do corpo, inclusive em página de
+continuação sem cabeçalho. **Em PDF ela é sempre `--editorial-00-navy`**,
+em todos os capítulos (decisão de 2026-09-18: "sempre navy, sem
+intercalar"); a variável continua existindo só para manter os componentes
+do corpo desacoplados. Nome exato do token, com sufixo, definido em
+`tokens.css`; um `var()` apontando para um nome que não existe não dá
+erro visível: cai silenciosamente no fallback (`var(--primary-purple)`) e
+a tabela sai roxa sem avisar.
+
+### Chip de ícone (removido)
+
+A faixa antiga tinha um chip branco com ícone de produto à direita. No
+cabeçalho branco ele ficaria solto, então saiu. Se o usuário pedir o ícone
+de volta, a saída é um chip pêssego (`--bg-peach`, `border-radius: 14px`,
+60px, ícone `-default` 42px) com `margin-left: auto` dentro do
+`.gh-band__row`; não reintroduza sem pedido.
 
 ## Corpo da página (`.gh-page-body`)
 
 ```css
 .gh-page-body {
   position: absolute; left: 20mm; right: 20mm;
-  top: 74mm; bottom: 32mm;    /* top = altura real da faixa + ~28mm de respiro, ver fórmula abaixo */
+  top: 58mm; bottom: 32mm;    /* top = altura real do cabeçalho + ~12mm de respiro, ver fórmula */
   overflow: hidden;
 }
-/* página de continuação, sem faixa: só o top muda (respiro normal do topo).
-   bottom continua 32mm igual — o rodapé (print-footer.md) fica na mesma
-   altura em toda página, tenha ela faixa ou não. */
+/* página de continuação, sem cabeçalho: só o top muda (respiro normal do topo).
+   bottom continua 32mm igual: o rodapé (print-footer.md) fica na mesma
+   altura em toda página, tenha ela cabeçalho ou não. */
 .gh-page-body.no-band { top: 20mm; }
 ```
 
-**`74mm` não é uma constante fixa — é `altura_real_da_faixa + ~28mm` de
-respiro, e o resultado bateu 74mm porque a faixa validada tinha ~46mm de
-altura.** Quando o corpo pagina por medição (ver "Conteúdo que flui em
-muitas páginas" em `print-pages.md`) e você mede a altura real de cada
-faixa no navegador, **não use a altura medida como `top` diretamente** — já
-aconteceu de um agente fazer isso e o texto do capítulo nasceu colado
-embaixo da faixa, sem nenhum respiro, porque ele leu "não force altura
-fixa na faixa" como licença para também não reservar respiro nenhum no
-corpo. A regra correta, com faixa de altura variável:
+**`58mm` não é uma constante fixa: é `altura_real_do_cabeçalho + ~12mm`
+de respiro**, e deu 58mm porque o cabeçalho validado (uma linha de
+eyebrow + título) termina em ~46mm, barra incluída. A primeira versão da
+IDV nova usava 74mm (~28mm de respiro, herdado da faixa colorida) e o
+usuário pediu para "diminuir o espaço entre a barra abaixo do título e o
+início do texto"; 12mm foi o valor aprovado.
+
+Quando o corpo pagina por medição (ver "Conteúdo que flui em muitas
+páginas" em `print-pages.md`) e você mede a altura real de cada cabeçalho
+no navegador, **não use a altura medida como `top` diretamente**: já
+aconteceu de um agente fazer isso e o texto nascer colado na barra. A
+regra, com cabeçalho de altura variável:
 
 ```
-top = altura_real_da_faixa_em_mm + 28
+top = altura_real_do_cabeçalho_em_mm (até a barra) + 12
 ```
 
-Os ~28mm de respiro valem tanto pra faixa curta (uma linha de
-eyebrow+título, como no exemplo validado) quanto pra faixa mais alta
-(título de duas linhas, ou com `.gh-band__desc`) — é sempre a mesma folga
-absoluta somada por cima da altura real, não uma margem fixa de página que
-ignora o quanto a faixa cresceu.
+Os ~12mm valem tanto para cabeçalho curto quanto para título de duas
+linhas: é sempre a mesma folga absoluta somada à altura real, não uma
+margem fixa de página que ignora o quanto o cabeçalho cresceu.
 
 ## Escala tipográfica (PDF impresso)
 
 Validada com o usuário em agosto de 2026. **Use sempre `pt`, nunca `px`**,
-em qualquer texto de PDF — `pt` é uma unidade física fixa (1pt = 1/72
+em qualquer texto de PDF: `pt` é unidade física fixa (1pt = 1/72
 polegada), então o tamanho no papel é previsível; `px` depende da resolução
-assumida pelo motor de renderização e pode sair diferente do esperado.
-Isso vale para todo o corpo do documento (título de capítulo já é a
-exceção documentada abaixo, por ser um elemento de capa/faixa, não corpo
-corrido).
+assumida pelo motor de renderização. Vale para todo o corpo do documento
+(título de capítulo já é a exceção documentada abaixo, por ser elemento de
+cabeçalho, não corpo corrido).
 
 | Nível | Uso | Tamanho |
 |---|---|---|
-| Título principal (H1) | `.gh-band__title`, título de capítulo na faixa colorida | 20–24pt (padrão: 22pt) |
-| Subtítulo (H2/H3) | `.gh-page-body h3`/`h4`, subtítulo de seção dentro do corpo (ex: "Frentes de trabalho") | 14–18pt (padrão: 16pt) |
+| Título principal (H1) | `.gh-band__title`, título de capítulo no cabeçalho | 20–24pt (padrão: 22pt) |
+| Subtítulo (H2/H3) | `.gh-page-body h3`/`h4`, subtítulo de seção dentro do corpo (ex: "Fontes de dados analisadas"), em `--dark-navy` | 14–18pt (padrão: 16pt) |
 | Texto principal (corpo) | `.gh-page-body p`, `li`, texto corrido | 11–12pt (padrão: 11.5pt) |
-| Notas de rodapé e legendas | `.gh-footer__text`, `.gh-fig-inline__caption`, `.gh-table__caption`, células de tabela, callouts | 9–10pt |
+| Notas de rodapé e legendas | `.gh-footer__text`, `.gh-fig-inline__caption`, `.gh-table-caption`, células de tabela, callouts | 9–10pt |
 
 ```css
-.gh-page-body h3 { font-size: 16pt; color: var(--logo-purple); margin: 0 0 10px; }
-.gh-page-body p  { font-size: 11.5pt; line-height: 1.5; color: var(--text-body); margin: 0 0 14px; }
+.gh-page-body h3 { font-size: 16pt; color: var(--dark-navy); margin: 0 0 10px; }  /* navy, não roxo: o roxo roubava atenção do título do capítulo (pedido do usuário, 2026-09-18) */
+.gh-page-body p  { font-size: 11.5pt; line-height: 1.5; color: var(--text-body); margin: 0 0 14px; text-align: justify; hyphens: none; }
+.gh-page-body li { font-size: 11.5pt; line-height: 1.5; color: var(--text-body); margin-bottom: 4px; }
 ```
 
 O que **não muda** com essa escala: o numeral grande (`.gh-band__num`,
 56px, decorativo) e o eyebrow (`.gh-band__eyebrow`, rótulo pequeno em
-maiúsculas) — nenhum dos dois é "texto de leitura", então ficam fora da
-escala de 4 níveis acima.
+maiúsculas); nenhum dos dois é "texto de leitura", então ficam fora da
+escala de 4 níveis.
 
 ## O que varia por capítulo
 
-- `--section-color`: cor da faixa, rotaciona pela rampa editorial (ver
-  `palette.md` — `--editorial-01-purple` → `02-magenta` → `03-pink` →
-  `04-coral`, repetindo o ciclo do 5º capítulo em diante).
-- Numeral, eyebrow, título.
-- Ícone (opcional): escolha por nome mais próximo do conteúdo, ver
-  `editorial-report.md` seção 5 para o mapeamento curado de ícones.
+- Numeral, eyebrow, título. Só isso.
 
 ## O que não varia
 
-Estrutura da faixa (padding, tamanhos de fonte, chip do ícone),
-posicionamento full-bleed, opacidade do numeral (0.72).
+Fundo branco, numeral e eyebrow em navy (opacidades .45 e .7), título em
+roxo, barra de 2px `--border-soft` alinhada às margens de 20mm, sem
+formas, sem chip de ícone, `--section-color` navy.
+
+## Histórico
+
+- **Agosto/2026:** faixa colorida full-bleed na cor do capítulo, texto
+  branco, numeral a 72% de branco, chip branco com ícone. Substituída.
+- **2026-09-17 (IDV nova):** v1 manteve a faixa com meio-anel decorativo;
+  o usuário pediu "mais sóbrio: fundo branco, número, título e subtítulo
+  em navy, e uma barra similar à do footer abaixo". v2 aprovada; depois
+  respiro do corpo reduzido de 28mm para 12mm.
+- **2026-09-18:** `h3` do corpo de roxo para navy ("roubava atenção do
+  título da página"); em seguida o título do capítulo testado em roxo e
+  aprovado; tabelas fixadas em navy em todos os capítulos.

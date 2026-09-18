@@ -12,8 +12,8 @@ arquivo documenta o componente inteiro.
 Tabela **sem cartão ao redor**: nada de borda arredondada, sombra, ou caixa
 de cabeçalho separada como em `component-recipes.md` (`.gh-table`, que é
 para HTML/web, não para PDF impresso). No PDF, a tabela é só a tabela:
-uma legenda em negrito acima, header sólido na cor da seção atual, linhas
-finas embaixo de cada linha, zebra sutil.
+uma legenda em negrito acima, header sólido navy, linhas finas embaixo de
+cada linha, zebra sutil.
 
 **Numeração de legenda é sequencial no documento inteiro** (Tabela 1,
 Tabela 2, Tabela 3...), não reinicia por capítulo. Conte a partir da
@@ -47,12 +47,18 @@ primeira tabela do documento, na ordem em que aparecem.
 .gh-print-table tbody tr:nth-child(even) td { background: var(--bg-subtle); }
 ```
 
-A cor do header **segue a seção atual** (`--section-color`, a mesma
-variável que a faixa de capítulo usa — ver `print-header.md`), não é
-roxo fixo. Isso vale inclusive em página de continuação sem faixa: o
-`--section-color` do capítulo continua definido no elemento pai (`.gh-page`
-ou um wrapper do capítulo), então a tabela pega a cor certa mesmo longe da
-faixa que a definiu.
+O header é **sempre navy** (`--editorial-00-navy`, via `--section-color`
+definida no `.gh-page`, ver `print-header.md`), em todos os capítulos.
+Histórico da decisão (simulação do Relatório de Diagnóstico com a IDV
+nova): em 2026-09-17 o usuário tirou magenta e rosa das tabelas e aprovou
+navy e roxo alternando por capítulo; em 2026-09-18 pediu "a cor da tabela
+sempre em navy, sem intercalar entre os capítulos". Legenda e contorno dos
+callouts herdam a mesma cor. O roxo no PDF fica reservado ao título do
+capítulo, à capa e ao índice.
+
+A variável `--section-color` continua sendo o mecanismo (a tabela não
+declara navy fixo) para que um documento que precise de outra cor de seção
+mude num lugar só; mas o padrão, sem pedido em contrário, é navy em tudo.
 
 ## HTML
 
@@ -91,3 +97,4 @@ documentos, não o conjunto exato de colunas.
 
 - [`print-pages.md`](print-pages.md) — arquitetura de página que esta tabela pressupõe.
 - [`print-header.md`](print-header.md) — de onde vem `--section-color`.
+- [`palette.md`](palette.md) — o que sobrou da rampa editorial em PDF.

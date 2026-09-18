@@ -78,39 +78,48 @@ se precisar de uma versão mais suave do acento pontual.
 ## Rampa editorial — relatórios longos com capítulos (livro Gov Hub)
 
 Progressão oficial de matiz do MIV: **azul-marinho → roxo → magenta → rosa →
-pêssego claro.** Substitui a rampa "harmonizada"/aproximada da versão
-anterior desta skill — estes valores agora são os hexadecimais exatos do
-manual, não uma aproximação. Use esta rampa **somente em relatórios/
-frameworks longos e com capítulos** (como o Briefing, o guia de integração,
-ou qualquer PDF no estilo "00 Introdução, 01 Artefato, 02 Artefato..."). Para
-telas de produto/UI, siga sempre o roxo como cor única de assinatura.
+pêssego claro.** Estes valores são os hexadecimais exatos do manual. Use
+esta rampa **somente em relatórios/frameworks longos e com capítulos**
+(como o Briefing, o guia de integração, ou qualquer PDF no estilo "01
+Introdução, 02 Metodologia..."). Para telas de produto/UI, siga sempre o
+roxo como cor única de assinatura.
 
 | Token | Hex (oficial) | Uso |
 |---|---|---|
-| `--editorial-00-navy` | `#0A005A` | Capa/numeral do capítulo 00 (abertura, introdução) |
-| `--editorial-01-purple` | `#613EFF` | Capa/numeral do capítulo 01 |
-| `--editorial-02-magenta` | `#EF41FF` | Capa/numeral do capítulo 02 |
-| `--editorial-03-pink` | `#F9006F` | Capa/numeral do capítulo 03 |
-| `--editorial-04-peach` | `#FFE7E1` | Capa/numeral do capítulo 04 (fechamento) — **atenção:** é uma cor clara, então o numeral/título ficam em `--dark-navy`, não em branco (ver acessibilidade). |
+| `--editorial-00-navy` | `#0A005A` | Cor de seção (tabela, callout) em PDF, em todos os capítulos |
+| `--editorial-01-purple` | `#613EFF` | Em PDF: título do capítulo (`.gh-band__title`); não é mais cor de seção |
+| `--editorial-02-magenta` | `#EF41FF` | **Fora de texto e tabela em PDF** (ver abaixo). Só em elemento gráfico, slide ou post. |
+| `--editorial-03-pink` | `#F9006F` | **Fora de texto e tabela em PDF.** Só em elemento gráfico, slide ou post. |
+| `--editorial-04-peach` | `#FFE7E1` | Fundo de forma/chip em PDF (pílula da capa, ver `print-cover.md`). Cor clara: qualquer texto por cima vai em `--dark-navy`. |
 
-**Como aplicar a progressão:**
-- Página de capa do documento: fundo sólido `--dark-navy` ou gradiente
-  `--primary-purple` → `--dark-navy`, com um elemento gráfico (círculos/
-  semicírculos, ver `component-recipes.md`) em `--accent-magenta` ou
-  `--accent-pink` cruzando o fundo.
-- Cada capítulo/seção numerada ganha sua cor da rampa, em ordem, ciclando de
-  volta ao navy se houver mais de 5 capítulos.
-- Sobre o fundo colorido da capa de capítulo, sobreponha uma grade sutil
-  (`--editorial-grid-line`) e 1–2 círculos/semicírculos translúcidos
-  (`--editorial-ring`) como textura decorativa — nunca ilustrações
-  figurativas (ver "Padronagem e elementos gráficos" em `component-recipes.md`).
-- O número do capítulo e o título ficam em branco, bold, sobre fundo escuro
-  (navy, roxo, magenta, pink) — e em `--dark-navy` sobre o capítulo peach
-  (`#FFE7E1`), que é claro demais para texto branco.
-- Dentro do corpo do capítulo (fundo branco), a cor do capítulo pode ser
-  usada como acento local: título de seção, ícone do callout, barra lateral
-  — mantendo o roxo como cor dominante do restante do documento (títulos
-  gerais, tabelas, badges).
+### Em PDF: navy nas tabelas, roxo só no título (decisões de 2026-09-17/18)
+
+Na simulação do Relatório de Diagnóstico com a IDV nova, o usuário pediu
+para **remover magenta e rosa dos textos e tabelas**; testou navy e roxo
+alternando por capítulo e, no dia seguinte, fixou **navy em todas as
+tabelas** ("sem intercalar entre os capítulos"). A partir daí, em
+documento PDF:
+
+- `--section-color` = `--editorial-00-navy` em todo capítulo. Ela pinta
+  header e legenda de tabela e o contorno de callout (`print-table.md`,
+  `editorial-report.md` seção 6).
+- Hierarquia de títulos: **título do capítulo em roxo** (`.gh-band__title`,
+  o único roxo da página de texto; testado e aprovado em 2026-09-18),
+  numeral e eyebrow em navy, `h3` de seção em navy (eram roxos; "roubavam
+  atenção do título da própria página"). Título do índice em `--logo-purple`.
+- Capa branca, cabeçalho branco, rodapé com símbolo navy: o documento
+  inteiro fica em navy + roxo + pêssego, com o roxo em poucos pontos
+  (título de capítulo, quarto de círculo da capa, índice).
+- Magenta e rosa continuam válidos nos **elementos gráficos** de slides e
+  posts (`slides.md`, `social-posts.md`) e no CTA de produto
+  (`--accent-pink`); só saíram do PDF impresso.
+
+**Como aplicar a progressão (histórico, versão anterior a 2026-09-17):**
+a faixa colorida full-bleed por capítulo, com a rampa completa navy →
+roxo → magenta → rosa → pêssego, numeral branco a 72% e chip branco com
+ícone, foi o padrão de agosto de 2026 e está substituída pelo cabeçalho
+sóbrio. Não a reproduza em documento novo; se um documento antigo com a
+faixa precisar de manutenção, mantenha-o consistente consigo mesmo.
 
 ## Elementos gráficos e padronagem
 

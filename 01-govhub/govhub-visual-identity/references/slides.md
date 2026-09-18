@@ -222,7 +222,7 @@ projeto entram depois, se houver, na versão `negativo` — ver
   </div>
   <div class="gh-slide__partners">
     <img src="logo/parceiros/lab-livre-white.svg" alt="Lab Livre">
-    <img src="logo/parceiros/unb-light.svg" alt="UnB">
+    <img src="logo/parceiros/unb-light-outlined.svg" alt="UnB">
   </div>
 </section>
 ```

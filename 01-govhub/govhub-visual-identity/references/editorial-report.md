@@ -36,8 +36,9 @@ Regra prática:
 
 | Contexto | Arquivo | Tamanho de referência |
 |---|---|---|
-| Capa, fundo colorido/escuro | `logomarca-horizontal-white.svg` | ~64px de altura |
-| Rodapé de página, fundo branco | `icone-none-default.svg` (ícone colorido) | ~45px de altura |
+| Capa de PDF (fundo branco, ver `print-cover.md`) | `logomarca-horizontal-navy.svg` | 12mm de altura |
+| Capa/slide com fundo colorido/escuro | `logomarca-horizontal-white.svg` | ~64px de altura |
+| Rodapé de página de PDF, fundo branco | `icone-none-navy.svg` (ver `print-footer.md`) | 9.5mm de altura |
 | Rodapé sobre fundo colorido | `icone-none-white.svg` | ~45px de altura |
 | Barra inferior de post sobre pêssego | `logomarca-horizontal-navy.svg` | 44px de altura |
 
@@ -69,19 +70,21 @@ cabeçalho, só o nome do documento no rodapé):
   cabeçalho e rodapé pressupõem, e o motivo (um bug real de paginação do
   Chrome) de por que essa é a versão certa e não a de margem
   negativa/sangria que um relatório antigo desta skill usava.
-- [`print-cover.md`](print-cover.md) — capa: fundo sólido `--logo-purple`,
-  moldura fina, logo no fluxo (não solta num canto), título/subtítulo,
-  rodapé pequeno da capa.
-- [`print-header.md`](print-header.md) — cabeçalho de capítulo: faixa
-  full-bleed com numeral (sempre começando em 01, não 00) + eyebrow +
-  título, chip de ícone opcional.
+- [`print-cover.md`](print-cover.md) — capa: fundo branco, logo navy no
+  alto à esquerda, título Oswald uppercase navy, três formas oficiais
+  sangrando (quarto roxo, pílula pêssego, anel navy), parceiros pretos no
+  rodapé da capa.
+- [`print-header.md`](print-header.md) — cabeçalho de capítulo: sobre o
+  branco da página, numeral (sempre começando em 01, não 00) + eyebrow +
+  título em navy, barra de 2px abaixo alinhada às margens. Sem faixa
+  colorida e sem chip de ícone desde 2026-09-17.
 - [`print-footer.md`](print-footer.md) — rodapé: repete em toda página de
   conteúdo, barra fina alinhada à margem do texto (não à borda física da
   página) + marca da Gov Hub.
 
-**Página de visão geral/framework** (grid com um card por seção) usa a
-mesma faixa full-bleed sólida no topo, com o texto "FRAMEWORK" como eyebrow
-e o título + subtítulo da faixa — não um card ou banda com margem.
+**Página de visão geral/framework** (grid com um card por seção) usa o
+mesmo cabeçalho de capítulo no topo, com o texto "FRAMEWORK" como eyebrow
+e o título; não um card ou banda com margem.
 
 ## 4. Escrita: sem travessão (—)
 
@@ -154,12 +157,11 @@ de construção no Figma.
 
 Nunca coloque um ícone sobre cor diferente do fundo embutido da sua
 variante — inclusive roxo `#613EFF`, magenta e branco. O fundo pintado do
-ícone destoa quando forçado sobre outra cor. É por isso que o chip do
-ícone no cabeçalho de capítulo (`gh-band__icon`, ver `print-header.md`)
-tem sempre a cor de uma variante (pêssego + `-default` por padrão), mesmo
-quando a faixa atrás dele é de outra cor da rampa: o chip garante que o
-ícone está sobre um dos três fundos permitidos, não sobre a cor variável
-da faixa.
+ícone destoa quando forçado sobre outra cor. É por isso que o badge do
+callout (`.gh-icon-badge`, seção 6) é branco com contorno na cor da
+seção, e não preenchido: o ícone `-default` fica sobre branco, um dos
+fundos previstos, e não sobre a cor variável do capítulo. (O chip de
+ícone do cabeçalho de capítulo saiu em 2026-09-17, ver `print-header.md`.)
 
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 

@@ -21,8 +21,9 @@ Hub, nunca no lugar dela.
   exercício). Ver "Ciclo eleitoral" abaixo.
 
 Lab Livre e UnB vieram com nomes próprios, pela cor e não pelo fundo
-(`-white`/`-black`/`-blue`, `-light`/`-dark`/`-colourfull`). A tabela abaixo
-já traduz cada um para o fundo certo.
+(`-white`/`-black`/`-blue`; `-light`/`-dark`/`-colourfull`, mais
+`-outlined`/`-fulfilled` e `-vertical` na UnB). A tabela abaixo já traduz
+cada um para o fundo certo.
 
 ## Lab Livre e UnB: sempre juntos, nessa ordem
 
@@ -34,9 +35,12 @@ UnB logo depois. Nunca uma sem a outra.
 
 | Parceiro | Fundo claro (`positivo`) | Fundo escuro (`negativo`) | Formato |
 |---|---|---|---|
-| Lab Livre (logo completa) | `lab-livre-blue.svg` (azul institucional `#080056`, preferir) ou `lab-livre-black.svg` | `lab-livre-white.svg` | SVG 1514×377 |
-| Lab Livre (só a borboleta, ícone) | `borboleta-blue.svg` (preferir) ou `borboleta-black.svg` | `borboleta-white.svg` | SVG 256×256 |
-| UnB | `unb-colourfull.svg` (azul `#003F7A` + verde `#008137`, preferir) ou `unb-dark.svg` (preto) | `unb-light.svg` | SVG 1174×301 |
+| Lab Livre (logo completa) | `lab-livre-black.svg` (preferir, mesma cor da UnB) ou `lab-livre-blue.svg` (azul institucional `#080056`) | `lab-livre-white.svg` | SVG 1514×377 |
+| Lab Livre (só a borboleta, ícone) | `borboleta-black.svg` (preferir) ou `borboleta-blue.svg` | `borboleta-white.svg` | SVG 256×256 |
+| UnB horizontal, **outlined** (padrão) | `unb-dark-outlined.svg` | `unb-light-outlined.svg` | SVG 1172×303 |
+| UnB horizontal, fulfilled (símbolo cheio) | `unb-dark-fulfilled.svg` | `unb-light-fulfilled.svg` | SVG 1174×301 |
+| UnB vertical, outlined | `unb-dark-vertical-outlined.svg` | `unb-light-vertical-outlined.svg` | SVG 605×559 |
+| UnB colorida (azul `#133E79` + verde `#008940`) | `unb-colourfull-fulfilled.svg` (horizontal) / `unb-colourfull-vertical.svg` | não há | SVG |
 | Ipea | `ipea_positivo.png` (1028×200) | **não há** | PNG |
 | MGI — Ministério da Gestão e da Inovação em Serviços Públicos | `mgi_positivo-defeso.svg` | `mgi_negativo-defeso.svg` | SVG 380×119 |
 | MIR — Ministério da Integração e do Desenvolvimento Regional | `mir_positivo-defeso.svg` | `mir_negativo-defeso.svg` | SVG 325×118 |
@@ -47,10 +51,15 @@ A **borboleta** é só o ícone do Lab Livre: use-a apenas onde a logo
 completa não cabe (chip, favicon, rodapé muito baixo), e mesmo assim com a
 UnB ao lado. Em capa, encerramento e fechamento vai a logo completa.
 
-Em fundo claro (pêssego, magenta, branco), use `lab-livre-blue` +
-`unb-dark`: a UnB colorida (`unb-colourfull`) foi testada nos posts em
-2026-09-17 e reprovada pelo usuário ao lado da paleta Gov Hub; fica só
-para quando ele pedir. `lab-livre-black` é para impressão monocromática. O azul do Lab Livre
+**UnB sempre na versão `outlined`** (símbolo em contorno): a `fulfilled`
+(símbolo cheio) foi testada na capa de PDF em 2026-09-17 e reprovada pelo
+usuário por ficar pesada ao lado da Lab Livre; a `fulfilled` fica para
+quando ele pedir. As duas logos vão **na mesma cor**: em fundo claro
+(pêssego, magenta, branco) `lab-livre-black` + `unb-dark-outlined`; em
+fundo escuro `lab-livre-white` + `unb-light-outlined`. A UnB colorida
+(`unb-colourfull-*`) também foi reprovada nos posts (2026-09-17) ao lado
+da paleta Gov Hub; só a pedido. As versões `vertical` são para espaços
+altos e estreitos (coluna lateral, selo), nunca na linha de parceiros. O azul do Lab Livre
 (`#080056`) é da marca dele, não é o navy do Gov Hub (`#0A005A`); não
 recolorir um pelo outro.
 
@@ -63,8 +72,8 @@ ou aplicar filtro CSS na logo de um parceiro.
 - **Sempre:** Lab Livre e UnB, nessa ordem, em toda capa de PDF, slide de
   encerramento e fechamento de carrossel (regra já fixada em
   `print-cover.md`). Em fundo escuro: `lab-livre-white.svg` +
-  `unb-light.svg`; em fundo claro: `lab-livre-blue.svg` +
-  `unb-dark.svg`.
+  `unb-light-outlined.svg`; em fundo claro: `lab-livre-black.svg` +
+  `unb-dark-outlined.svg`.
 - **Ipea:** só quando o documento é de um projeto/frente com o Ipea. Entra
   depois da UnB.
 - **Ministérios:** só o ministério do projeto/frente a que o documento

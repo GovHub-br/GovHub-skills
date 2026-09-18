@@ -80,10 +80,10 @@
      skill (que usava tons "harmonizados", não oficiais). Uso: capa/numeral
      de capítulo, tarja full-bleed de seção — nunca em UI de produto, onde
      o roxo (--primary-purple) segue como cor única de assinatura. */
-  --editorial-00-navy:    #0A005A; /* abertura/capa, capítulo mais "denso" */
-  --editorial-01-purple:  #613EFF; /* capítulo 01 — mesmo tom do primário */
-  --editorial-02-magenta: #EF41FF; /* capítulo 02 */
-  --editorial-03-pink:    #F9006F; /* capítulo 03 */
+  --editorial-00-navy:    #0A005A; /* em PDF: cor de seção (tabela/callout) em todos os capítulos */
+  --editorial-01-purple:  #613EFF; /* em PDF: título do capítulo; mesmo tom do primário */
+  --editorial-02-magenta: #EF41FF; /* fora de texto/tabela em PDF desde 2026-09-17 (palette.md); só elemento gráfico */
+  --editorial-03-pink:    #F9006F; /* idem */
   --editorial-04-peach:   #FFE7E1; /* fechamento — claro, precisa de texto escuro (--dark-navy) em cima */
   --editorial-grid-line: rgba(255, 255, 255, 0.08); /* linha de grade sutil sobre capas coloridas */
   --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */

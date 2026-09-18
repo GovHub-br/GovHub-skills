@@ -3,11 +3,13 @@
 Validado na prática (agosto de 2026) num documento de teste de 3 páginas,
 revisado e aprovado pelo usuário. Esta é a técnica correta para gerar PDF a
 partir de HTML impresso via Chrome headless (`--print-to-pdf` ou
-`Page.printToPDF`) sempre que o documento tiver **capa + cabeçalho de
-capítulo em faixa colorida full-bleed + rodapé repetido em toda página**.
-Não é a técnica do `editorial-report.md` original (que usava margem de
-página + margem negativa para sangrar a faixa) — aquela abordagem tem um bug
-real do Chrome, documentado abaixo. Use sempre esta versão.
+`Page.printToPDF`) sempre que o documento tiver **capa com formas
+sangrando pelas bordas + cabeçalho de capítulo + rodapé repetido em toda
+página**. Não é a técnica do `editorial-report.md` original (que usava
+margem de página + margem negativa para sangrar a faixa) — aquela abordagem
+tem um bug real do Chrome, documentado abaixo. Use sempre esta versão.
+Desde 2026-09-17 o cabeçalho de capítulo é branco (não sangra mais), mas a
+capa continua sangrando as formas, e a arquitetura é a mesma.
 
 ## Regra: a dificuldade de paginar o corpo NÃO é motivo para simplificar capa/cabeçalho
 
@@ -74,7 +76,7 @@ truque de margem negativa, e o bug não tem como acontecer.
 
 Cada página do documento é `<div class="gh-page">...</div>` em sequência no
 `<body>`. Dentro dela, tudo é posicionado absolutamente:
-- a faixa do cabeçalho: `position:absolute; top:0; left:0; right:0;` — veja
+- o cabeçalho de capítulo: `position:absolute; top:0; left:20mm; right:20mm;` — veja
   [`print-header.md`](print-header.md);
 - o rodapé: `position:absolute; ...; bottom:12mm;` — veja
   [`print-footer.md`](print-footer.md);
@@ -160,18 +162,20 @@ capítulo full-bleed em todas as páginas, sem overflow nem folga grande):
 
 1. Quebre o conteúdo do corpo em **blocos atômicos** (uma tabela, um
    diagrama, uma nota — nunca algo que não possa ser cortado no meio) mais
-   uma **faixa** (`.gh-band`, ver `print-header.md`) por capítulo.
+   um **cabeçalho** (`.gh-band`, ver `print-header.md`) por capítulo.
 2. Num navegador headless (Puppeteer/Playwright), depois que qualquer
    conteúdo assíncrono (ex: diagramas mermaid) já tiver renderizado, crie um
    container escondido `position:absolute; width:170mm` (a largura útil do
    corpo — 210mm menos as margens de 20mm de cada lado de `print-header.md`)
    e, para cada bloco, jogue o HTML dele lá dentro e leia `scrollHeight`.
-   Meça a faixa de cada capítulo do mesmo jeito, a `210mm` (largura cheia).
+   Meça o cabeçalho de cada capítulo do mesmo jeito, a `170mm` (ele é
+   alinhado às margens, como o corpo).
 3. Empacote os blocos em páginas com um algoritmo guloso: a primeira página
-   de um capítulo tem orçamento vertical `297mm − altura_da_faixa − 32mm`
-   (32mm reservados pro rodapé); páginas de continuação (sem faixa) têm
+   de um capítulo tem orçamento vertical `297mm − (altura_do_cabeçalho + 12mm) − 32mm`
+   (12mm de respiro após a barra, 32mm reservados pro rodapé); páginas de
+   continuação (sem cabeçalho) têm
    `297mm − 20mm − 32mm`. Assim que um bloco não cabe no orçamento restante,
-   feche a página atual e abra uma nova sem faixa. Subtraia uma margem de
+   feche a página atual e abra uma nova sem cabeçalho. Subtraia uma margem de
    segurança do orçamento pra absorver diferenças de arredondamento entre a
    medição e a renderização final — **use pelo menos ~20mm, não ~4mm**: em
    produção, blocos empilhados como siblings reais (margem entre um bloco e
@@ -192,6 +196,33 @@ capítulo full-bleed em todas as páginas, sem overflow nem folga grande):
    medição bate com o resultado real — mas confira mesmo assim (ver
    "Revisão obrigatória" acima; ela continua obrigatória mesmo com
    paginação por medição).
+6. **Numere as páginas e o índice no mesmo passo.** O gerador é quem sabe
+   quantas páginas físicas existem, então é ele que preenche o
+   `.gh-footer__page` de cada rodapé (`print-footer.md`) e a coluna `.page`
+   do índice (`print-frontmatter.md`), nunca um número digitado à mão:
+
+   ```js
+   // pages: array de {html, chapter?} na ordem final; a capa é pages[0]
+   pages.forEach((pg, i) => { pg.number = i + 1; });          // capa = 1
+   const tocEntries = chapters.map(ch => ({
+     num: ch.num, label: ch.title,
+     page: pages.find(pg => pg.chapter === ch.num).number,    // 1ª página do capítulo
+   }));
+   const footer = (pg) => pg.isCover ? '' : `
+     <div class="gh-footer-bar"></div>
+     <div class="gh-footer">
+       <span class="gh-footer__text"><span class="gh-footer__page">${pg.number}</span>${docShort} &middot; ${projectShort} &middot; Gov Hub &middot; Lab Livre - UnB</span>
+       <img class="gh-footer__logo" alt="" src="logo/icone-none-navy.svg">
+     </div>`;
+   ```
+
+   Ordem de montagem: capa, front matter (se houver), capítulos. O índice
+   é o único bloco que depende do resultado da paginação, então gere o HTML
+   dele **depois** de empacotar os capítulos; a página do índice em si tem
+   posição fixa (3, logo após a folha de identificação), e o front matter
+   ocupa sempre 2 páginas, então não altera a contagem dos capítulos de
+   forma imprevisível. Se o documento não tem front matter, o capítulo 01
+   começa na página 2.
 
 **Pegadinha: bloco/faixa com `<img>` (ícone) mede menor do que o real se
 você não esperar a imagem carregar.** Ao jogar o HTML de um bloco dentro
@@ -247,7 +278,7 @@ ambiente de geração do PDF não tiver internet, o comando para baixar a pasta
 ## Referências
 
 - [`print-cover.md`](print-cover.md) — código exato da capa.
-- [`print-header.md`](print-header.md) — código exato do cabeçalho de capítulo (faixa colorida).
+- [`print-header.md`](print-header.md) — código exato do cabeçalho de capítulo (branco, navy, barra abaixo).
 - [`print-footer.md`](print-footer.md) — código exato do rodapé.
 - [`print-table.md`](print-table.md) — código exato de tabela de dados (legenda + header sólido na cor da seção, sem cartão ao redor).
 - [`print-frontmatter.md`](print-frontmatter.md) — folha de identificação + índice, só em relatório de entrega de produto (pergunte antes).

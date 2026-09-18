@@ -358,7 +358,7 @@ sangrando pela esquerda. Conteúdo centralizado abaixo do quarto de círculo
     <div style="font-size:22px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.75);">Uma iniciativa de</div>
     <div style="display:flex; align-items:center; justify-content:center; gap:48px;">
       <img src="logo/parceiros/lab-livre-white.svg" alt="Lab Livre" style="height:60px; width:auto;">
-      <img src="logo/parceiros/unb-light.svg" alt="UnB" style="height:60px; width:auto;">
+      <img src="logo/parceiros/unb-light-outlined.svg" alt="UnB" style="height:60px; width:auto;">
     </div>
   </div>
 </div>
@@ -403,9 +403,9 @@ Texto, logo, formas e componentes trocam juntos quando o fundo muda:
 |---|---|---|---|---|---|---|---|
 | navy | branco | white | roxo, magenta, pêssego (rosa só como 4ª, pequena) | magenta / texto navy | roxo | rosa | brancas |
 | roxo | branco | white | navy, pêssego, magenta | pêssego / navy | navy | rosa | brancas |
-| pêssego | navy | navy | roxo, navy, magenta | magenta / navy | rosa | rosa | `lab-livre-blue` + `unb-dark` |
+| pêssego | navy | navy | roxo, navy, magenta | magenta / navy | rosa | rosa | `lab-livre-black` + `unb-dark-outlined` |
 | rosa | branco (peso ≥ 600) | white | navy, roxo, pêssego | navy / branco | navy | **navy** | brancas |
-| magenta | navy | navy | navy, roxo, pêssego | pêssego / navy | navy | **navy** | `lab-livre-blue` + `unb-dark` |
+| magenta | navy | navy | navy, roxo, pêssego | pêssego / navy | navy | **navy** | `lab-livre-black` + `unb-dark-outlined` |
 
 - **Cor segura** (forma grande atrás de texto, ênfase B e fechamento C):
   navy→roxo, roxo→navy, pêssego→magenta, rosa→navy, magenta→pêssego.
