@@ -121,8 +121,9 @@ body { font-family: var(--font); color: var(--text-body); -webkit-font-smoothing
 .composition .step { display: flex; align-items: center; gap: 10px; }
 .composition .num { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-purple); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
 .composition .step:nth-of-type(odd) .num { background: var(--dark-navy); }
-.composition .step > div > b { display: block; color: var(--text-strong); }
-.composition .step > div > span { color: var(--text-muted); }
+.composition .step b { display: block; color: var(--text-strong); }
+.composition .step span { color: var(--text-muted); }
+.composition .step span.num { color: #fff; } /* vence .step span, qualquer aninhamento */
 .composition .sep { width: 28px; height: 0; border-top: 2px solid var(--dark-navy); position: relative; }
 .composition .sep::after { content: ""; position: absolute; right: -2px; top: -5px; border: 4px solid transparent; border-left: 7px solid var(--dark-navy); }
 
