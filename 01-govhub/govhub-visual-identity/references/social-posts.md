@@ -13,7 +13,7 @@ proporções, paleta) estão na seção "Comunicação" de
 
 ## Quando usar cada estrutura
 
-| # | Estrutura | Fundo | Papel no carrossel |
+| # | Estrutura | Fundo padrão | Papel no carrossel |
 |---|---|---|---|
 | 1 | **Capa** | navy | 1º quadro. Logo + chamada + apoio. |
 | 2 | **Conteúdo** | pêssego | Quadros de explicação: rótulo na pílula, título, descrição e um bloco (cards em grade, lista de cards ou fluxo de 3 passos). |
@@ -24,10 +24,27 @@ proporções, paleta) estão na seção "Comunicação" de
 Ordem canônica de um carrossel: `capa → conteúdo × N → ênfase → conteúdo × N
 → convite → fechamento`. Um post único usa só a **capa** (ou só a **ênfase**).
 
-Os fundos da tabela são os padrão. Cada estrutura também existe nos outros
-4 fundos da paleta e em 3 composições alternativas de formas, como
-**arquivos HTML prontos no CDN**: ver "Variações: fundos e composições"
-no fim deste arquivo antes de recompor qualquer coisa à mão.
+## Primeiro passo: escolha a composição e os fundos
+
+**Antes de escrever qualquer HTML**, vá à seção
+["Variações"](#variações-fundos-e-composições-100-templates-prontos) no fim
+deste arquivo. Cada estrutura existe em **4 composições de formas (A-D) ×
+5 fundos = 100 HTMLs prontos no CDN**, todos aprovados. A composição A com
+os fundos da tabela acima é só **uma** das 100, e é a que está escrita
+inline neste arquivo por ser a primeira validada: não a trate como padrão
+nem a escolha por ser a que está mais à mão.
+
+Sem pedido explícito do usuário, **escolha uma composição (A, B, C ou D)
+para o carrossel inteiro** e mantenha-a em todos os quadros (misturar
+composições no mesmo carrossel quebra a unidade da peça); varie o fundo
+por estrutura, a partir dos padrão da tabela acima. Ao entregar, **diga
+qual combinação usou** e lembre que existem outras 99, com o link da
+galeria. Se o usuário pedir uma variação específica, use a dele.
+
+O código inline das seções seguintes é a composição A, e serve de
+referência de estrutura (zonas de texto, limites de linha, componentes)
+para qualquer composição: as posições das formas mudam, as regras de
+conteúdo não.
 
 ## Base compartilhada
 
@@ -382,6 +399,24 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/post-templates/<estrutu
 arquivo, troque os textos de exemplo e os ícones (chips levam o símbolo
 branco do Gov Hub como stand-in; substitua pelo ícone de produto da
 variante certa), mantenha formas e posições. Não recomponha do zero.
+
+**As quatro composições têm o mesmo peso.** `A` não é a preferida: é
+apenas a que está transcrita neste arquivo. Escolher `A` porque o código
+já está na tela é o erro que essa seção existe para evitar (aconteceu em
+2026-09-21: uma sequência inteira de posts saiu na composição A sem que o
+usuário soubesse que havia outras). Escolha `B`, `C` ou `D` com a mesma
+naturalidade, pelo que a composição faz pelo conteúdo:
+
+| Se o quadro tem | Composição que ajuda |
+|---|---|
+| título curto e muito texto de apoio | `A` ou `C` (formas concentradas num canto, texto com a largura toda) |
+| título longo | `B` (título ao lado da forma, mais altura pro texto) |
+| cards ou lista | `D` no conteúdo (forma grande atrás dos cards) |
+| número-chave ou citação curta | `B` na ênfase (centralizado no círculo) |
+| pouca coisa e muito respiro | `C` (cacho pequeno no canto) |
+
+Quando nada no conteúdo puxar pra um lado, escolha livremente e avise o
+usuário qual usou — o ponto é a peça não sair sempre igual.
 
 ### Composições por estrutura
 
