@@ -1,0 +1,9 @@
+{
+  "name": "govhub-diagramas-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Renderizador HTML -> PNG dos diagramas Gov Hub",
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}
