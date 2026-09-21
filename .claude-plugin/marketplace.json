@@ -11,7 +11,7 @@
     {
       "name": "govhub-skills",
       "source": "./",
-      "description": "Coleção completa — todas as 51 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
+      "description": "Coleção completa — todas as 52 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
       "category": "development"
     },
     {
@@ -48,6 +48,12 @@
       "name": "govhub-docs",
       "source": "./06-docs-relatorios",
       "description": "Docs & Relatórios — Geração de documentos e relatórios: docx, xlsx, PDF, planilhas, README, changelog, diagramas Mermaid e conversão de web para Markdown. (7 skills)",
+      "category": "development"
+    },
+    {
+      "name": "govhub-lablivre",
+      "source": "./07-lablivre",
+      "description": "Lab Livre — Skills da marca Lab Livre (Laboratório de Software Livre da UnB, dono dos projetos Gov Hub): identidade visual oficial com a mesma arquitetura da skill do Gov Hub (PDF, slides, posts, tokens). (1 skills)",
       "category": "development"
     }
   ]

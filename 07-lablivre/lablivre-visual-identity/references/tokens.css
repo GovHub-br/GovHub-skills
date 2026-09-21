@@ -1,0 +1,110 @@
+/* ============================================================
+   Lab Livre — Design Tokens (identidade visual oficial)
+   Fonte: Manual de Identidade Visual (MIV) Lab Livre.
+   Cole este bloco no <head> (dentro de <style>) ou no topo do
+   seu arquivo CSS. Depois use as variáveis com var(--nome).
+
+   Esta skill é uma cópia da govhub-visual-identity (2026-09-18) com a
+   paleta trocada pela do Lab Livre. Os NOMES dos tokens são os mesmos
+   da skill do Gov Hub de propósito: todo o código das referências
+   (PDF, slides, posts, componentes) funciona nas duas marcas, e um
+   artefato troca de marca trocando só este :root. O comentário de
+   cada cor traz o nome que o MIV do Lab Livre usa.
+   ============================================================ */
+
+/* Fontes da marca: Reddit Sans (principal) + Oswald (apoio, títulos) */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ---------- Paleta oficial (MIV Lab Livre) ---------- */
+  --primary-purple:  #7023E8; /* ROXO (MIV) — cor-assinatura, ícone da folha, destaque primário */
+  --dark-navy:       #080056; /* AZUL PROFUNDO (MIV) — texto forte, fundos escuros, contraste máximo */
+  --accent-magenta:  #E52E70; /* ROSA-CHOQUE (MIV) — acento secundário, transições de gradiente */
+  --accent-pink:     #F46B2F; /* LARANJA (MIV) — acento quente pontual, CTA, contraponto ao roxo/azul */
+  --bg-peach:        #FFE7E1; /* ROSA CLARO (MIV) — fundo claro de marca, respiro, base de cards */
+  --text-white:      #FFFFFF;
+
+  /* ---------- Estados derivados do primário ----------
+     Aproximados por escurecimento do --primary-purple para hover/active,
+     já que o MIV não define shades intermediários. Ajuste se o time de
+     design fornecer valores exatos. */
+  --purple-600: #5F1EC5; /* hover/foco do primário */
+  --purple-700: #4A17A0; /* active/pressionado (mais escuro) */
+
+  /* ---------- Neutros / texto ----------
+     Mantidos neutros (não tingidos de roxo) para legibilidade em texto
+     corrido longo — ver nota de acessibilidade em palette.md. Títulos e
+     destaques de marca usam --dark-navy ou --primary-purple, não estes. */
+  --text-strong: #202020; /* títulos neutros, texto forte quando não é "de marca" */
+  --text-body:   #2D3748; /* corpo de texto padrão */
+  --text-muted:  #666666; /* texto secundário / legendas */
+
+  /* ---------- Fundos ---------- */
+  --bg-white:  #FFFFFF;
+  --bg-light:  #F7F7F7; /* fundo neutro claro, uso geral */
+  --bg-subtle: #F8F9FA; /* fundo alternado (zebra, seções) */
+  /* --bg-peach (acima) é a alternativa "de marca" a estes dois neutros */
+
+  /* ---------- Bordas / divisores ---------- */
+  --border-soft: #E6DCFB; /* linha divisória sutil — lilás bem claro, tom do primário */
+
+  /* ---------- Cores de estado / semânticas (não são cor de marca) ---------- */
+  --color-success:   #10B981; /* verde — sucesso */
+  --color-highlight: #FFD700; /* amarelo — destaque */
+
+  /* ---------- Tipografia ----------
+     Reddit Sans: fonte principal (logotipo em Black caps, tagline Medium,
+     texto corrido em Regular, Bold para ênfase). No Canva gratuito, usar
+     Open Sans no lugar (mantém proporções parecidas).
+     Oswald: fonte de apoio, só para títulos/chamadas de impacto, sempre
+     uppercase + Bold — nunca em texto corrido. */
+  --font-family-base:    'Reddit Sans', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-heading: 'Oswald', 'Reddit Sans', 'Open Sans', sans-serif;
+
+  /* ---------- Sombras ---------- */
+  --shadow-md: 0 2px 10px rgba(8, 0, 86, 0.10);
+  --shadow-lg: 0 4px 20px rgba(8, 0, 86, 0.12);
+  --shadow-xl: 0 8px 30px rgba(8, 0, 86, 0.16);
+
+  /* ---------- Transição padrão ---------- */
+  --transition-normal: all 0.3s ease;
+
+  /* ---------- Raios / espaçamento base ---------- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --grid-gutter: 20px;
+
+  /* ---------- Rampa editorial (relatórios longos / capítulos) ----------
+     Progressão oficial do MIV Lab Livre, do frio para o quente: azul
+     profundo -> roxo -> rosa-choque -> laranja -> rosa claro. Uso em PDF
+     restrito (ver palette.md): tabelas em azul profundo, título de
+     capítulo em roxo; rosa-choque e laranja só em elemento gráfico. */
+  --editorial-00-navy:    #080056; /* em PDF: cor de seção (tabela/callout) em todos os capítulos */
+  --editorial-01-purple:  #7023E8; /* em PDF: título do capítulo; mesmo tom do primário */
+  --editorial-02-magenta: #E52E70; /* fora de texto/tabela em PDF desde 2026-09-17 (palette.md); só elemento gráfico */
+  --editorial-03-pink:    #F46B2F; /* idem */
+  --editorial-04-peach:   #FFE7E1; /* fechamento — claro, precisa de texto escuro (--dark-navy) em cima */
+  --editorial-grid-line: rgba(255, 255, 255, 0.08); /* linha de grade sutil sobre capas coloridas */
+  --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */
+
+  /* ---------- Roxo exato da logo ----------
+     O MIV aplica a marca preferencialmente em roxo #7023E8, igual ao
+     --primary-purple. Mantido como token separado por compatibilidade
+     com o código herdado da skill do Gov Hub. */
+  --logo-purple: #7023E8;
+}
+
+/* Base recomendada — aplique no body do artefato */
+body {
+  font-family: var(--font-family-base);
+  color: var(--text-body);
+  background: var(--bg-light);
+}
+
+/* Títulos/chamadas de impacto — fonte de apoio Oswald, sempre uppercase + bold */
+.gh-heading-display {
+  font-family: var(--font-family-heading);
+  text-transform: uppercase;
+  font-weight: 700;
+}
