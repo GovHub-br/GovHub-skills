@@ -232,10 +232,15 @@ conteúdo com 3 variantes de bloco, ênfase, convite, fechamento), na ordem
 canônica `capa → conteúdo → ênfase → conteúdo → convite → fechamento`.
 Texto corrido justificado, sem travessão e sem traço decorativo; cards
 no padrão "título forte + descrição discreta + ícone de produto em chip".
-Cada estrutura existe também nos 5 fundos da paleta e em 4 composições de
-formas, como **100 HTMLs prontos no CDN** (`post-templates/` do
-`skills-assets`, seção "Variações" de `social-posts.md`): parta de um
-deles em vez de recompor.
+
+Cada estrutura existe em **4 composições de formas (A-D) × 5 fundos = 100
+HTMLs prontos no CDN** (`post-templates/` do `skills-assets`, seção
+"Variações" de `social-posts.md`), todos aprovados. **Escolha a
+composição antes de escrever HTML**: fixe uma (A, B, C ou D) para o
+carrossel inteiro, parta do arquivo do CDN e diga ao usuário qual
+combinação usou. A composição A é a que está transcrita inline no
+`social-posts.md`; ela **não** é o padrão, é só a mais à mão, e usá-la
+sempre faz todas as peças saírem iguais.
 
 ## Acessibilidade (obrigatório)
 
@@ -289,7 +294,7 @@ deles em vez de recompor.
 - [`references/print-watermark.md`](references/print-watermark.md) — marca d'água **opcional** em páginas de conteúdo de PDF (uma forma isolada no canto, roxo a 7 %). Pergunte antes; padrão sem. Nunca em capa, folha de identificação, índice ou encerramento.
 - [`references/slides.md`](references/slides.md) — **variante colorida** de apresentação: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
 - [`references/slides-sober.md`](references/slides-sober.md) — **variante sóbria** de apresentação (branca, navy + roxo + pêssego, a linguagem do relatório em PDF no canvas 16:9): código exato validado em 2026-09-18 de capa, seção, conteúdo (tópicos, duas colunas, cards, tabela), ênfase (número-chave, citação) e encerramento, rodapé só com número + símbolo, e as armadilhas do WeasyPrint com SVG inline (`currentColor`/`transform` não funcionam).
-- [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: as 5 estruturas de quadro 1080×1350 (capa, conteúdo, ênfase, convite, fechamento) com código exato validado, posições das formas, zonas de texto, limites de linhas, mapeamento ícone↔chip e a lista de erros já cometidos.
+- [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: as 100 variações prontas no CDN (4 composições × 5 fundos por estrutura) e como escolher uma, seguido das 5 estruturas de quadro 1080×1350 (capa, conteúdo, ênfase, convite, fechamento) com código exato validado, posições das formas, zonas de texto, limites de linhas, mapeamento ícone↔chip e a lista de erros já cometidos.
 - [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — os 8 elementos gráficos oficiais (**servidos por CDN** a partir de `GovHub-br/skills-assets`, não são arquivos locais): tabela de quando usar cada um, snippets SVG das formas isoladas, formatos e regras de recomposição para Instagram/poster/banner, e como adicionar um elemento novo.
 - [`references/logo/`](references/logo/) — logo oficial Gov Hub (nova exportação do MIV): `logomarca-horizontal-*`, `logomarca-vertical-*`, `assinatura-horizontal-*`/`assinatura-vertical-*` (só o nome) e `icone-none-*` (só o ícone), cada uma em `default`/`navy`/`peach`/`white`/`black`, SVG. Tabela de qual arquivo usar onde em `editorial-report.md` seção 1. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre e UnB, que andam sempre juntas e nessa ordem porque o Lab Livre é o dono dos projetos e fica dentro da UnB; Ipea; e os ministérios MGI, MIR, Cidades e Cultura), usadas no rodapé da capa, no encerramento de slides e no fechamento de carrossel — ordem fixa: Lab Livre → UnB → Ipea (se houver) → ministério do projeto (se houver). Qual arquivo usar em cada fundo (`positivo`/`negativo`), quais faltam, e a regra do **período de defeso eleitoral** (sufixo `-defeso`) estão em [`references/partners.md`](references/partners.md).
 - [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca completa de ícones de produto Gov Hub (332 nomes × variantes `default`/`orange`/`purple`, regeradas na paleta atual em 2026-09-16), **servida por CDN** a partir do repo `GovHub-br/skills-assets` — não são arquivos locais. O catálogo traz a URL-base jsDelivr, o padrão `<nome>-<variante>.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Para capas/callouts de relatório use a variante `default`. Escolha o ícone **pelo nome** (são descritivos, ex.: `document-check`, `shield-check`, `chart-bar`) — a biblioteca é grande demais pra um mapeamento fixo; há um subconjunto curado só para os callouts do Framework de Briefing em `editorial-report.md` seção 5. Cada variante traz o fundo embutido na paleta atual (`default` pêssego, `purple` navy, `orange` rosa); **nunca** use um ícone sobre fundo diferente do da sua variante — ver regra completa em `editorial-report.md` seção 5.
