@@ -97,27 +97,23 @@ dependendo do que ficar mais natural na frase:
 Hífens dentro de palavras compostas (`ator-chave`, `pré-requisito`)
 continuam normais — a regra é só sobre o travessão longo usado como pausa.
 
-## 5. Ícones de produto (os do Gov Hub, por enquanto)
+## 5. Ícones de produto Lab Livre (não são os ícones de linha genéricos)
 
 Os ícones de produto são ilustrações "duotone": contorno numa cor da
-paleta e uma sombra/silhueta deslocada em outra, sobre um fundo embutido
-no próprio SVG (variante `default`: contorno navy, sombra rosa, fundo
-pêssego). Use estes, não ícones de linha genéricos desenhados à mão; o
-efeito de marca é bem mais forte.
+paleta e uma sombra/silhueta deslocada em outra, sobre um preenchimento
+embutido no próprio SVG (variante `default`: contorno azul profundo,
+sombra laranja, preenchimento rosa claro). Use estes, não ícones de linha
+genéricos desenhados à mão; o efeito de marca é bem mais forte.
 
-> **São os ícones do Gov Hub**, na paleta dele (`GovHub-br/skills-assets`,
-> regerado em 2026-09-16). No Lab Livre use só `default` (fundo rosa
-> claro, idêntico nas duas marcas) e `purple` (fundo navy `#0A005A`,
-> indistinguível do azul profundo `#080056`); **não use `orange`** (fundo
-> rosa `#F9006F`, que briga com o laranja do Lab Livre). Detalhe e caminho
-> previsto dos ícones próprios em `icons-catalog.md`.
+> Estão na pasta `lablivre/icons/` do `skills-assets`, na paleta do Lab
+> Livre (recoloridos em 2026-09-21). Ver `icons-catalog.md`.
 
 Os SVGs **não ficam nesta skill** — são servidos por CDN a partir do repo
 `GovHub-br/skills-assets`. Ver [`icons-catalog.md`](icons-catalog.md) para a
 URL-base, o padrão de nome e a lista completa dos 332 nomes. Resumo:
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/<nome>-<variante>.svg
 ```
 
 São 332 nomes de ícone, cada um em 3 variantes (`default`, `orange`, `purple`).
@@ -143,9 +139,9 @@ ao redor precisa ter exatamente essa cor:
 
 | Fundo | Variante (sufixo na URL) |
 |---|---|
-| Rosa claro `#FFE7E1` (`--bg-peach`) | `-default.svg` (contorno navy, sombra rosa) |
-| Azul profundo `#080056` (`--dark-navy`) | `-purple.svg` (contorno pêssego, sombra rosa; fundo embutido é o navy `#0A005A` do Gov Hub, diferença imperceptível) |
-| Laranja `#F46B2F` (`--accent-pink`) | **nenhuma**: `-orange.svg` tem fundo rosa `#F9006F` do Gov Hub. Não coloque ícone sobre laranja até existirem ícones do Lab Livre. |
+| Rosa claro `#FFE7E1` (`--bg-peach`) | `-default.svg` (contorno azul profundo, sombra laranja) |
+| Azul profundo `#080056` (`--dark-navy`) | `-purple.svg` (contorno rosa claro, sombra laranja) |
+| Laranja `#F46B2F` (`--accent-pink`) | `-orange.svg` (contorno azul profundo, sombra rosa claro) |
 
 Sobre **branco** (corpo de relatório, callouts) não existe variante:
 coloque o ícone dentro de um chip pêssego (`background: var(--bg-peach)`)
@@ -208,7 +204,7 @@ título em uppercase pequeno, corpo de texto normal.
 
 ```html
 <div class="gh-callout-box">
-  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/paper-default.svg" alt=""></div>
+  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/paper-default.svg" alt=""></div>
   <div>
     <div class="gh-callout-box__title">O que é</div>
     <div class="gh-callout-box__body">Texto explicativo do callout.</div>

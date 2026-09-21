@@ -3,12 +3,14 @@
 Os ícones **não ficam nesta skill** (seriam ~1000 arquivos, acima do limite
 de 200 do claude.ai). Eles vivem no repo público
 [`GovHub-br/skills-assets`](https://github.com/GovHub-br/skills-assets) e são
-servidos por CDN.
+servidos por CDN. O repositório tem uma pasta por marca desde 2026-09-21:
+os do Gov Hub em `gov-hub/`, os do Lab Livre (recoloridos) em `lablivre/`;
+não misture os dois conjuntos.
 
 ## URL
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<variante>.svg
 ```
 
 - `<nome>` — um dos 332 nomes listados abaixo (descritivos do conceito).
@@ -27,7 +29,7 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>
 Exemplo:
 
 ```html
-<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/document-check-default.svg" alt="">
+<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-default.svg" alt="">
 ```
 
 `@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
@@ -39,14 +41,14 @@ Baixe a pasta e troque os `src=` para caminho relativo (`icons/<nome>-<variante>
 
 ```bash
 git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
-cp -r skills-assets/icons ./icons
+cp -r skills-assets/gov-hub/icons ./icons
 ```
 
 ou, sem git:
 
 ```bash
 curl -sL https://github.com/GovHub-br/skills-assets/archive/refs/heads/main.tar.gz \
-  | tar xz --strip-components=1 skills-assets-main/icons
+  | tar xz --strip-components=2 skills-assets-main/gov-hub/icons
 ```
 
 ## Escolha pelo nome

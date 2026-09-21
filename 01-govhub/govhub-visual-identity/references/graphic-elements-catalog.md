@@ -2,14 +2,15 @@
 
 Elementos gráficos propostos pela equipe de design para a identidade visual
 atual. Como os ícones, **não ficam nesta skill**: vivem no repo público
-[`GovHub-br/skills-assets`](https://github.com/GovHub-br/skills-assets) e são
-servidos por CDN. Todos são SVG `1920×1080` (16:9), só formas vetoriais nas
+[`GovHub-br/skills-assets`](https://github.com/GovHub-br/skills-assets),
+pasta `gov-hub/` (desde 2026-09-21 o repo tem uma pasta por marca; a do
+Lab Livre é `lablivre/`), e são servidos por CDN. Todos são SVG `1920×1080` (16:9), só formas vetoriais nas
 cores da paleta, sem imagem embutida.
 
 ## URL
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/<nome>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/<nome>.svg
 ```
 
 `@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
@@ -19,7 +20,7 @@ Exemplo como fundo de slide:
 
 ```css
 .gh-slide--content {
-  background: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/pagina-comum.svg") center / cover no-repeat;
+  background: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/pagina-comum.svg") center / cover no-repeat;
 }
 ```
 
@@ -48,7 +49,7 @@ Baixe a pasta e troque as URLs por caminho relativo (`graphic-elements/<nome>.sv
 
 ```bash
 git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
-cp -r skills-assets/graphic-elements ./graphic-elements
+cp -r skills-assets/gov-hub/graphic-elements ./graphic-elements
 ```
 
 ## Formas isoladas (snippets)
@@ -167,6 +168,6 @@ Exemplo de feed quadrado (1080×1080):
 
 ## Como adicionar um elemento novo
 
-1. Subir o SVG `1920×1080` (ou o formato da peça) em `skills-assets/graphic-elements/` e dar push.
+1. Subir o SVG `1920×1080` (ou o formato da peça) em `skills-assets/gov-hub/graphic-elements/` e dar push.
 2. Acrescentar uma linha na tabela acima com categoria e "quando usar".
 3. Se for um template de slide novo, adicionar a zona segura e o código do tipo em `slides.md`.

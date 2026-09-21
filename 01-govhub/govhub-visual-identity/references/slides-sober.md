@@ -340,21 +340,21 @@ Conteúdo, cards (ícones de produto do CDN, variante `-default`, escolha pelo n
     <p>Os três eixos do projeto, na ordem em que foram executados.</p>
     <div class="gh-cards">
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/book-open-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/book-open-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">O que é</p>
           <p class="gh-callout-box__body">Diagnóstico das bases de contratações públicas e do fluxo de dados entre os sistemas do Executivo Federal.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/document-check-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Quando</p>
           <p class="gh-callout-box__body">Primeira entrega da Meta 01, base para a arquitetura de publicação dos produtos seguintes.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/settings-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/settings-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Como</p>
           <p class="gh-callout-box__body">Extração via APIs públicas, modelagem em camadas (bronze, prata, ouro) e catálogo de metadados no Gov Hub.</p>

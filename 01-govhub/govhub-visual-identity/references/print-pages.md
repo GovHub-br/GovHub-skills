@@ -270,7 +270,7 @@ arquivo e de `print-cover.md`/`print-header.md`/`print-footer.md`
 (ex: `logo/logomarca-horizontal-white.svg`) já assumem essa cópia local, relativa ao HTML.
 
 **Ícones:** não são copiados — os `src=` nos exemplos apontam direto para a
-CDN (`https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/...`).
+CDN (`https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/...`).
 Ver [`icons-catalog.md`](icons-catalog.md) para a lista de nomes e, se o
 ambiente de geração do PDF não tiver internet, o comando para baixar a pasta
 `icons/` local e trocar os `src=` para caminho relativo.

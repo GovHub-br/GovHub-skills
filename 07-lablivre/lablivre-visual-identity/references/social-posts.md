@@ -91,7 +91,7 @@ body { margin: 0; font-family: var(--font-family-base); -webkit-font-smoothing: 
   letter-spacing: 0.1em; font-size: 30px; color: var(--dark-navy);
 }
 
-/* barra inferior: só a logomarca à esquerda (sem "<site do Lab Livre>" ao lado), "Arraste para o lado" à direita */
+/* barra inferior: só a logomarca à esquerda (sem "lablivre.unb.br" ao lado), "Arraste para o lado" à direita */
 .gh-post__bottom {
   position: absolute; left: 88px; right: 88px; bottom: 72px; height: 44px;
   display: flex; align-items: center; justify-content: space-between;
@@ -126,15 +126,15 @@ tamanho):
 
 ### Ícones de produto nos posts
 
-O repositório `GovHub-br/skills-assets` foi regerado na paleta atual
-(2026-09-16). Cada variante já traz o **fundo embutido**, então o chip em
-volta precisa ter exatamente essa cor:
+Os ícones do Lab Livre estão em `lablivre/icons/` do `skills-assets`
+(recoloridos em 2026-09-21). Cada variante já traz o **preenchimento
+embutido**, então o chip em volta precisa ter exatamente essa cor:
 
 | Variante | Fundo embutido | Onde entra no post |
 |---|---|---|
-| `-orange.svg` | rosa `#F46B2F` (contorno navy, sombra pêssego) | `.gh-chip--pink` **dentro de card branco** (estruturas 2 e 4). O chip pêssego sobre card branco ficou fraco; o rosa é o que chama atenção. |
-| `-default.svg` | pêssego `#FFE7E1` (contorno navy, sombra rosa) | `.gh-chip--peach` **direto sobre o fundo pêssego**, fora de card (chip grande do convite). |
-| `-purple.svg` | navy `#080056` (contorno pêssego, sombra rosa) | `.gh-chip--navy` sobre o roxo da estrutura 3. |
+| `-orange.svg` | laranja `#F46B2F` (contorno navy, sombra pêssego) | `.gh-chip--pink` **dentro de card branco** (estruturas 2 e 4). O chip pêssego sobre card branco ficou fraco; o rosa é o que chama atenção. |
+| `-default.svg` | pêssego `#FFE7E1` (contorno navy, sombra laranja) | `.gh-chip--peach` **direto sobre o fundo pêssego**, fora de card (chip grande do convite). |
+| `-purple.svg` | navy `#080056` (contorno pêssego, sombra laranja) | `.gh-chip--navy` sobre o roxo da estrutura 3. |
 
 Nunca o ícone solto sobre pêssego, roxo, navy ou branco sem o chip da cor
 certa, e nunca chip pêssego dentro de card branco. Em ambiente sem internet, baixe os SVGs (ver `icons-catalog.md`) e
@@ -322,7 +322,7 @@ fica direto sobre o pêssego, por isso é pêssego + `-default`.
     <div style="display:flex; flex-direction:column; gap:22px; margin-top:8px;">
       <div style="display:inline-flex; align-items:center; gap:16px; align-self:flex-start; padding:24px 40px; border-radius:999px; background:var(--accent-pink); color:#fff; font-size:30px; font-weight:700;">Fale com a gente <svg class="gh-arrow" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></div>
       <div style="display:flex; flex-direction:column; gap:6px;">
-        <span style="font-size:30px; font-weight:700; color:var(--dark-navy);"><site do Lab Livre></span>
+        <span style="font-size:30px; font-weight:700; color:var(--dark-navy);">lablivre.unb.br</span>
         <span style="font-size:26px; font-weight:500; color:var(--text-muted);">caguiar@unb.br</span>
       </div>
     </div>
@@ -355,7 +355,7 @@ projeto Gov Hub; ordem e versões em
 
   <div style="position:absolute; left:88px; right:88px; top:600px; display:flex; flex-direction:column; align-items:center; gap:28px; text-align:center;">
     <img src="logo/lab-livre-white.svg" alt="Lab Livre" style="height:112px; width:auto;">
-    <div style="font-size:40px; font-weight:700; color:#fff;"><site do Lab Livre></div>
+    <div style="font-size:40px; font-weight:700; color:#fff;">lablivre.unb.br</div>
     <div style="font-family:var(--font-family-heading); font-weight:600; text-transform:uppercase; letter-spacing:0.06em; font-size:34px; color:rgba(255,255,255,0.85);">Tagline da marca.</div>
   </div>
 
@@ -369,31 +369,28 @@ projeto Gov Hub; ordem e versões em
 </div>
 ```
 
-## Variações: fundos e composições (100 templates prontos, do Gov Hub)
+## Variações: fundos e composições (100 templates prontos)
 
-> **Pendente: templates do Lab Livre.** Os 100 HTMLs do CDN são os do Gov
-> Hub: têm os hex do Gov Hub e a logo do Gov Hub embutidos. Para usar um
-> no Lab Livre, troque o `:root` pelos tokens desta skill (`tokens.css`)
-> e as logos por `lab-livre-*`/`borboleta-*` e parceiros desta pasta.
-> Caminho previsto dos templates próprios:
-> `skills-assets@main/lablivre/post-templates/`.
-
-Validadas na skill do Gov Hub em 2026-09-17 numa galeria com as 100
-combinações (5 estruturas × 4 composições × 5 fundos). Os arquivos vivem
-em `GovHub-br/skills-assets`, pasta `post-templates/`, um HTML por
-combinação, com texto de exemplo no lugar do conteúdo:
+As 100 combinações (5 estruturas × 4 composições × 5 fundos) existem na
+paleta do Lab Livre, com a logo Lab Livre, a borboleta nos chips e os
+parceiros UnB + Gov Hub. Foram geradas em 2026-09-21 a partir das do Gov
+Hub (validadas lá em 2026-09-17), pelo mesmo `gen.js`, que também ficou na
+pasta. Os arquivos vivem em `GovHub-br/skills-assets`, pasta
+`lablivre/post-templates/`, um HTML por combinação, com texto de exemplo
+no lugar do conteúdo:
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/post-templates/<estrutura>-<composição>-<fundo>.html
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/post-templates/<estrutura>-<composição>-<fundo>.html
 ```
 
 `estrutura` ∈ `capa | conteudo | enfase | convite | fechamento`;
 `composição` ∈ `A | B | C | D` (A é a deste arquivo, só com a cor trocada);
 `fundo` ∈ `purple | navy | peach | pink | magenta`. A galeria interativa é o
 `index.html` da mesma pasta. Para gerar uma peça numa variação: baixe o
-arquivo, troque os textos de exemplo e os ícones (chips levam o símbolo
-branco do Gov Hub como stand-in; substitua pelo ícone de produto da
-variante certa), mantenha formas e posições. Não recomponha do zero.
+arquivo, troque os textos de exemplo e os ícones (chips levam a borboleta
+branca como stand-in; substitua pelo ícone de produto da variante certa),
+mantenha formas e posições. Não recomponha do zero. Para regerar os 100
+depois de mexer na spec: `node gen.js` dentro da pasta.
 
 ### Composições por estrutura
 
@@ -416,13 +413,20 @@ Texto, logo, formas e componentes trocam juntos quando o fundo muda:
 | navy | branco | white | roxo, magenta, pêssego (rosa só como 4ª, pequena) | magenta / texto navy | roxo | rosa | brancas |
 | roxo | branco | white | navy, pêssego, magenta | pêssego / navy | navy | rosa | brancas |
 | pêssego | navy | navy | roxo, navy, magenta | magenta / navy | rosa | rosa | `unb-dark-outlined` (+ `govhub-black`) |
-| rosa | branco (peso ≥ 600) | white | navy, roxo, pêssego | navy / branco | navy | **navy** | brancas |
+| rosa (laranja `#F46B2F`) | **navy** | navy | navy, roxo, pêssego | navy / branco | navy | **navy** | `unb-dark-outlined` (+ `govhub-black`) |
 | magenta | navy | navy | navy, roxo, pêssego | pêssego / navy | navy | **navy** | `unb-dark-outlined` (+ `govhub-black`) |
 
 - **Cor segura** (forma grande atrás de texto, ênfase B e fechamento C):
   navy→roxo, roxo→navy, pêssego→magenta, rosa→navy, magenta→pêssego.
 - **Numeral da ênfase B** sobre a cor segura: rosa em navy/roxo, navy em
-  pêssego/magenta, branco em rosa.
+  pêssego/magenta, branco em rosa (o numeral fica sobre a forma navy, não
+  sobre o laranja).
+
+> **Diferença em relação ao Gov Hub:** no fundo `pink` o texto é **navy**,
+> não branco. O rosa `#F9006F` do Gov Hub é escuro o bastante para texto
+> branco; o laranja `#F46B2F` do Lab Livre dá ~2,9:1 com branco (reprova
+> AA até em texto grande) e ~7,5:1 com o azul profundo. Os 100 templates
+> do CDN já saem assim.
 - Pares evitados: rosa sobre magenta e vice-versa; pêssego como forma
   principal sobre rosa. Rosa continua acento: no máximo uma forma pequena
   por quadro, salvo quando é o próprio fundo.
@@ -455,10 +459,10 @@ Texto, logo, formas e componentes trocam juntos quando o fundo muda:
 | Barra fina laranja/roxa sob o título e linha divisória no fechamento | Removidas; o usuário pediu "sem traços". |
 | Ícone dentro de chip branco (regra antiga) | Chip na cor do fundo embutido da variante: rosa para `-orange`, pêssego para `-default`, navy para `-purple`. |
 | Chip pêssego dentro de card branco | Ficou apagado; dentro de card branco o chip é rosa com a variante `-orange`. |
-| Símbolo + `<site do Lab Livre>` na barra inferior | Só a logomarca horizontal (azul sobre rosa claro, branca sobre escuro). |
+| Símbolo + `lablivre.unb.br` na barra inferior | Só a logomarca horizontal (azul sobre rosa claro, branca sobre escuro). |
 | `hyphens: auto` quebrando palavras | `hyphens: none` + `overflow-wrap: normal`; justificar só pelo espaçamento. |
 | Três quadradinhos "Base A/B/C" no fluxo | Um único passo "Bases de dados"; o fluxo tem 3 passos iguais. |
-| Marca (símbolo + `<site do Lab Livre>`) repetida no topo e no centro do fechamento | No fechamento fica só o contador no topo; a marca aparece uma vez, grande. |
+| Marca (símbolo + `lablivre.unb.br`) repetida no topo e no centro do fechamento | No fechamento fica só o contador no topo; a marca aparece uma vez, grande. |
 
 ## Exportação
 

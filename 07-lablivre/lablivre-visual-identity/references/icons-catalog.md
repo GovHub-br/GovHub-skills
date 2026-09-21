@@ -1,15 +1,10 @@
-# Catálogo de ícones de produto (por enquanto, os do Gov Hub)
+# Catálogo de ícones de produto Lab Livre
 
-> **Pendente: ícones nas cores do Lab Livre.** Os ícones do CDN foram
-> gerados na paleta do **Gov Hub** (contorno navy `#0A005A`, sombra rosa
-> `#F9006F`, fundo pêssego `#FFE7E1`). Duas das três variantes servem sem
-> ajuste no Lab Livre: `default` (o rosa claro `#FFE7E1` é o mesmo nas
-> duas marcas) e `purple` (o navy `#0A005A` e o azul profundo `#080056`
-> são indistinguíveis a olho). **Evite `orange`**: o fundo embutido é o
-> rosa `#F9006F` do Gov Hub, que briga com o laranja `#F46B2F` do Lab
-> Livre. Caminho previsto para os ícones próprios, quando existirem:
-> `skills-assets@main/lablivre/icons/<nome>-<variante>.svg`; ao criá-los,
-> troque a URL-base abaixo e remova este aviso.
+Os 332 ícones × 3 variantes existem **na paleta do Lab Livre**, na pasta
+`lablivre/icons/` do `skills-assets` (recoloridos a partir dos do Gov Hub
+em 2026-09-21: mesma geometria, só os hex trocados pelo mapeamento de
+`palette.md`). O repositório tem uma pasta por marca, `lablivre/` e
+`gov-hub/`, com a mesma estrutura; não misture os dois conjuntos.
 
 Os ícones **não ficam nesta skill** (seriam ~1000 arquivos, acima do limite
 de 200 do claude.ai). Eles vivem no repo público
@@ -19,16 +14,16 @@ servidos por CDN.
 ## URL
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/<nome>-<variante>.svg
 ```
 
 - `<nome>` — um dos 332 nomes listados abaixo (descritivos do conceito).
 - `<variante>` — cada uma traz o **fundo embutido** no próprio SVG, na
   paleta atual (repo regerado em 2026-09-16, mesma nomenclatura de antes):
-  `default` (fundo pêssego `#FFE7E1`, contorno navy, sombra rosa),
-  `purple` (fundo navy `#0A005A`, contorno pêssego, sombra rosa) e
-  `orange` (fundo rosa `#F9006F` do Gov Hub, contorno navy, sombra
-  pêssego; **não usar no Lab Livre**, ver aviso acima). Os nomes
+  `default` (preenchimento rosa claro `#FFE7E1`, contorno azul profundo,
+  sombra laranja), `purple` (preenchimento azul profundo `#080056`,
+  contorno rosa claro, sombra laranja) e `orange` (preenchimento rosa
+  claro, contorno azul profundo, sombra rosa claro). Os nomes
   `purple`/`orange` são históricos; o que vale é a cor do fundo embutido.
   Para relatório/e-book use quase sempre `default`. Regra completa de qual
   variante sobre qual fundo: `editorial-report.md` seção 5.
@@ -39,7 +34,7 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>
 Exemplo:
 
 ```html
-<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/document-check-default.svg" alt="">
+<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/document-check-default.svg" alt="">
 ```
 
 `@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
@@ -51,14 +46,14 @@ Baixe a pasta e troque os `src=` para caminho relativo (`icons/<nome>-<variante>
 
 ```bash
 git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
-cp -r skills-assets/icons ./icons
+cp -r skills-assets/lablivre/icons ./icons
 ```
 
 ou, sem git:
 
 ```bash
 curl -sL https://github.com/GovHub-br/skills-assets/archive/refs/heads/main.tar.gz \
-  | tar xz --strip-components=1 skills-assets-main/icons
+  | tar xz --strip-components=2 skills-assets-main/lablivre/icons
 ```
 
 ## Escolha pelo nome

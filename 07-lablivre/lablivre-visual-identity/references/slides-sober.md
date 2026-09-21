@@ -343,21 +343,21 @@ Conteúdo, cards (ícones de produto do CDN, variante `-default`, escolha pelo n
     <p>Os três eixos do projeto, na ordem em que foram executados.</p>
     <div class="gh-cards">
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/book-open-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/book-open-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">O que é</p>
           <p class="gh-callout-box__body">Diagnóstico das bases de contratações públicas e do fluxo de dados entre os sistemas do Executivo Federal.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/document-check-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/document-check-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Quando</p>
           <p class="gh-callout-box__body">Primeira entrega da Meta 01, base para a arquitetura de publicação dos produtos seguintes.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/settings-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/icons/settings-default.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Como</p>
           <p class="gh-callout-box__body">Extração via APIs públicas, modelagem em camadas (bronze, prata, ouro) e catálogo de metadados no Lab Livre.</p>
@@ -478,7 +478,7 @@ Encerramento (troque o e-mail pelo do responsável do projeto):
 
   <img class="gh-cover__logo" src="logo/lab-livre-blue.svg" alt="Lab Livre">
   <div class="gh-closing__block">
-    <p class="gh-closing__lead"><strong><site do Lab Livre></strong><br>&lt;e-mail de contato&gt;</p>
+    <p class="gh-closing__lead"><strong>lablivre.unb.br</strong><br>caguiar@unb.br</p>
   </div>
   <div class="gh-cover__footer">
     <img src="logo/parceiros/unb-dark-outlined.svg" alt="UnB">

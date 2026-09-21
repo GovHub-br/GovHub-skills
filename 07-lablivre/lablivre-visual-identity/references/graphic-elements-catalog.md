@@ -1,20 +1,11 @@
-# Catálogo de elementos gráficos (por enquanto, os do Gov Hub)
+# Catálogo de elementos gráficos Lab Livre
 
-> **Pendente: templates nas cores do Lab Livre.** Os 8 SVGs do CDN são os
-> do Gov Hub, nas cores dele (navy `#0A005A`, roxo `#613EFF`, magenta
-> `#EF41FF`, rosa `#F9006F`, pêssego `#FFE7E1`). As formas e composições
-> são as mesmas que o MIV do Lab Livre prescreve (círculos, semicírculos,
-> retângulos arredondados), e o pêssego é idêntico; só os outros quatro
-> matizes divergem. Até existirem os arquivos do Lab Livre (caminho
-> previsto `skills-assets@main/lablivre/graphic-elements/<nome>.svg`),
-> use como fundo de slide só com o usuário ciente, ou prefira a variante
-> sóbria (`slides-sober.md`) e os **snippets inline** abaixo, que já saem
-> na cor do token. Ao gerar os SVGs do Lab Livre, troque a URL-base e
-> remova este aviso.
-
-Elementos gráficos propostos pela equipe de design do Gov Hub, projeto do
-Lab Livre, na mesma linguagem gráfica. Como os ícones, **não ficam nesta
-skill**: vivem no repo público
+Os 8 arquivos existem **na paleta do Lab Livre**, na pasta
+`lablivre/graphic-elements/` do `skills-assets` (recoloridos a partir dos
+do Gov Hub em 2026-09-21: mesma geometria e composição, só os hex
+trocados). A linguagem gráfica é a mesma que o MIV do Lab Livre prescreve
+(círculos, semicírculos, retângulos arredondados). Como os ícones, **não
+ficam nesta skill**: vivem no repo público
 [`GovHub-br/skills-assets`](https://github.com/GovHub-br/skills-assets) e são
 servidos por CDN. Todos são SVG `1920×1080` (16:9), só formas vetoriais nas
 cores da paleta, sem imagem embutida.
@@ -22,7 +13,7 @@ cores da paleta, sem imagem embutida.
 ## URL
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/<nome>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/graphic-elements/<nome>.svg
 ```
 
 `@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
@@ -32,7 +23,7 @@ Exemplo como fundo de slide:
 
 ```css
 .gh-slide--content {
-  background: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/pagina-comum.svg") center / cover no-repeat;
+  background: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/lablivre/graphic-elements/pagina-comum.svg") center / cover no-repeat;
 }
 ```
 
@@ -61,7 +52,7 @@ Baixe a pasta e troque as URLs por caminho relativo (`graphic-elements/<nome>.sv
 
 ```bash
 git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
-cp -r skills-assets/graphic-elements ./graphic-elements
+cp -r skills-assets/lablivre/graphic-elements ./graphic-elements
 ```
 
 ## Formas isoladas (snippets)
@@ -180,6 +171,6 @@ Exemplo de feed quadrado (1080×1080):
 
 ## Como adicionar um elemento novo
 
-1. Subir o SVG `1920×1080` (ou o formato da peça) em `skills-assets/graphic-elements/` e dar push.
+1. Subir o SVG `1920×1080` (ou o formato da peça) em `skills-assets/lablivre/graphic-elements/` e dar push.
 2. Acrescentar uma linha na tabela acima com categoria e "quando usar".
 3. Se for um template de slide novo, adicionar a zona segura e o código do tipo em `slides.md`.

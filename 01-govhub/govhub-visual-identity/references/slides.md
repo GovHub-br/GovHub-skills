@@ -45,12 +45,12 @@ body { font-family: var(--font-family-base); color: var(--text-body); }
 .gh-slide:last-child { page-break-after: auto; break-after: auto; }
 
 /* um template por tipo de slide (URLs literais: WeasyPrint/Chrome não resolvem var() dentro de url()) */
-.gh-slide--cover       { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/capa.svg"); color: #fff; }
-.gh-slide--section     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/capa-capitulo.svg"); color: #fff; }
-.gh-slide--section-alt { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/capa-capitulo-alternativa.svg"); color: #fff; }
-.gh-slide--content     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/pagina-comum.svg"); }
-.gh-slide--emphasis    { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/pagina-comum-com-enfase.svg"); }
-.gh-slide--closing     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/graphic-elements/encerramento.svg"); color: #fff; }
+.gh-slide--cover       { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/capa.svg"); color: #fff; }
+.gh-slide--section     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/capa-capitulo.svg"); color: #fff; }
+.gh-slide--section-alt { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/capa-capitulo-alternativa.svg"); color: #fff; }
+.gh-slide--content     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/pagina-comum.svg"); }
+.gh-slide--emphasis    { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/pagina-comum-com-enfase.svg"); }
+.gh-slide--closing     { background-image: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/encerramento.svg"); color: #fff; }
 
 /* ---- capa e encerramento ---- */
 .gh-slide--cover .gh-slide__block,

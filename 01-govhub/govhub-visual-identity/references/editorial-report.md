@@ -116,7 +116,7 @@ Os SVGs **não ficam nesta skill** — são servidos por CDN a partir do repo
 URL-base, o padrão de nome e a lista completa dos 332 nomes. Resumo:
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<variante>.svg
 ```
 
 São 332 nomes de ícone, cada um em 3 variantes (`default`, `orange`, `purple`).
@@ -207,7 +207,7 @@ título em uppercase pequeno, corpo de texto normal.
 
 ```html
 <div class="gh-callout-box">
-  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/icons/paper-default.svg" alt=""></div>
+  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/paper-default.svg" alt=""></div>
   <div>
     <div class="gh-callout-box__title">O que é</div>
     <div class="gh-callout-box__body">Texto explicativo do callout.</div>

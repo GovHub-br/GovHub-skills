@@ -385,11 +385,11 @@ sangrando pela esquerda. Conteúdo centralizado abaixo do quarto de círculo
 
 Validadas com o usuário em 2026-09-17 numa galeria com as 100 combinações
 (5 estruturas × 4 composições × 5 fundos). Todas foram aprovadas. Os
-arquivos vivem em `GovHub-br/skills-assets`, pasta `post-templates/`, um
+arquivos vivem em `GovHub-br/skills-assets`, pasta `gov-hub/post-templates/`, um
 HTML por combinação, com texto de exemplo no lugar do conteúdo:
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/post-templates/<estrutura>-<composição>-<fundo>.html
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/post-templates/<estrutura>-<composição>-<fundo>.html
 ```
 
 `estrutura` ∈ `capa | conteudo | enfase | convite | fechamento`;
