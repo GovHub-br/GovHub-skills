@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Modelo Físico — Os Schemas do Banco</title>
+<link rel="stylesheet" href="../references/diagram.css">
+<style>
+  .grid { display: grid; grid-template-columns: 300px 300px 300px 1fr; gap: 40px; align-items: start; }
+  .col h2, .conv h2 { margin: 0 0 14px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--primary-purple); }
+  .col .node { margin-bottom: 16px; }
+  .col .node h3 { font-size: 15px; }
+  .col .node p { font-size: 11.5px; line-height: 1.4; }
+  .conv { border: 1.5px solid var(--border-soft); border-radius: var(--radius-md); background: #fff; padding: 20px 22px; margin-top: 32px; }
+  .conv dl { margin: 0; font-size: 11.5px; }
+  .conv dt { font-weight: 700; color: var(--text-strong); margin-top: 8px; }
+  .conv dd { margin: 2px 0 0 10px; color: var(--text-muted); }
+  .legend--bare { justify-content: center; border: 0; background: transparent; }
+</style>
+</head>
+<body>
+<div class="diagram">
+  <h1 class="title">Modelo Físico — Os Schemas do Banco</h1>
+  <p class="subtitle">Um único PostgreSQL, organizado em schemas por papel</p>
+
+  <div class="canvas">
+    <section class="zone">
+      <span class="pill">PostgreSQL · banco minc</span>
+      <div class="grid">
+        <div class="col">
+          <h2>Ingestão · Airflow</h2>
+          <div class="node" id="bronze"><h3>bronze</h3><p>réplica do SALIC · 5 bancos<br>recarga completa diária · colunas em texto</p></div>
+          <div class="node"><h3>control</h3><p>log de ingestão do SALIC</p></div>
+          <div class="node"><h3>transferegov</h3><p>pouso das APIs + territorialização<br>atualização por chave natural</p></div>
+          <div class="node"><h3>relatorio_gestao</h3><p>planilhas de gestão parseadas</p></div>
+          <div class="node"><h3>bbagil</h3><p>extrato · subtransações · controle</p></div>
+          <div class="node" id="bacen"><h3>bacen</h3><p>séries do SGS · deflator</p></div>
+          <div class="node"><h3>ibge_sidra</h3><p>agregados do SIDRA · MUNIC · semanal</p></div>
+        </div>
+        <div class="col">
+          <h2>Cargas pontuais e legado</h2>
+          <div class="node node--legacy"><h3>ancine</h3><p>planilha da agência</p></div>
+          <div class="node node--legacy"><h3>bsc · bb_agil</h3><p>schemas legados, sem produtor</p></div>
+        </div>
+        <div class="col">
+          <h2>Saída da transformação</h2>
+          <div class="node node--out" id="cotas"><h3>cotas</h3><p>bronze, silver e gold do domínio<br>grão de pagamento · cotas por grupo</p></div>
+          <div class="node node--out"><h3>agentes</h3><p>perfis, dado mestre e primeiro acesso</p></div>
+          <div class="node node--out"><h3>metadata</h3><p>inventário autogerado dos modelos</p></div>
+          <div class="node node--out"><h3>minc</h3><p>eixo de tempo da camada semântica</p></div>
+        </div>
+        <div class="conv">
+          <h2>Convenções</h2>
+          <dl>
+            <dt>· Schema por domínio</dt><dd>o nome físico vem do domínio, não da camada</dd>
+            <dt>· Tipagem no pouso</dt><dd>toda coluna nasce em texto; a conversão é do dbt</dd>
+            <dt>· Sem chave estrangeira</dt><dd>a integridade é verificada por teste, não por restrição</dd>
+            <dt>· Índice único</dt><dd>nas tabelas por atualização incremental, garante idempotência</dd>
+            <dt>· Nomes minúsculos</dt><dd>no SALIC, o padrão banco__tabela preserva a origem</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <script type="application/json" id="arrows">
+    [
+      {"from":"bacen","to":"cotas","type":"flow","label":"a transformação consome os schemas de pouso","fromSide":"right","toSide":"left","via":684,"labelAt":"start","dx":60}
+    ]
+    </script>
+  </div>
+
+  <div class="legend legend--bare">
+    <div class="item"><span class="swatch"></span><span>ingestão ativa</span></div>
+    <div class="item"><span class="swatch swatch--dashed"></span><span>carga pontual ou legado</span></div>
+    <div class="item"><span class="swatch swatch--out"></span><span>saída da transformação</span></div>
+  </div>
+</div>
+<script src="../references/diagram.js"></script>
+</body>
+</html>
