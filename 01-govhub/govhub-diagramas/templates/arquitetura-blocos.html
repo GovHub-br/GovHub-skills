@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Arquitetura Física Proposta — Data Lakehouse</title>
+<link rel="stylesheet" href="../references/diagram.css">
+<style>
+  /* layout específico deste diagrama */
+  .cols { display: grid; grid-template-columns: 560px 1fr; gap: 96px; align-items: start; }
+  .stack { display: grid; gap: 64px; }
+  .node .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: center; }
+  .node .name { text-align: center; }
+  .node .name h3 { font-size: 20px; }
+  .node .desc { font-size: 13px; color: var(--text-muted); text-align: center; }
+  .sub { margin-top: 18px; border: 2px solid var(--primary-purple); border-radius: var(--radius-md); background: var(--bg-subtle); padding: 16px 22px; text-align: center; }
+  .sub h4 { margin: 0 0 12px; font-size: 13px; letter-spacing: .06em; color: var(--purple-700); }
+  .sub .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .sub .row .node { padding: 12px; }
+  .sub .foot { margin-top: 10px; font-size: 12px; color: var(--text-muted); }
+  .right { display: grid; grid-template-columns: 1fr 270px; gap: 30px; align-items: start; }
+  .right .stack { gap: 52px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; }
+  .split > div { padding: 6px 12px; text-align: center; }
+  .split > div + div { border-left: 1px solid var(--border-soft); }
+  .status { display: inline-block; margin-top: 10px; padding: 6px 14px; border: 1.5px dashed var(--accent-pink); background: var(--bg-peach); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-body); }
+  .status b { color: var(--accent-pink); }
+  .ranger .name { text-align: center; }
+  .ranger ul { margin: 12px 0 0; padding: 12px 0 0 14px; font-size: 12.5px; color: var(--text-body); border-top: 1px solid var(--border-soft); }
+  .ranger li { margin: 6px 0; }
+  .badge { position: absolute; z-index: 2; padding: 6px 10px; border: 1.5px solid var(--primary-purple); border-radius: var(--radius-sm); background: #fff; font-size: 11.5px; font-weight: 600; color: var(--purple-700); text-align: center; }
+</style>
+</head>
+<body>
+<div class="diagram">
+  <h1 class="title">Arquitetura Física Proposta — Data Lakehouse</h1>
+  <p class="subtitle">Estado-alvo: a composição inteira na infraestrutura do Ministério da Cultura</p>
+
+  <div class="canvas">
+    <div class="cols">
+      <!-- ESQUERDA: orquestração e armazenamento -->
+      <section class="zone">
+        <span class="pill">Orquestração e armazenamento</span>
+        <div class="stack">
+          <div class="node" id="airflow">
+            <span class="pill">1. Orquestração</span>
+            <div class="row">
+              <div class="name"><h3>Apache Airflow</h3><p>orquestrador de pipelines</p></div>
+              <div class="desc">orquestração e agendamento dos pipelines de dados</div>
+            </div>
+          </div>
+          <div class="node" id="lakehouse">
+            <span class="pill">2. Data Lakehouse · Armazenamento</span>
+            <div class="row">
+              <div class="name"><h3>MinIO</h3><p>object storage</p></div>
+              <div class="desc">armazenamento em formato aberto e colunar</div>
+            </div>
+            <div class="sub">
+              <h4>FORMATO DE TABELA ABERTA</h4>
+              <div class="row">
+                <div class="node"><h3>Apache Iceberg</h3><p>formato de tabela</p></div>
+                <div class="node"><h3>Parquet</h3><p>arquivo colunar</p></div>
+              </div>
+              <div class="foot">dados armazenados em Parquet sob Iceberg</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIREITA: catálogo, consulta e consumo -->
+      <section class="zone zone--dashed">
+        <span class="pill">Catálogo, consulta e consumo</span>
+        <div class="right">
+          <div class="stack">
+            <div class="node" id="catalog">
+              <span class="pill">3. Catálogo de dados · Metadados</span>
+              <div class="row">
+                <div class="name"><h3>PostgreSQL</h3><p>(catalog)</p></div>
+                <div class="desc">esquemas, tabelas, partições, estatísticas e permissões (Iceberg)</div>
+              </div>
+            </div>
+            <div class="node" id="trino">
+              <span class="pill">4. Motor de busca</span>
+              <div class="row">
+                <div class="name"><h3>Trino</h3><p>(query engine)</p></div>
+                <div class="desc">engine única de consulta distribuída que lê os dados do MinIO usando os metadados do catálogo<br><span class="status"><b>implantado no ambiente</b></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="node node--pink ranger" id="ranger">
+            <span class="pill pill--pink">5. Governança e acesso</span>
+            <div class="name"><h3>Apache Ranger</h3><p>governança e controle de acesso</p></div>
+            <ul>
+              <li>Controle de acesso baseado em políticas</li>
+              <li>Auditoria de acesso</li>
+              <li>Segurança de dados em todo o ecossistema</li>
+            </ul>
+            <div style="text-align:center"><span class="status"><b>previsto na proposta</b><br>implantação pendente</span></div>
+          </div>
+        </div>
+        <div class="node" id="consumo" style="margin-top:52px">
+          <span class="pill">6. Consumo</span>
+          <div class="split">
+            <div><h3>Usuários e equipes</h3><p>analistas, cientistas de dados, gestores, sistemas e aplicações</p></div>
+            <div><h3>Agentes de IA · GraphRAG</h3><p>geração de SQL a partir de perguntas em linguagem natural (ver Meta 04)</p></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- etiqueta sobre a seta de dados entre as zonas; ajuste left/top após o render -->
+    <div class="badge" id="badge-parquet" style="left:562px;top:264px">dados brutos<br>em Parquet</div>
+
+    <script type="application/json" id="arrows">
+    [
+      {"from":"airflow","to":"lakehouse","type":"exec","label":"executa e orquestra os pipelines","fromSide":"bottom","toSide":"top"},
+      {"from":"lakehouse","to":"trino","type":"data","fromSide":"right","toSide":"left"},
+      {"from":"catalog","to":"trino","type":"meta","label":"leitura de metadados e estatísticas","fromSide":"bottom","toSide":"top"},
+      {"from":"trino","to":"consumo","type":"flow","label":"leitura de dados","fromSide":"bottom","toSide":"top"},
+      {"from":"ranger","to":"catalog","type":"gov","fromSide":"left","toSide":"right"},
+      {"from":"ranger","to":"trino","type":"gov","fromSide":"left","toSide":"right"}
+    ]
+    </script>
+  </div>
+
+  <div class="legend">
+    <span class="legend-title">LEGENDA</span>
+    <div class="item"><span class="sample"></span><div><b>Orquestração / execução</b><span>Airflow aciona os pipelines</span></div></div>
+    <div class="item"><span class="sample sample--data"></span><div><b>Transferência de dados</b><span>armazenamento em Parquet</span></div></div>
+    <div class="item"><span class="sample sample--meta"></span><div><b>Consulta de metadados</b><span>esquemas e partições</span></div></div>
+    <div class="item"><span class="sample sample--flow"></span><div><b>Leitura de dados</b><span>resultado das consultas</span></div></div>
+    <div class="item"><span class="sample sample--gov"></span><div><b>Governança / acesso</b><span>políticas e auditoria</span></div></div>
+  </div>
+
+  <div class="composition">
+    <div><span class="legend-title">COMPOSIÇÃO</span><br><span style="color:var(--text-muted)">do Lakehouse</span></div>
+    <div class="step"><span class="num">1</span><div><b>Object storage</b><span>MinIO</span></div></div><span class="sep"></span>
+    <div class="step"><span class="num">2</span><div><b>Catálogo</b><span>PostgreSQL</span></div></div><span class="sep"></span>
+    <div class="step"><span class="num">3</span><div><b>Motor de consulta</b><span>Trino</span></div></div><span class="sep"></span>
+    <div class="step"><span class="num">4</span><div><b>Formato de tabela aberta</b><span>Parquet sob Iceberg</span></div></div><span class="sep"></span>
+    <div class="step"><span class="num">5</span><div><b>Governança</b><span>Apache Ranger</span></div></div>
+  </div>
+</div>
+<script src="../references/diagram.js"></script>
+</body>
+</html>
