@@ -3,7 +3,7 @@
    Seta: {"from":"id","to":"id","type":"exec|data|meta|flow|gov","label":"opcional",
           "fromSide":"top|right|bottom|left","toSide":"...", "via": número (x da vertical
           numa rota horizontal, ou y da horizontal numa rota vertical),
-          "labelAt":"start|mid|end", "dx":0, "dy":0}
+          "labelAt":"start|mid|end" (posição do rótulo ao longo da rota; em linha reta = 25% / 50% / 75%), "dx":0, "dy":0}
    Posições vêm do layout real (getBoundingClientRect) — nada de coordenadas à mão. */
 (function () {
   const NS = 'http://www.w3.org/2000/svg';
@@ -46,7 +46,11 @@
       let d, label;
       if (Math.abs(horiz ? y1 - y2 : x1 - x2) < 1) {
         d = 'M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2;
-        label = [(x1 + x2) / 2, (y1 + y2) / 2];
+        label = {
+          start: [x1 + (x2 - x1) * 0.25, y1 + (y2 - y1) * 0.25],
+          mid:   [(x1 + x2) / 2, (y1 + y2) / 2],
+          end:   [x1 + (x2 - x1) * 0.75, y1 + (y2 - y1) * 0.75],
+        }[a.labelAt || 'mid'];
       } else if (horiz) {
         const mx = a.via != null ? a.via : (x1 + x2) / 2;
         d = 'M' + x1 + ',' + y1 + ' L' + mx + ',' + y1 + ' L' + mx + ',' + y2 + ' L' + x2 + ',' + y2;
