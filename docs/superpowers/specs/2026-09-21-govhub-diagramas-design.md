@@ -149,6 +149,22 @@ Checklist de qualidade: legenda sempre; largura 1500, altura livre; só cores
 de `colors.md`; dado pessoal com `.note--lgpd`; máximo ~12 nós por diagrama,
 acima disso dividir com nó de subprocesso.
 
+## Origem do conteúdo (mapeamento a partir da `govhub-fluxos`)
+
+Fonte: `~/.claude/skills/synced/*/govhub-fluxos/` (sincronizada do claude.ai).
+
+| Origem | Destino | Tratamento |
+|---|---|---|
+| `references/fluxo-processo.md` | `references/grammar-processo.md` | Portado: taxonomia de nós, uma raia por ator, checklist. |
+| `references/fluxo-dados.md` | `references/grammar-dados.md` | Portado: política→instrumento→sistema, pipeline, nomenclatura real das camadas, LGPD. |
+| `references/cores-fluxos.md` | `references/colors.md` | Reescrito: mesma lógica de distribuição, tokens da IDV atual; seção SVG vira CSS/Reddit Sans. |
+| `SKILL.md` — famílias, princípios 1–5, "o que não fazer" | `SKILL.md` | Portado, com 4 famílias em vez de 2. |
+| `SKILL.md` — passos 5–7 (SVG, `visualize`, cairosvg, `present_files`) | `SKILL.md` passos 3–6 | Substituído por template HTML + `render.mjs` + conferência do PNG. |
+| `project_knowledge_search` | passo 1 | Substituído por leitura de arquivo/repo e `dbt_lineage.py`. |
+| Referências a `govhub-mapeamento-politica-dado` | — | Removidas; frase genérica "versão simplificada = segundo diagrama". |
+| — | `references/grammar-arquitetura.md`, templates de blocos e schemas | Novo. |
+| — | Diferenciação de `mermaid-diagram-specialist` | Novo. |
+
 ## Verificação da skill
 
 - Renderizar os 4 templates: PNG existe, largura 3000 px (scale 2).
