@@ -51,13 +51,14 @@ claude plugin install govhub-core@govhub
 
 | Plugin | O que traz | Skills |
 |--------|-----------|--------|
-| `govhub-skills` | **Tudo** — as 51 skills de todas as categorias | 51 |
+| `govhub-skills` | **Tudo** — as 52 skills de todas as categorias | 52 |
 | `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
 | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
 | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
 | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
 | `govhub-qualidade` | [05 · Qualidade & arquitetura](#05--qualidade-testes--arquitetura) — TDD, debug, clean code, ADR, segurança | 18 |
 | `govhub-docs` | [06 · Docs & relatórios](#06--documentação-relatórios--escritório) — planilhas, PDF, changelog, README, Mermaid | 7 |
+| `govhub-lablivre` | [07 · Lab Livre](#07--lab-livre) — identidade visual do Lab Livre, mesma arquitetura da do Gov Hub | 1 |
 
 > Instale **o `govhub-skills` ou os plugins por categoria** — não os dois, senão as mesmas skills entram duas vezes.
 
@@ -141,7 +142,7 @@ As skills abaixo estão organizadas em pastas por categoria.
 | Skill | O que faz |
 |-------|-----------|
 | [`govhub-pipeline-guide`](01-govhub/govhub-pipeline-guide/) | Implementar uma nova fonte de dados no Gov Hub BR — DAG Airflow, cliente de API, transformações dbt (bronze → silver → gold), testes e PR. Cobre SIAPE, SIAFI, SICONV, TransfereGov, IBGE, PNCP. |
-| [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do GovHub (gov-hub.io) em relatórios, páginas, slides, dashboards e temas CSS. Roxo `#7A34F3`. |
+| [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do Gov Hub (gov-hub.io) em relatórios e PDFs, slides, posts, dashboards e temas CSS. Roxo `#613EFF`, navy `#0A005A`. |
 | [`accountability-report`](01-govhub/accountability-report/) | Relatório de prestação de contas de um repositório a partir do git. Saída em Markdown, HTML e PDF A4 pronto para entrega oficial. |
 
 ## 02 · Dados & Bancos
@@ -216,6 +217,12 @@ As skills abaixo estão organizadas em pastas por categoria.
 | [`web-to-markdown`](06-docs-relatorios/web-to-markdown/) | Converte páginas web (URLs) em Markdown limpo — útil para extrair conteúdo de fontes gov. |
 | [`pdf-processing-pro`](06-docs-relatorios/pdf-processing-pro/) | PDF em produção — forms, tabelas, OCR, validação e operações em lote. |
 | [`spreadsheet`](06-docs-relatorios/spreadsheet/) | Criar/editar/analisar planilhas via Python (openpyxl, pandas) com fórmulas. |
+
+## 07 · Lab Livre
+
+| Skill | O que faz |
+|-------|-----------|
+| [`lablivre-visual-identity`](07-lablivre/lablivre-visual-identity/) | Aplica a identidade visual oficial do Lab Livre (UnB) em relatórios e PDFs, slides, posts, dashboards e temas CSS. Cópia da `govhub-visual-identity` com a paleta do Lab Livre (roxo `#7023E8`, azul profundo `#080056`); assets do CDN ainda nas cores do Gov Hub. |
 
 > **Word, Excel, PowerPoint e PDF:** as skills `docx`, `xlsx` e `pdf` não estão aqui — são proprietárias da Anthropic e não podem ser redistribuídas por terceiros (ver [`NOTICE.md`](NOTICE.md)). Elas vêm da fonte oficial:
 >

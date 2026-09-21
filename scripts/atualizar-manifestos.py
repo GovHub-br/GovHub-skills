@@ -54,6 +54,13 @@ CATS = [
         "description": "Geração de documentos e relatórios: docx, xlsx, PDF, planilhas, README, changelog, diagramas Mermaid e conversão de web para Markdown.",
         "keywords": ["documentacao", "docx", "xlsx", "pdf", "changelog", "mermaid", "readme"],
     },
+    {
+        "dir": "07-lablivre",
+        "name": "govhub-lablivre",
+        "titulo": "Lab Livre",
+        "description": "Skills da marca Lab Livre (Laboratório de Software Livre da UnB, dono dos projetos Gov Hub): identidade visual oficial com a mesma arquitetura da skill do Gov Hub (PDF, slides, posts, tokens).",
+        "keywords": ["lablivre", "lab-livre", "unb", "identidade-visual", "design"],
+    },
 ]
 
 

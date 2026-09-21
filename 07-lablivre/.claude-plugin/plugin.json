@@ -1,0 +1,20 @@
+{
+  "name": "govhub-lablivre",
+  "description": "Skills da marca Lab Livre (Laboratório de Software Livre da UnB, dono dos projetos Gov Hub): identidade visual oficial com a mesma arquitetura da skill do Gov Hub (PDF, slides, posts, tokens). (1 skills)",
+  "author": {
+    "name": "GovHub BR / lablivre",
+    "url": "https://github.com/GovHub-br"
+  },
+  "homepage": "https://github.com/GovHub-br/GovHub-skills",
+  "repository": "https://github.com/GovHub-br/GovHub-skills",
+  "keywords": [
+    "lablivre",
+    "lab-livre",
+    "unb",
+    "identidade-visual",
+    "design"
+  ],
+  "skills": [
+    "./lablivre-visual-identity"
+  ]
+}
