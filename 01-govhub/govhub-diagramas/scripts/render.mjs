@@ -17,7 +17,7 @@ for (let i = 0; i < args.length; i++) {
   else if (args[i] === '--selector') opt.selector = args[++i];
   else pos.push(args[i]);
 }
-if (!pos[0]) { console.error(USO); process.exit(1); }
+if (!pos[0] || !Number.isFinite(opt.width) || !Number.isFinite(opt.scale)) { console.error(USO); process.exit(1); }
 const input = resolve(pos[0]);
 if (!existsSync(input)) { console.error('Arquivo não encontrado: ' + input); process.exit(1); }
 const output = resolve(pos[1] || join(dirname(input), basename(input, extname(input)) + '.png'));
@@ -40,7 +40,12 @@ async function comPlaywright() {
     const el = page.locator(opt.selector).first();
     if (await el.count()) await el.screenshot({ path: output });
     else { console.log('seletor ' + opt.selector + ' não encontrado; capturando a página inteira'); await page.screenshot({ path: output, fullPage: true }); }
-  } finally { await browser.close(); }
+  } catch (e) {
+    await browser.close();
+    console.error('render falhou: ' + e.message);
+    process.exit(1);
+  }
+  await browser.close();
   return true;
 }
 

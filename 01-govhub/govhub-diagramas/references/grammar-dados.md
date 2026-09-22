@@ -101,4 +101,4 @@ nunca tente fazer as duas coisas dentro do mesmo diagrama.
 | Observação técnica | `<div class="note note--plain">…</div>` |
 | Dado pessoal | `<div class="note note--lgpd">CPF anonimizado na silver</div>` |
 | Setas | JSON em `#arrows`; `data` para transferência, `exec` para orquestração, `flow` para leitura |
-| Lineage automático | `python3 scripts/dbt_lineage.py target/manifest.json --group layer` |
+| Lineage automático | `python3 <skill>/scripts/dbt_lineage.py target/manifest.json --group layer` |

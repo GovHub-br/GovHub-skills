@@ -10,7 +10,7 @@ identidade.
 
 | Papel no diagrama | Token | Hex | Classe |
 |---|---|---|---|
-| Zona/ator principal, pílulas, setas de leitura de dados | `--primary-purple` | `#613EFF` | `.zone`, `.pill`, `.a-flow` |
+| Zona/ator principal, pílulas, setas de leitura de dados | `--primary-purple` | `#613EFF` | `.zone`, `.pill`, `.a-flow`, `.a-meta` |
 | Título do diagrama; setas de execução e transferência | `--dark-navy` | `#0A005A` | `.title`, `.a-exec`, `.a-data` |
 | Segundo ator/estágio; texto roxo sobre fundo claro | `--purple-700` | `#3F28A6` | `.lane:nth-of-type(2)`, `.tag`, rótulos de seta |
 | Terceiro ator / camada intermediária | `--accent-magenta` | `#EF41FF` | `.lane:nth-of-type(3)`, `.pill--magenta` |

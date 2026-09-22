@@ -65,7 +65,7 @@ subprocesso, nunca um só sobrecarregado.
 
    | Fonte | Como extrair |
    |---|---|
-   | Projeto dbt (`target/manifest.json`) | `python3 scripts/dbt_lineage.py target/manifest.json --group schema` (mapa de schemas) ou `--group layer` (pipeline). Sem manifest: `dbt parse`. |
+   | Projeto dbt (`target/manifest.json`) | `python3 <skill>/scripts/dbt_lineage.py target/manifest.json --group schema` (mapa de schemas) ou `--group layer` (pipeline). Sem manifest: `dbt parse`. |
    | DAGs do Airflow, código | Ler os arquivos; listar fontes, tabelas de pouso, cadência. |
    | Documento, ata, transcrição, PDF | Ler tudo; cada caixa, seta, sistema e observação da fonte entra na lista. |
    | Descrição do usuário | Listar e confirmar o que ficou ambíguo antes de desenhar. |
@@ -94,7 +94,9 @@ subprocesso, nunca um só sobrecarregado.
    Gera o `.png` ao lado (largura 3000 px, escala 2). Se sair código 2 ou o
    Chromium não abrir, rode `bash <skill>/scripts/setup.sh` (uma vez; pode
    pedir sudo) e repita. Se o log disser que a Reddit Sans não carregou,
-   verifique a internet — o PNG saiu com fonte errada.
+   verifique a internet — o PNG saiu com fonte errada. Após atualizar o
+   plugin, o `node_modules` some — rode `setup.sh` de novo (só o npm
+   install; o Chromium fica em `~/.cache/ms-playwright`).
 
 5. **Conferir o PNG lendo a imagem.** Procure: texto cortado ou quebrado
    em lugar ruim, seta atravessando nó, rótulo em cima de borda, pílula
@@ -121,7 +123,8 @@ subprocesso, nunca um só sobrecarregado.
 
 - Não desenhar sem listar a lógica antes.
 - Não usar Mermaid, SVG à mão, cairosvg ou coordenadas fixas de seta — as
-  setas vêm do JSON `#arrows` e são posicionadas pelo layout.
+  setas vêm do JSON `#arrows` e são posicionadas pelo layout; `via` e a
+  posição de um `.badge` são a única exceção, para desviar de um nó.
 - Não usar cores fora de `colors.md` nem fonte diferente de Reddit Sans.
 - Não entregar PNG sem ter olhado para ele.
 - Não publicar o diagrama técnico como peça de divulgação: para isso, faça um

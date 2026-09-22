@@ -49,7 +49,7 @@ convenções ao lado.
 
 ### Fonte dos dados
 
-`python3 scripts/dbt_lineage.py target/manifest.json --group schema` devolve
+`python3 <skill>/scripts/dbt_lineage.py target/manifest.json --group schema` devolve
 os schemas com seus modelos e a descrição de cada um; use as descrições para
 a linha de conteúdo, e o `materialization`/frequência da DAG para a cadência.
 Schemas sem produtor no dbt (legado) entram na coluna do meio.
