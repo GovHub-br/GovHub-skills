@@ -51,8 +51,8 @@ claude plugin install govhub-core@govhub
 
 | Plugin | O que traz | Skills |
 |--------|-----------|--------|
-| `govhub-skills` | **Tudo** — as 52 skills de todas as categorias | 52 |
-| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, prestação de contas | 3 |
+| `govhub-skills` | **Tudo** — as 53 skills de todas as categorias | 53 |
+| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, diagramas técnicos, prestação de contas | 4 |
 | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
 | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
 | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
@@ -105,6 +105,7 @@ Você **não precisa** chamar a skill pelo nome. Depois de instalada, o Claude a
 - *"cria uma DAG nova pra ingerir dados do SIAPE"* → dispara a `govhub-pipeline-guide`.
 - *"extrai os CNPJs desse PDF e joga no banco"* → dispara a `pdf-postgres-extractor`.
 - *"gera o relatório de prestação de contas do último ano"* → dispara a `accountability-report`.
+- *"desenha a arquitetura do lakehouse pra figura do relatório"* → dispara a `govhub-diagramas`.
 
 Se quiser **forçar** o uso de uma skill, é só citá-la: *"use a skill `sql-pro` para otimizar essa query"*.
 
@@ -143,6 +144,7 @@ As skills abaixo estão organizadas em pastas por categoria.
 |-------|-----------|
 | [`govhub-pipeline-guide`](01-govhub/govhub-pipeline-guide/) | Implementar uma nova fonte de dados no Gov Hub BR — DAG Airflow, cliente de API, transformações dbt (bronze → silver → gold), testes e PR. Cobre SIAPE, SIAFI, SICONV, TransfereGov, IBGE, PNCP. |
 | [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do Gov Hub (gov-hub.io) em relatórios e PDFs, slides, posts, dashboards e temas CSS. Roxo `#613EFF`, navy `#0A005A`. |
+| [`govhub-diagramas`](01-govhub/govhub-diagramas/) | Diagramas técnicos com a IDV: arquitetura em blocos, mapa de schemas, fluxo de processo com raias e pipeline de dados. HTML editável + PNG via Chromium; lê o lineage do dbt. |
 | [`accountability-report`](01-govhub/accountability-report/) | Relatório de prestação de contas de um repositório a partir do git. Saída em Markdown, HTML e PDF A4 pronto para entrega oficial. |
 
 ## 02 · Dados & Bancos

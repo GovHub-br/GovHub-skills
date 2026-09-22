@@ -11,13 +11,13 @@
     {
       "name": "govhub-skills",
       "source": "./",
-      "description": "Coleção completa — todas as 52 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
+      "description": "Coleção completa — todas as 53 skills de uma vez. Instale este OU os plugins por categoria abaixo, não os dois.",
       "category": "development"
     },
     {
       "name": "govhub-core",
       "source": "./01-govhub",
-      "description": "Específicas do GovHub — Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git. (3 skills)",
+      "description": "Específicas do GovHub — Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial, diagramas técnicos (arquitetura, schemas, raias, pipeline) e relatório de prestação de contas a partir do git. (4 skills)",
       "category": "development"
     },
     {
