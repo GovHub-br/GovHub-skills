@@ -8,7 +8,9 @@ description: >-
   componente, dashboard, e-mail, tema CSS. Dispara com: "identidade visual
   govhub", "tema govhub", "cores/paleta do govhub", "roxo do govhub", "deixar
   com a cara do govhub", "padrão govhub", "slides govhub", "post instagram
-  govhub", "elementos gráficos govhub", "marca d'água govhub", "logo govhub".
+  govhub", "elementos gráficos govhub", "marca d'água govhub", "logo govhub",
+  "gerar o PDF desse markdown", "documento/dicionário de dados em PDF",
+  "relatório A4 com a capa do govhub", "build_doc".
 ---
 
 # Gov Hub — Identidade Visual
@@ -123,7 +125,32 @@ topo do CSS). O arquivo completo e comentado está em
 
 ## Como aplicar por alvo
 
-**O entregável final vai virar PDF?** Isso vale pra qualquer gênero de
+**PDF sóbrio de corpo corrido, a partir de um markdown longo** (relatório
+técnico, dicionário de dados, nota): use
+[`scripts/build_doc.py`](scripts/README.md) em vez de escrever o CSS na mão.
+Ele implementa a receita validada de capa, faixa de capítulo, rodapé e tabela,
+e pagina com WeasyPrint, o que dispensa o loop de paginação por medição de
+`print-pages.md`.
+
+```bash
+python3 scripts/build_doc.py --markdown doc.md --cover-title "Relatório" --project-short MIR
+# documento de verdade: copie scripts/exemplo-config.json e passe --config
+```
+
+**O script não substitui a skill.** Ele cobre o texto que flui: capítulos,
+tabelas, figuras, blocos de destaque. Fica de fora, e continua nas
+referências: ícones de produto em callout e card (`editorial-report.md` §5-6),
+folha de identificação e índice (`print-frontmatter.md`), marca d'água
+(`print-watermark.md`), qualquer composição em grid (cards, callouts lado a
+lado, página de visão geral de framework) e todo layout que o markdown não
+expressa. Documento no estilo livro ou framework numerado pede essas peças:
+leia as referências e monte à mão, ou gere o corpo com o script e acrescente
+as páginas especiais depois.
+
+O script também não vale para peça que não é documento A4 (slide, post,
+poster, dashboard) nem para arquitetura de página diferente.
+
+**Qualquer outro PDF.** Isso vale pra qualquer gênero de
 documento — relatório técnico, dicionário de dados, e-book, framework
 numerado — não só pros casos "estilo livro" da seção 4. Antes de desenhar
 capa ou cabeçalho de página do zero, vá direto para
@@ -280,6 +307,7 @@ sempre faz todas as peças saírem iguais.
 
 ## Referências (progressive disclosure)
 
+- [`scripts/build_doc.py`](scripts/README.md) — **comece por aqui para um markdown longo que vira PDF**: script pronto (Python + WeasyPrint) que monta capa, faixa de capítulo, rodapé e tabelas numeradas a partir de um `.md` com um capítulo por `## N. Título`, configurado por um JSON pequeno. Também trata imagem solta como `<figure>`, `**Limitações:**` como bloco de destaque, e evita título órfão no fim da página. Validado no Dicionário de Dados do MIR (129 páginas, 91 tabelas, 7 figuras).
 - [`references/tokens.css`](references/tokens.css) — tokens completos e comentados, prontos para copiar.
 - [`references/partners.md`](references/partners.md) — logos dos parceiros institucionais: catálogo por fundo claro/escuro, quem entra em cada peça e em que ordem, e o ciclo eleitoral (arquivos `-defeso` valem no defeso; sem sufixo, no governo em exercício).
 - [`references/palette.md`](references/palette.md) — paleta detalhada, quando usar cada cor, regras de contraste e a rampa editorial (em PDF: tabelas navy, título de capítulo roxo, desde 2026-09-18).

@@ -1,0 +1,32 @@
+{
+  "markdown": "../MEU_DOCUMENTO.md",
+  "out_dir": ".",
+  "out_html": "Meu_Documento_GovHub.html",
+  "out_pdf": "Meu_Documento_GovHub.pdf",
+
+  "cover_title": "Título na capa",
+  "cover_subtitle": "Uma frase dizendo o que o documento cobre.",
+  "doc_short": "Título curto (vai no rodapé de toda página)",
+  "project_short": "MIR",
+
+  "partners": [
+    { "file": "lab-livre-black.svg", "alt": "Lab Livre" },
+    { "file": "unb-dark-outlined.svg", "alt": "UnB" }
+  ],
+
+  "eyebrows": {
+    "1": "Introdução",
+    "2": "Domínio de dados",
+    "7": "Referência",
+    "8": "Anexo"
+  },
+  "eyebrow_default": "Capítulo",
+
+  "logo_dir": null,
+  "dash_convention": true,
+
+  "extra_css": "cards.css",
+  "callout_icons": { "nota metodológica:": "beaker" },
+  "icons_base": "https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons",
+  "icon_variant": "default"
+}

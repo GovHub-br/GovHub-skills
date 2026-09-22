@@ -135,33 +135,45 @@ nome em todas as ocorrências desse conceito no documento — não alterne
 entre sinônimos próximos (`folder` num capítulo, `folder-open` noutro)
 para a mesma ideia.
 
-**Fundo permitido: o fundo embutido da variante.** O repositório de ícones
-foi regerado na paleta atual (2026-09-16) mantendo a nomenclatura antiga;
-cada variante já vem com o fundo pintado dentro do SVG, então o chip/fundo
-ao redor precisa ter exatamente essa cor:
+**Os SVGs atuais têm fundo transparente** (conferido nos arquivos servidos em
+2026-09-22; a descrição de "fundo embutido" valia para a exportação anterior).
+Cada ícone é duotone: preenchimento, contorno e, em duas variantes, sombra.
 
-| Fundo | Variante (sufixo na URL) |
-|---|---|
-| Pêssego `#FFE7E1` (`--bg-peach`) | `-default.svg` (contorno navy, sombra rosa) |
-| Navy `#0A005A` (`--dark-navy`) | `-purple.svg` (contorno pêssego, sombra rosa) |
-| Rosa `#F9006F` (`--accent-pink`) | `-orange.svg` (contorno navy, sombra pêssego) |
+| Variante | Preenchimento | Contorno | Sombra |
+|---|---|---|---|
+| `-default.svg` | pêssego | navy | rosa |
+| `-purple.svg` | navy | pêssego | rosa |
+| `-orange.svg` | pêssego | navy | pêssego |
 
-Sobre **branco** (corpo de relatório, callouts) não existe variante:
-coloque o ícone dentro de um chip pêssego (`background: var(--bg-peach)`)
-com a variante `-default`. Ver o chip em `social-posts.md`.
+**O contorno mantém as três legíveis sobre qualquer cor da paleta.** Não existe
+combinação proibida por legibilidade: o chip/fundo ao redor não precisa casar
+com nada. A escolha é de peso, pelo preenchimento:
+
+| Fundo | Variante | Como lê |
+|---|---|---|
+| Branco, pêssego | `-purple` | forma cheia navy, leitura mais firme |
+| Navy, roxo, magenta | `-default` | forma cheia pêssego sobre o escuro |
+| Qualquer um, versão discreta | `-orange` | sombra pêssego em vez de rosa, mais silenciosa |
+
+Usar a variante "errada" não quebra nada: o ícone passa a ler como desenho de
+linha em vez de forma cheia.
 
 Para **criar um ícone novo** que ainda não existe na biblioteca, esta skill
 não cobre isso — use a skill separada `govhub-icon-creation`, dedicada à
 técnica duotone exata (camadas, offset, cores por variante) e ao workflow
 de construção no Figma.
 
-Nunca coloque um ícone sobre cor diferente do fundo embutido da sua
-variante — inclusive roxo `#613EFF`, magenta e branco. O fundo pintado do
-ícone destoa quando forçado sobre outra cor. É por isso que o badge do
-callout (`.gh-icon-badge`, seção 6) é branco com contorno na cor da
-seção, e não preenchido: o ícone `-default` fica sobre branco, um dos
-fundos previstos, e não sobre a cor variável do capítulo. (O chip de
-ícone do cabeçalho de capítulo saiu em 2026-09-17, ver `print-header.md`.)
+Duas formas válidas de badge em PDF, as duas com a cor de seção (navy fixo
+desde 2026-09-18, ver `palette.md`):
+
+- **Chip branco com contorno navy** e ícone `-purple` (`.gh-icon-badge`,
+  seção 6): mais discreto, para callout no meio do texto.
+- **Chip navy preenchido** e ícone `-default`: mais evidente, para callout
+  que precisa saltar aos olhos (limitação, ressalva). É o que
+  `scripts/build_doc.py` gera.
+
+Roxo e magenta aceitam ícone normalmente, com a `-default`. (O chip de ícone
+do cabeçalho de capítulo saiu em 2026-09-17, ver `print-header.md`.)
 
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
 

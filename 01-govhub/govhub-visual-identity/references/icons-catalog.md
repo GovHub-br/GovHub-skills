@@ -14,14 +14,25 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<v
 ```
 
 - `<nome>` — um dos 332 nomes listados abaixo (descritivos do conceito).
-- `<variante>` — cada uma traz o **fundo embutido** no próprio SVG, na
-  paleta atual (repo regerado em 2026-09-16, mesma nomenclatura de antes):
-  `default` (fundo pêssego `#FFE7E1`, contorno navy, sombra rosa),
-  `purple` (fundo navy `#0A005A`, contorno pêssego, sombra rosa) e
-  `orange` (fundo rosa `#F9006F`, contorno navy, sombra pêssego). Os nomes
-  `purple`/`orange` são históricos; o que vale é a cor do fundo embutido.
-  Para relatório/e-book use quase sempre `default`. Regra completa de qual
-  variante sobre qual fundo: `editorial-report.md` seção 5.
+- `<variante>` — os nomes são históricos e **não descrevem a cor**. Os SVGs
+  atuais (repo regerado em 2026-09-16) têm **fundo transparente**, não fundo
+  embutido. Cada um é um desenho duotone com preenchimento, contorno e, em
+  duas variantes, uma sombra deslocada. Verificado nos arquivos servidos em
+  2026-09-22:
+
+  | Variante | Preenchimento | Contorno | Sombra |
+  |---|---|---|---|
+  | `default` | pêssego `#FFE7E1` | navy `#0A005A` | rosa `#F9006F` |
+  | `purple` | navy `#0A005A` | pêssego `#FFE7E1` | rosa `#F9006F` |
+  | `orange` | pêssego `#FFE7E1` | navy `#0A005A` | pêssego `#FFE7E1` |
+
+  **Por causa do contorno, as três continuam legíveis sobre qualquer cor da
+  paleta**, inclusive branco, pêssego, navy, roxo, magenta e rosa: nenhuma
+  combinação faz o ícone sumir. O que muda é o peso. Escolha pelo
+  preenchimento: se ele contrastar com o fundo, o ícone lê como forma cheia;
+  se coincidir, lê como desenho de linha. Em corpo de relatório (branco) a
+  leitura cheia é `purple`; dentro de um chip navy é `default`. A `orange`,
+  com a sombra em pêssego em vez de rosa, é a mais discreta. Ver `editorial-report.md` seção 5.
 
   > A CDN (`@main`) guarda cache de ~12 h; logo após uma regeração, baixe
   > pelo `raw.githubusercontent.com` ou fixe o SHA do commit na URL.
