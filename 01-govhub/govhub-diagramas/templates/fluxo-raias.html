@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fluxo de processo — exemplo ilustrativo</title>
+<link rel="stylesheet" href="../references/diagram.css">
+<style>
+  /* cor de etapa por raia (a mesma da cabeça da raia) */
+  .lane:nth-of-type(2) .node--fill { background: var(--purple-700); border-color: var(--purple-700); }
+  .lane:nth-of-type(3) .node--fill { background: var(--accent-magenta); border-color: var(--accent-magenta); }
+  .lane:nth-of-type(2) .dot { background: var(--purple-700); }
+  .lane:nth-of-type(3) .dot { background: var(--accent-magenta); }
+  .lane:nth-of-type(2) .dot--end { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--purple-700); }
+  .lane:nth-of-type(3) .dot--end { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--accent-magenta); }
+  .lane-body .note { font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="diagram">
+  <h1 class="title">Concessão de bolsa — fluxo de processo</h1>
+  <p class="subtitle">Exemplo ilustrativo: substitua atores, etapas e sistemas pelos da fonte real</p>
+
+  <div class="canvas">
+    <div class="lanes">
+      <div class="lane">
+        <div class="lane-head">Bolsista</div>
+        <div class="lane-body">
+          <div class="dot" id="ini-bolsista" style="grid-column:1"><span>Início</span></div>
+          <div class="node node--fill" id="solicitar" style="grid-column:2"><h3>Preencher solicitação</h3><span class="tag">Formulário SEI</span></div>
+          <div class="node node--fill" id="complementar" style="grid-column:4"><h3>Complementar documentos</h3></div>
+          <div class="dot dot--end" id="fim-bolsista" style="grid-column:7"><span>Bolsa paga</span></div>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="lane-head">Coordenação</div>
+        <div class="lane-body">
+          <div class="node node--fill" id="analisar" style="grid-column:3"><h3>Analisar documentação</h3></div>
+          <div class="decision" id="completa" style="grid-column:4">Documentação completa?</div>
+          <div class="node node--fill" id="aprovar" style="grid-column:5"><h3>Aprovar concessão</h3><span class="tag">Portaria de bolsas</span></div>
+          <div class="note note--plain" style="grid-column:6"><strong>Prazo:</strong> 10 dias úteis após o recebimento</div>
+        </div>
+      </div>
+      <div class="lane">
+        <div class="lane-head">Sistema de bolsas</div>
+        <div class="lane-body">
+          <div class="node node--fill" id="registrar" style="grid-column:5"><h3>Registrar bolsista</h3><span class="tag">Sistema de bolsas</span></div>
+          <div class="node node--legacy" id="pagamento" style="grid-column:6"><h3>Gerar pagamento</h3><p>ver fluxo financeiro</p></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="application/json" id="arrows">
+    [
+      {"from":"ini-bolsista","to":"solicitar","type":"flow"},
+      {"from":"solicitar","to":"analisar","type":"flow","fromSide":"bottom","toSide":"left"},
+      {"from":"analisar","to":"completa","type":"flow"},
+      {"from":"completa","to":"complementar","type":"flow","label":"Não","fromSide":"top","toSide":"bottom"},
+      {"from":"complementar","to":"analisar","type":"flow","fromSide":"left","toSide":"top","via":150},
+      {"from":"completa","to":"aprovar","type":"flow","label":"Sim"},
+      {"from":"aprovar","to":"registrar","type":"flow","fromSide":"bottom","toSide":"top"},
+      {"from":"registrar","to":"pagamento","type":"flow"},
+      {"from":"pagamento","to":"fim-bolsista","type":"flow","fromSide":"right","toSide":"bottom"}
+    ]
+    </script>
+  </div>
+
+  <div class="legend">
+    <span class="legend-title">LEGENDA</span>
+    <div class="item"><span class="swatch swatch--fill"></span><span>etapa do Bolsista</span></div>
+    <div class="item"><span class="swatch swatch--navy"></span><span>etapa da Coordenação</span></div>
+    <div class="item"><span class="swatch swatch--magenta"></span><span>etapa do Sistema</span></div>
+    <div class="item"><span class="swatch swatch--peach"></span><span>decisão</span></div>
+    <div class="item"><span class="swatch swatch--tag"></span><span>instrumento / sistema</span></div>
+    <div class="item"><span class="swatch swatch--dashed"></span><span>subprocesso (outro diagrama)</span></div>
+    <div class="item"><span class="swatch" style="border-color:var(--border-soft);background:var(--bg-subtle)"></span><span>observação</span></div>
+  </div>
+</div>
+<script src="../references/diagram.js"></script>
+</body>
+</html>
