@@ -2,7 +2,9 @@
    <script type="application/json" id="arrows">[...]</script> como SVG sobre .canvas.
    Seta: {"from":"id","to":"id","type":"exec|data|meta|flow|gov","label":"opcional",
           "fromSide":"top|right|bottom|left","toSide":"...", "via": número (x da vertical
-          numa rota horizontal, ou y da horizontal numa rota vertical),
+          numa rota horizontal, ou y da horizontal numa rota vertical — ignorado quando
+          fromSide e toSide estão em eixos diferentes: a rota vira um único cotovelo em L
+          para chegar perpendicular ao alvo, sem ponto de desvio),
           "labelAt":"start|mid|end" (posição do rótulo ao longo da rota; em linha reta = 25% / 50% / 75%), "dx":0, "dy":0}
    Posições vêm do layout real (getBoundingClientRect) — nada de coordenadas à mão. */
 (function () {
@@ -42,23 +44,40 @@
       const fromSide = a.fromSide || sa, toSide = a.toSide || sb;
       const [x1, y1] = anchor(A, fromSide), [x2, y2] = anchor(B, toSide);
       const horiz = fromSide === 'left' || fromSide === 'right';
+      const fromVert = fromSide === 'top' || fromSide === 'bottom';
+      const toVert = toSide === 'top' || toSide === 'bottom';
       const type = a.type || 'flow';
-      let d, label;
-      if (Math.abs(horiz ? y1 - y2 : x1 - x2) < 1) {
+      let d, label, vertical;
+      if (fromVert !== toVert) {            // eixos mistos: um único cotovelo, chega perpendicular ao alvo
+        d = fromVert
+          ? 'M' + x1 + ',' + y1 + ' L' + x1 + ',' + y2 + ' L' + x2 + ',' + y2
+          : 'M' + x1 + ',' + y1 + ' L' + x2 + ',' + y1 + ' L' + x2 + ',' + y2;
+        const legA = fromVert ? Math.abs(y2 - y1) : Math.abs(x2 - x1);   // primeira perna
+        const legB = fromVert ? Math.abs(x2 - x1) : Math.abs(y2 - y1);   // segunda perna
+        // rótulo: 'start' = meio da primeira perna, 'end' = meio da segunda, 'mid' = a perna mais longa
+        const onFirst = (a.labelAt || 'mid') === 'start' || ((a.labelAt || 'mid') === 'mid' && legA >= legB);
+        label = fromVert
+          ? (onFirst ? [x1, (y1 + y2) / 2] : [(x1 + x2) / 2, y2])
+          : (onFirst ? [(x1 + x2) / 2, y1] : [x2, (y1 + y2) / 2]);
+        vertical = fromVert ? onFirst : !onFirst;
+      } else if (Math.abs(horiz ? y1 - y2 : x1 - x2) < 1) {
         d = 'M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2;
         label = {
           start: [x1 + (x2 - x1) * 0.25, y1 + (y2 - y1) * 0.25],
           mid:   [(x1 + x2) / 2, (y1 + y2) / 2],
           end:   [x1 + (x2 - x1) * 0.75, y1 + (y2 - y1) * 0.75],
         }[a.labelAt || 'mid'];
+        vertical = !horiz;
       } else if (horiz) {
         const mx = a.via != null ? a.via : (x1 + x2) / 2;
         d = 'M' + x1 + ',' + y1 + ' L' + mx + ',' + y1 + ' L' + mx + ',' + y2 + ' L' + x2 + ',' + y2;
         label = { start: [(x1 + mx) / 2, y1], end: [(mx + x2) / 2, y2], mid: [mx, (y1 + y2) / 2] }[a.labelAt || 'mid'];
+        vertical = false;
       } else {
         const my = a.via != null ? a.via : (y1 + y2) / 2;
         d = 'M' + x1 + ',' + y1 + ' L' + x1 + ',' + my + ' L' + x2 + ',' + my + ' L' + x2 + ',' + y2;
         label = { start: [x1, (y1 + my) / 2], end: [x2, (my + y2) / 2], mid: [(x1 + x2) / 2, my] }[a.labelAt || 'mid'];
+        vertical = false;
       }
       const p = document.createElementNS(NS, 'path');
       p.setAttribute('d', d);
@@ -67,8 +86,7 @@
       svg.appendChild(p);
       if (a.label) {
         const t = document.createElementNS(NS, 'text');
-        // rota vertical: texto à direita da linha; horizontal: centrado acima
-        const vertical = !horiz && Math.abs(x1 - x2) < 1;
+        // perna vertical: texto à direita da linha; perna horizontal: centrado acima
         t.setAttribute('x', label[0] + (a.dx || 0) + (vertical ? 10 : 0));
         t.setAttribute('y', label[1] + (a.dy || 0) + (vertical ? 4 : -6));
         t.setAttribute('text-anchor', vertical ? 'start' : 'middle');
