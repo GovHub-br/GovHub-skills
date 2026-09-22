@@ -16,8 +16,8 @@ CATS = [
         "dir": "01-govhub",
         "name": "govhub-core",
         "titulo": "Específicas do GovHub",
-        "description": "Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial e relatório de prestação de contas a partir do git.",
-        "keywords": ["govhub", "airflow", "dbt", "dados-abertos", "prestacao-de-contas", "identidade-visual"],
+        "description": "Skills específicas do GovHub BR: guia de implementação de pipelines (Airflow + dbt + Postgres), identidade visual oficial, diagramas técnicos (arquitetura, schemas, raias, pipeline) e relatório de prestação de contas a partir do git.",
+        "keywords": ["govhub", "airflow", "dbt", "dados-abertos", "prestacao-de-contas", "identidade-visual", "diagramas"],
     },
     {
         "dir": "02-dados-e-bancos",

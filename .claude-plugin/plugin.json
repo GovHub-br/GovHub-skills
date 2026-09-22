@@ -1,6 +1,6 @@
 {
   "name": "govhub-skills",
-  "description": "Coleção completa de skills do GovHub BR / lablivre — as 52 skills de todas as categorias em um único plugin.",
+  "description": "Coleção completa de skills do GovHub BR / lablivre — as 53 skills de todas as categorias em um único plugin.",
   "author": {
     "name": "GovHub BR / lablivre",
     "url": "https://github.com/GovHub-br"
@@ -19,6 +19,7 @@
   ],
   "skills": [
     "./01-govhub/accountability-report",
+    "./01-govhub/govhub-diagramas",
     "./01-govhub/govhub-pipeline-guide",
     "./01-govhub/govhub-visual-identity",
     "./02-dados-e-bancos/bigquery-basics",
