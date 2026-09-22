@@ -31,12 +31,19 @@ async function comPlaywright() {
   catch (e) { console.error('playwright instalado, mas o Chromium não abriu:\n' + e.message.split('\n')[0]); return false; }
   try {
     const page = await browser.newPage({ viewport: { width: opt.width, height: 100 }, deviceScaleFactor: opt.scale });
+    const errosJs = [];                                  // erro de sintaxe/execução no HTML = PNG sem setas
+    page.on('pageerror', e => errosJs.push(e.message));
     await page.goto(pathToFileURL(input).href, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     const fonteOk = await page.evaluate(() =>
       [...document.fonts].some(f => f.family.replace(/["']/g, '') === 'Reddit Sans' && f.status === 'loaded'));
     console.log(fonteOk ? 'fonte: Reddit Sans carregada' : 'AVISO: Reddit Sans NÃO carregou (sem internet?) — o PNG sai com fonte fallback');
     await page.evaluate(() => { if (window.drawArrows) window.drawArrows(); });
+    if (errosJs.length) throw new Error('erro de JavaScript na página: ' + errosJs[0]);
+    const setas = await page.evaluate(() => ({
+      declaradas: !!document.getElementById('arrows'), desenhadas: document.querySelectorAll('svg.arrows path.a').length }));
+    if (setas.declaradas && setas.desenhadas === 0) throw new Error('#arrows declarado, mas nenhuma seta foi desenhada (diagram.js carregou?)');
+    if (setas.declaradas) console.log('setas: ' + setas.desenhadas);
     const el = page.locator(opt.selector).first();
     if (await el.count()) await el.screenshot({ path: output });
     else { console.log('seletor ' + opt.selector + ' não encontrado; capturando a página inteira'); await page.screenshot({ path: output, fullPage: true }); }

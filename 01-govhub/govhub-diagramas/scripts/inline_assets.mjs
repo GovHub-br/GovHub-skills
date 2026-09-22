@@ -15,7 +15,9 @@ html = html.replace(/<link\s+rel="stylesheet"\s+href="([^"]+)">/g, (_, href) => 
 });
 html = html.replace(/<script\s+src="([^"]+)"><\/script>/g, (_, s) => {
   scriptCount++;
-  return '<script>\n' + readFileSync(resolve(dirname(srcAbs), s), 'utf8') + '\n</script>';
+  // um "</script" dentro do JS (string ou comentário) fecharia a tag no HTML; escapa
+  const js = readFileSync(resolve(dirname(srcAbs), s), 'utf8').replace(/<\/script/gi, '<\\/script');
+  return '<script>\n' + js + '\n</script>';
 });
 if (linkCount === 0) console.error('AVISO: nenhum <link rel="stylesheet"> encontrado');
 if (scriptCount === 0) console.error('AVISO: nenhum <script src> encontrado');

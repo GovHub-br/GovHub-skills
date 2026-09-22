@@ -1,5 +1,5 @@
 /* govhub-diagramas — desenha as setas declaradas em
-   <script type="application/json" id="arrows">[...]</script> como SVG sobre .canvas.
+   <script type="application/json" id="arrows">[...] (o elemento de id "arrows") como SVG sobre .canvas.
    Seta: {"from":"id","to":"id","type":"exec|data|meta|flow|gov","label":"opcional",
           "fromSide":"top|right|bottom|left","toSide":"...", "via": número (x da vertical
           numa rota horizontal, ou y da horizontal numa rota vertical — ignorado quando
