@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Pipeline de dados — fonte ao consumo</title>
+<link rel="stylesheet" href="../references/diagram.css">
+<style>
+  .stages { display: grid; grid-template-columns: 300px 260px 1fr 300px; gap: 56px; align-items: start; }
+  .zone .stack { display: grid; gap: 22px; }
+  .layers { display: grid; gap: 18px; }
+  .zone--plain { background: #fff; }
+</style>
+</head>
+<body>
+<div class="diagram">
+  <h1 class="title">Pipeline de dados — da fonte ao consumo</h1>
+  <p class="subtitle">Exemplo ilustrativo: substitua fontes, DAGs, camadas e saídas pelos do projeto</p>
+
+  <div class="canvas">
+    <div class="stages">
+      <section class="zone">
+        <span class="pill">Fontes</span>
+        <div class="stack">
+          <div class="node" id="salic"><h3>SALIC</h3><p>Postgres · réplica completa diária</p><span class="tag">acesso direto</span></div>
+          <div class="node" id="transferegov"><h3>TransfereGov</h3><p>API · atualização por chave natural</p><span class="tag">API REST</span></div>
+          <div class="node" id="planilhas"><h3>Planilhas de gestão</h3><p>xlsx enviadas por e-mail</p><span class="tag">carga pontual</span></div>
+        </div>
+      </section>
+
+      <section class="zone">
+        <span class="pill">Ingestão</span>
+        <div class="stack">
+          <div class="node node--fill" id="airflow"><h3>Apache Airflow</h3><p>uma DAG por fonte · pouso em texto</p></div>
+          <div class="note note--plain"><strong>Cadência:</strong> diária (SALIC), semanal (IBGE), sob demanda (planilhas)</div>
+        </div>
+      </section>
+
+      <section class="zone zone--plain">
+        <span class="pill">Transformação · dbt</span>
+        <div class="layers">
+          <div class="layer layer--1" id="bronze"><h3>bronze</h3><p>cópia fiel da fonte, colunas em texto</p></div>
+          <div class="layer layer--2" id="silver"><h3>silver</h3><p>tipagem, deduplicação, chaves naturais</p></div>
+          <div class="decision" id="testes" style="justify-self:center">testes dbt passaram?</div>
+          <div class="layer layer--3" id="gold"><h3>gold</h3><p>grão de análise · métricas do domínio</p></div>
+          <div class="note note--lgpd">CPF de proponentes anonimizado na silver; a gold não carrega dado pessoal</div>
+        </div>
+      </section>
+
+      <section class="zone">
+        <span class="pill">Consumo</span>
+        <div class="stack">
+          <div class="node node--out" id="superset"><h3>Superset</h3><p>painéis institucionais</p></div>
+          <div class="node node--out" id="relatorios"><h3>Relatórios</h3><p>PDF · notas técnicas</p></div>
+          <div class="node node--out" id="agentes"><h3>Agentes de IA</h3><p>SQL a partir de linguagem natural</p></div>
+        </div>
+      </section>
+    </div>
+
+    <script type="application/json" id="arrows">
+    [
+      {"from":"salic","to":"airflow","type":"data","fromSide":"right","toSide":"left"},
+      {"from":"transferegov","to":"airflow","type":"data","fromSide":"right","toSide":"left"},
+      {"from":"planilhas","to":"airflow","type":"data","fromSide":"right","toSide":"left"},
+      {"from":"airflow","to":"bronze","type":"exec","label":"carrega","fromSide":"right","toSide":"left"},
+      {"from":"bronze","to":"silver","type":"flow","fromSide":"bottom","toSide":"top"},
+      {"from":"silver","to":"testes","type":"flow","fromSide":"bottom","toSide":"top"},
+      {"from":"testes","to":"gold","type":"flow","label":"sim","fromSide":"bottom","toSide":"top"},
+      {"from":"gold","to":"superset","type":"flow","fromSide":"right","toSide":"left"},
+      {"from":"gold","to":"relatorios","type":"flow","fromSide":"right","toSide":"left"},
+      {"from":"gold","to":"agentes","type":"flow","fromSide":"right","toSide":"left"}
+    ]
+    </script>
+  </div>
+
+  <div class="legend">
+    <span class="legend-title">LEGENDA</span>
+    <div class="item"><span class="sample sample--data"></span><div><b>Transferência de dados</b><span>fonte → pouso</span></div></div>
+    <div class="item"><span class="sample"></span><div><b>Orquestração</b><span>Airflow executa a carga</span></div></div>
+    <div class="item"><span class="sample sample--flow"></span><div><b>Leitura / transformação</b><span>dbt e consumo</span></div></div>
+    <div class="item"><span class="swatch swatch--out"></span><span class="swatch" style="background:var(--purple-tint-3)"></span><span class="swatch swatch--fill"></span><span>camadas: bruta → tratada → curada</span></div>
+    <div class="item"><span class="swatch swatch--peach"></span><span>validação de qualidade</span></div>
+    <div class="item"><span class="swatch" style="border-color:var(--accent-pink);background:var(--bg-peach)"></span><span>ponto de tratamento LGPD</span></div>
+  </div>
+</div>
+<script src="../references/diagram.js"></script>
+</body>
+</html>
