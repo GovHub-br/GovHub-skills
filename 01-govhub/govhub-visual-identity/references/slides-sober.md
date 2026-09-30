@@ -1,29 +1,18 @@
-# Slides Gov Hub, variante sóbria: código exato validado
+# Slides Gov Hub: código exato validado
 
-Variante **branca** dos slides, validada com o usuário em 2026-09-18
+Slides **brancos**, validada com o usuário em 2026-09-18
 (4 rodadas de ajuste). É a linguagem do relatório em PDF
 ([`print-cover.md`](print-cover.md), [`print-header.md`](print-header.md),
 [`print-table.md`](print-table.md)) transposta para o canvas 1920×1080:
-fundo branco em todo slide, paleta só **navy + roxo + pêssego** (magenta e
-rosa não entram), formas oficiais apenas na capa, na abertura de seção e
-no encerramento. **Não usa os 6 templates coloridos do CDN**; eles ficam
-para a variante colorida de [`slides.md`](slides.md).
-
-## Quando usar cada variante
-
-- **Sóbria (este arquivo):** apresentação institucional que acompanha um
-  relatório de entrega, reunião com ministério/órgão, banca, comitê. É a
-  preferência declarada do usuário para material institucional.
-- **Colorida (`slides.md`):** evento, divulgação, aula, comunicação
-  externa em que a marca precisa aparecer forte.
-
-Se o pedido não deixar claro, pergunte ("sóbria como o relatório, ou
-colorida com os templates oficiais?") antes de montar. Não misture as
-duas no mesmo deck.
+fundo branco em todo slide, paleta só **navy + roxo + `#F2F1F6`** (o
+modo sóbrio de `palette.md`; `#BE006E` não entra), Reddit Sans em tudo,
+formas oficiais apenas na capa, na abertura de seção e no encerramento.
+Vale para qualquer apresentação (institucional, evento, aula): a
+variante colorida com templates do CDN foi descontinuada em 2026-09-30.
 
 ## Arquitetura e exportação
 
-Mesma de `slides.md`: uma `section.gh-slide` de 1920×1080 por slide,
+Uma `section.gh-slide` de 1920×1080 por slide,
 `@page` do mesmo tamanho com margem zero, pasta `logo/` copiada de
 `references/logo/` para dentro da pasta do deck, exportação com
 WeasyPrint (`python3 -m weasyprint deck.html deck.pdf`) e **conferência
@@ -37,7 +26,7 @@ olhar cada uma; ver checklist no fim).
 
 | Tipo | Papel | Formas | Cabeçalho | Rodapé |
 |---|---|---|---|---|
-| Capa | 1 por deck | quarto roxo + pílula pêssego + anel navy (as da capa do PDF) | logo navy no alto | parceiros pretos |
+| Capa | 1 por deck | quarto roxo + pílula `#F2F1F6` + anel navy (as da capa do PDF) | logo navy no alto | parceiros pretos |
 | Seção | abre cada seção | só um quarto roxo menor no canto | numeral + eyebrow + título roxo + barra | nenhum |
 | Conteúdo (tópicos, duas colunas, cards, tabela) | corpo do deck | nenhuma | numeral + eyebrow (nome da seção) + título roxo + barra | número + símbolo |
 | Ênfase (número-chave ou citação) | 1 por seção no máximo | nenhuma | igual ao conteúdo | número + símbolo |
@@ -46,12 +35,12 @@ olhar cada uma; ver checklist no fim).
 ## CSS (copie inteiro)
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Reddit+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --primary-purple: #613EFF;
   --dark-navy:      #0A005A;
-  --bg-peach:       #FFE7E1;
+  --bg-soft:        #F2F1F6;
   --bg-white:       #FFFFFF;
   --bg-subtle:      #F8F9FA;
   --text-strong:    #202020;
@@ -60,7 +49,7 @@ olhar cada uma; ver checklist no fim).
   --border-soft:    #E9DFFF;
   --section-color:  #0A005A;   /* sempre navy no PDF (print-table.md) */
   --font-family-base:    'Reddit Sans', 'Open Sans', sans-serif;
-  --font-family-heading: 'Oswald', 'Reddit Sans', sans-serif;
+  --font-family-heading: 'Reddit Sans', sans-serif; /* era Oswald */
   --radius-sm: 10px; --radius-md: 18px;
 }
 
@@ -82,9 +71,9 @@ body { font-family: var(--font-family-base); color: var(--text-body); background
 .gh-cover__logo { position: absolute; left: 120px; top: 100px; height: 64px; width: auto; }
 .gh-cover__content { position: absolute; left: 120px; top: 400px; width: 1100px; }
 .gh-cover__title {
-  font-family: var(--font-family-heading); font-weight: 700; text-transform: uppercase;
-  font-size: 104px; line-height: 1.04; letter-spacing: .005em;
-  color: var(--dark-navy); margin: 0 0 32px; max-width: 14ch;
+  font-family: var(--font-family-heading); font-weight: 800;
+  font-size: 96px; line-height: 1.06; letter-spacing: -0.025em;
+  color: var(--dark-navy); margin: 0 0 32px; max-width: 16ch;
 }
 .gh-cover__subtitle { font-size: 32px; line-height: 1.5; color: var(--text-body); margin: 0; max-width: 40ch; }
 .gh-cover__footer { position: absolute; left: 120px; bottom: 88px; display: flex; align-items: center; gap: 72px; }
@@ -154,7 +143,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); background
 .gh-body .gh-callout-box__body { font-size: 26px; line-height: 1.45; color: var(--text-body); margin: 0; }
 
 /* ênfase: número-chave */
-.gh-body .gh-kpi { font-family: var(--font-family-heading); font-weight: 700; font-size: 260px; line-height: 1; color: var(--primary-purple); margin: 0 0 24px; }
+.gh-body .gh-kpi { font-family: var(--font-family-heading); font-weight: 800; font-size: 240px; line-height: 1; letter-spacing: -0.05em; color: var(--primary-purple); margin: 0 0 24px; }
 .gh-body .gh-kpi-text { font-size: 44px; line-height: 1.35; font-weight: 500; color: var(--dark-navy); margin: 0; max-width: 26ch; }
 
 /* citação */
@@ -169,7 +158,7 @@ body { font-family: var(--font-family-base); color: var(--text-body); background
 
 /* ============ ENCERRAMENTO ============ */
 .gh-closing__block { position: absolute; left: 120px; bottom: 210px; width: 1100px; }
-.gh-closing__title { font-family: var(--font-family-heading); font-weight: 700; text-transform: uppercase; font-size: 104px; line-height: 1.04; color: var(--dark-navy); margin: 0 0 32px; }
+.gh-closing__title { font-family: var(--font-family-heading); font-weight: 800; font-size: 96px; line-height: 1.06; letter-spacing: -0.025em; color: var(--dark-navy); margin: 0 0 32px; }
 .gh-closing__lead { font-size: 34px; line-height: 1.6; color: var(--text-body); margin: 0; }
 .gh-closing__lead strong { color: var(--dark-navy); font-weight: 700; }
 ```
@@ -190,10 +179,10 @@ body { font-family: var(--font-family-base); color: var(--text-body); background
 - **Tabela** igual a `print-table.md`: legenda numerada navy, header navy
   sólido, zebra `--bg-subtle`, sem cartão nem sombra.
 - **Cards** são os callouts de `editorial-report.md`: contorno navy de
-  2.5px, badge de ícone 88px com ícone de produto `-default` 60px do CDN,
+  2.5px, badge de ícone 88px com ícone de produto `-sober` 60px do CDN,
   título uppercase pequeno e corpo 26px.
-- **Número-chave** (`.gh-kpi`) em Oswald 260px **roxo**, não rosa; o rosa
-  não entra na variante sóbria. Texto de apoio navy 44px.
+- **Número-chave** (`.gh-kpi`) em Reddit Sans 800 240px **roxo**; o
+  `#BE006E` não entra nos slides. Texto de apoio navy 44px.
 - **Citação** com filete roxo de 6px à esquerda, texto navy 46px, autor
   em `--text-muted`.
 - **Encerramento** sem "Obrigado": logo navy no alto, área livre no meio,
@@ -215,10 +204,10 @@ Capa:
        style="right:-1px; bottom:-1px; width:600px; height:600px">
     <path fill="#613EFF" d="M100 100H0a100 100 0 0 1 100-100z"/>
   </svg>
-  <!-- pílula pêssego, entrando pela esquerda -->
+  <!-- pílula #F2F1F6, entrando pela esquerda -->
   <svg class="gh-shape" viewBox="0 0 266 100" aria-hidden="true"
        style="left:-150px; top:230px; width:430px; height:162px; ">
-    <rect width="266" height="100" rx="50" fill="#FFE7E1"/>
+    <rect width="266" height="100" rx="50" fill="#F2F1F6"/>
   </svg>
   <!-- anel navy, alto à direita -->
   <svg class="gh-shape" viewBox="0 0 100 100" aria-hidden="true"
@@ -323,7 +312,7 @@ Conteúdo, duas colunas:
 </section>
 ```
 
-Conteúdo, cards (ícones de produto do CDN, variante `-default`, escolha pelo nome em `icons-catalog.md`):
+Conteúdo, cards (ícones de produto do CDN, variante `-sober`, escolha pelo nome em `icons-catalog.md`):
 
 ```html
 <section class="gh-slide">
@@ -340,21 +329,21 @@ Conteúdo, cards (ícones de produto do CDN, variante `-default`, escolha pelo n
     <p>Os três eixos do projeto, na ordem em que foram executados.</p>
     <div class="gh-cards">
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/book-open-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/book-open-sober.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">O que é</p>
           <p class="gh-callout-box__body">Diagnóstico das bases de contratações públicas e do fluxo de dados entre os sistemas do Executivo Federal.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-sober.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Quando</p>
           <p class="gh-callout-box__body">Primeira entrega da Meta 01, base para a arquitetura de publicação dos produtos seguintes.</p>
         </div>
       </div>
       <div class="gh-callout-box">
-        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/settings-default.svg" alt=""></div>
+        <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/settings-sober.svg" alt=""></div>
         <div>
           <p class="gh-callout-box__title">Como</p>
           <p class="gh-callout-box__body">Extração via APIs públicas, modelagem em camadas (bronze, prata, ouro) e catálogo de metadados no Gov Hub.</p>
@@ -467,10 +456,10 @@ Encerramento (troque o e-mail pelo do responsável do projeto):
     <path fill="#0A005A" fill-rule="evenodd"
           d="M50 0a50 50 0 1 0 0 100a50 50 0 1 0 0-100zM50 25.6a24.4 24.4 0 1 1 0 48.8a24.4 24.4 0 1 1 0-48.8z"/>
   </svg>
-  <!-- pílula pêssego, entrando pela esquerda -->
+  <!-- pílula #F2F1F6, entrando pela esquerda -->
   <svg class="gh-shape" viewBox="0 0 266 100" aria-hidden="true"
        style="left:-150px; top:230px; width:430px; height:162px; ">
-    <rect width="266" height="100" rx="50" fill="#FFE7E1"/>
+    <rect width="266" height="100" rx="50" fill="#F2F1F6"/>
   </svg>
 
   <img class="gh-cover__logo" src="logo/logomarca-horizontal-navy.svg" alt="Gov Hub">
@@ -488,7 +477,7 @@ Encerramento (troque o e-mail pelo do responsável do projeto):
 
 | Tipo | Zona de texto | Ocupada pelas formas |
 |---|---|---|
-| Capa / encerramento | `x 120–1200` | quarto roxo `x > 1320, y > 480`; anel navy `x > 1750, y < 330`; pílula pêssego `x < 280, y 230–392` |
+| Capa / encerramento | `x 120–1200` | quarto roxo `x > 1320, y > 480`; anel navy `x > 1750, y < 330`; pílula `#F2F1F6` `x < 280, y 230–392` |
 | Seção | `x 120–1360, y 300–800` | quarto roxo `x > 1500, y > 660` |
 | Conteúdo / ênfase | corpo `x 120–1800, y 290–940` | nenhuma; o rodapé fica abaixo de `y 940` |
 
@@ -498,7 +487,7 @@ Encerramento (troque o e-mail pelo do responsável do projeto):
    snippet de `print-cover.md` (que usa `fill="currentColor"` +
    `color:` no `style` + `rotate(180deg)`) foi validado no Chrome; no
    WeasyPrint a pílula e o anel saíram **pretos** e o quarto roxo sumiu.
-   Nos slides o `fill` é literal (`#613EFF`, `#0A005A`, `#FFE7E1`) e o
+   Nos slides o `fill` é literal (`#613EFF`, `#0A005A`, `#F2F1F6`) e o
    quarto já é desenhado no canto inferior direito
    (`d="M100 100H0a100 100 0 0 1 100-100z"`), sem transform.
 2. **Especificidade:** `.gh-body p` (0,1,1) vence `.gh-kpi` (0,1,0), e o
@@ -513,7 +502,7 @@ Encerramento (troque o e-mail pelo do responsável do projeto):
 ## Checklist de conferência visual
 
 (1) número de páginas do PDF = número de `.gh-slide`; (2) as três formas
-da capa e do encerramento estão nas cores certas (roxo, pêssego, navy;
+da capa e do encerramento estão nas cores certas (roxo, `#F2F1F6`, navy;
 nada preto); (3) título do cabeçalho em uma linha; (4) corpo dentro de
 `y 290–940`; (5) número-chave grande (não 32px); (6) cards com o texto
 dentro da borda; (7) só um slide de ênfase por seção.
@@ -524,3 +513,6 @@ dentro da borda; (7) só um slide de ênfase por seção.
   encerramento; o usuário pediu para tirar barra e nome do deck e aumentar
   o número (v2), depois remover "Obrigado" e GitHub e descer o contato
   (v3, aprovada: "ficou ótimo").
+- **2026-09-30 (modo sóbrio):** pêssego → `#F2F1F6` na pílula da capa e do
+  encerramento; Oswald uppercase → Reddit Sans 800 no título da capa, no
+  encerramento e no número-chave; ícones `-default` → `-sober`.

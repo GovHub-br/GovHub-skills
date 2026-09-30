@@ -28,5 +28,5 @@
   "extra_css": "cards.css",
   "callout_icons": { "nota metodológica:": "beaker" },
   "icons_base": "https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons",
-  "icon_variant": "default"
+  "icon_variant": "sober"
 }

@@ -126,7 +126,7 @@ body = soup.body
 # ---------------------------------------------------------------------------
 # 2. Reestrutura: capítulos (h2), tabelas com legenda, títulos de tabela
 # ---------------------------------------------------------------------------
-NAVY = "#0A005A"; PURPLE = "#613EFF"; PEACH = "#FFE7E1"
+NAVY = "#0A005A"; PURPLE = "#613EFF"; SOFT = "#F2F1F6"  # modo sóbrio: #F2F1F6 no lugar do pêssego
 
 chapters = []  # (num, eyebrow, title, [elements])
 front = []       # abertura: blocos .gh-front-page antes do capítulo 01
@@ -160,7 +160,7 @@ EYEBROW_DEFAULT = cfg.get("eyebrow_default", "Capítulo")
 
 # parágrafos que viram bloco de destaque (callout), pelo rótulo em negrito inicial.
 # Cada rótulo tem um ícone de produto (icons-catalog.md); o chip é navy, então a
-# variante é a de contorno pêssego (-default). Ver editorial-report.md seção 5.
+# variante é a -sober (preenchimento #F2F1F6, sombra #BE006E). Ver editorial-report.md seção 5.
 CALLOUT_ICONS = {
     "limitações:": "exclamation-triangle", "limitação:": "exclamation-triangle",
     "atenção:": "notification", "ressalva:": "information-circle",
@@ -171,7 +171,7 @@ CALLOUT_LABELS = set(CALLOUT_ICONS)
 ICONS_BASE = cfg.get(
     "icons_base",
     "https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons")
-ICON_VARIANT = cfg.get("icon_variant", "default")
+ICON_VARIANT = cfg.get("icon_variant", "sober")
 
 # CSS extra do documento: para peças que o markdown não expressa (cards, grids)
 # e que entram como HTML bruto no .md. Receitas em references/editorial-report.md.
@@ -296,12 +296,12 @@ CSS = f"""
   @bottom-center {{ content: element(gh-footer); width: 100%; vertical-align: top; padding: 0; margin: 0; }}
 }}
 :root {{
-  --primary-purple: {PURPLE}; --dark-navy: {NAVY}; --bg-peach: {PEACH};
+  --primary-purple: {PURPLE}; --dark-navy: {NAVY}; --bg-soft: {SOFT};
   --text-strong: #202020; --text-body: #2D3748; --text-muted: #666666;
-  --bg-white: #FFFFFF; --bg-subtle: #F8F9FA; --border-soft: #E9DFFF; --accent-pink: #F9006F;
+  --bg-white: #FFFFFF; --bg-subtle: {SOFT}; --border-soft: #E9DFFF; --accent-rose: #BE006E;
   --editorial-00-navy: {NAVY};
   --font-family-base: 'Reddit Sans', 'Open Sans', sans-serif;
-  --font-family-heading: 'Oswald', 'Reddit Sans', sans-serif;
+  --font-family-heading: 'Reddit Sans', 'Open Sans', sans-serif;
   --section-color: var(--editorial-00-navy);
 }}
 html, body {{ margin: 0; padding: 0; }}
@@ -333,8 +333,8 @@ strong {{ color: var(--text-strong); }}
 .gh-shape {{ position: absolute; display: block; }}
 .gh-cover__logo {{ position: absolute; left: 20mm; top: 20mm; height: 12mm; width: auto; }}
 .gh-cover__content {{ position: absolute; left: 20mm; right: 20mm; top: 32%; }}
-.gh-cover__title {{ font-family: var(--font-family-heading); font-weight: 700; text-transform: uppercase;
-  font-size: 46px; line-height: 1.04; letter-spacing: .005em; color: var(--dark-navy); margin: 0 0 18px; max-width: 14ch; }}
+.gh-cover__title {{ font-family: var(--font-family-heading); font-weight: 800;
+  font-size: 44px; line-height: 1.06; letter-spacing: -0.025em; color: var(--dark-navy); margin: 0 0 18px; max-width: 16ch; }}
 .gh-cover__subtitle {{ font-size: 14px; line-height: 1.55; max-width: 46ch; color: var(--text-body); margin: 0; }}
 .gh-cover__footer {{ position: absolute; left: 20mm; bottom: 16mm; }}
 .gh-cover__footer img {{ height: 34px; width: auto; vertical-align: middle; margin-right: 36px; }}
@@ -403,7 +403,7 @@ COVER = f"""
     <path fill="{PURPLE}" d="M100 100H0A100 100 0 0 1 100 0z"/>
   </svg>
   <svg class="gh-shape" viewBox="0 0 266 100" style="left:-26mm; top:64mm; width:74mm; height:27.8mm">
-    <rect width="266" height="100" rx="50" fill="{PEACH}"/>
+    <rect width="266" height="100" rx="50" fill="{SOFT}"/>
   </svg>
   <svg class="gh-shape" viewBox="0 0 100 100" style="right:-12mm; top:22mm; width:40mm; height:40mm">
     <path fill="{NAVY}" fill-rule="evenodd" d="M50 0a50 50 0 1 0 0 100a50 50 0 1 0 0-100zM50 25.6a24.4 24.4 0 1 1 0 48.8a24.4 24.4 0 1 1 0-48.8z"/>

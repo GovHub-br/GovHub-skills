@@ -93,8 +93,8 @@ a tabela sai roxa sem avisar.
 
 A faixa antiga tinha um chip branco com ícone de produto à direita. No
 cabeçalho branco ele ficaria solto, então saiu. Se o usuário pedir o ícone
-de volta, a saída é um chip pêssego (`--bg-peach`, `border-radius: 14px`,
-60px, ícone `-default` 42px) com `margin-left: auto` dentro do
+de volta, a saída é um chip `#F2F1F6` (`--bg-soft`, `border-radius: 14px`,
+60px, ícone `-sober` 42px) com `margin-left: auto` dentro do
 `.gh-band__row`; não reintroduza sem pedido.
 
 ## Corpo da página (`.gh-page-body`)

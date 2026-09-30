@@ -1,8 +1,8 @@
 # Logos dos parceiros institucionais
 
 Arquivos em `references/logo/parceiros/`. Aparecem no rodapé da capa
-(`print-cover.md`), no slide de encerramento (`slides.md`) e no quadro de
-fechamento de carrossel (`social-posts.md`), sempre **ao lado** da marca Gov
+(`print-cover.md`) e no slide de encerramento (`slides-sober.md`), sempre
+**ao lado** da marca Gov
 Hub, nunca no lugar dela.
 
 ## Convenção de nome
@@ -11,8 +11,7 @@ Hub, nunca no lugar dela.
 <parceiro>_<positivo|negativo>[-defeso].<svg|png>
 ```
 
-- `positivo`: texto preto, para **fundo claro** (branco, `--bg-light`,
-  pêssego).
+- `positivo`: texto preto, para **fundo claro** (branco, `#F2F1F6`).
 - `negativo`: texto branco, para **fundo escuro** (navy, roxo). O símbolo
   colorido (bandeira verde/amarelo/azul nos ministérios) é o mesmo nas duas
   versões; só o texto muda.
@@ -55,7 +54,7 @@ UnB ao lado. Em capa, encerramento e fechamento vai a logo completa.
 (símbolo cheio) foi testada na capa de PDF em 2026-09-17 e reprovada pelo
 usuário por ficar pesada ao lado da Lab Livre; a `fulfilled` fica para
 quando ele pedir. As duas logos vão **na mesma cor**: em fundo claro
-(pêssego, magenta, branco) `lab-livre-black` + `unb-dark-outlined`; em
+(branco, `#F2F1F6`) `lab-livre-black` + `unb-dark-outlined`; em
 fundo escuro `lab-livre-white` + `unb-light-outlined`. A UnB colorida
 (`unb-colourfull-*`) também foi reprovada nos posts (2026-09-17) ao lado
 da paleta Gov Hub; só a pedido. As versões `vertical` são para espaços

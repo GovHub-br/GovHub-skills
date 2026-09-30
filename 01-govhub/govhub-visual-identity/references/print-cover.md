@@ -15,16 +15,16 @@ capa) é fixo, copie sem alterar.
 ## O que é
 
 Fundo **branco**, logo Gov Hub navy no canto superior esquerdo, título em
-**Oswald bold uppercase** navy à esquerda um pouco acima do centro,
-subtítulo em Reddit Sans, e **três elementos gráficos oficiais** sangrando
-pelas bordas (ver `graphic-elements-catalog.md`): quarto de círculo roxo
-no canto inferior direito, pílula pêssego entrando pela esquerda, anel
-navy no alto à direita. Sem moldura, sem gradiente, sem kicker. Rodapé da
+**Reddit Sans 800** navy (caixa alta e baixa) à esquerda um pouco acima do
+centro, subtítulo em Reddit Sans, e **três elementos gráficos oficiais**
+sangrando pelas bordas (ver `graphic-elements-catalog.md`): quarto de
+círculo roxo no canto inferior direito, pílula `#F2F1F6` entrando pela
+esquerda, anel navy no alto à direita. Sem moldura, sem gradiente, sem kicker. Rodapé da
 capa: logos dos parceiros institucionais, alinhadas à esquerda.
 
-Paleta da capa: só navy, roxo e pêssego. Foi testada uma versão com fundo
-pêssego e pílula magenta; o usuário preferiu a branca e pediu para tirar
-magenta e rosa do documento inteiro (ver `palette.md`, rampa editorial).
+Paleta da capa: só navy, roxo e `#F2F1F6` (modo sóbrio, `palette.md`).
+Desde 2026-09-30 a pílula é `#F2F1F6` (era pêssego `#FFE7E1`) e o título
+é Reddit Sans 800 (era Oswald uppercase).
 
 ## CSS
 
@@ -45,12 +45,12 @@ magenta e rosa do documento inteiro (ver `palette.md`, rampa editorial).
 }
 
 .gh-cover__title {
-  font-family: var(--font-family-heading);      /* Oswald */
-  font-weight: 700; text-transform: uppercase;
-  font-size: 46px; line-height: 1.04; letter-spacing: .005em;
+  font-family: var(--font-family-base);         /* Reddit Sans (era Oswald) */
+  font-weight: 800;
+  font-size: 44px; line-height: 1.06; letter-spacing: -0.025em;
   color: var(--dark-navy);  /* explícito: um reset global tipo h1{color:...} no
                                 projeto que consome a skill sobrescreve a herança */
-  margin: 0 0 18px; max-width: 14ch;
+  margin: 0 0 18px; max-width: 16ch;
 }
 
 .gh-cover__subtitle {
@@ -74,9 +74,9 @@ magenta e rosa do documento inteiro (ver `palette.md`, rampa editorial).
        style="right:-1px; bottom:-1px; width:104mm; height:104mm; color:var(--primary-purple); transform:rotate(180deg)">
     <path fill="currentColor" d="M0 0h100a100 100 0 0 1-100 100z"/>
   </svg>
-  <!-- pílula pêssego, entrando pela esquerda -->
+  <!-- pílula #F2F1F6, entrando pela esquerda -->
   <svg class="gh-shape" viewBox="0 0 266 100" aria-hidden="true"
-       style="left:-26mm; top:64mm; width:74mm; height:27.8mm; color:var(--bg-peach)">
+       style="left:-26mm; top:64mm; width:74mm; height:27.8mm; color:var(--bg-soft)">
     <rect width="266" height="100" rx="50" fill="currentColor"/>
   </svg>
   <!-- anel navy, alto à direita -->
@@ -110,7 +110,7 @@ em [`partners.md`](partners.md). Copie a pasta `references/logo/` inteira
 
 ## O que varia por documento
 
-- **Título** (`.gh-cover__title`): nome do documento. `max-width: 14ch` já
+- **Título** (`.gh-cover__title`): nome do documento. `max-width: 16ch` já
   força quebra em duas linhas ("Relatório de / Diagnóstico"); teste com
   2-3 linhas antes de aumentar a largura. Título de 3 linhas ainda não
   encosta na pílula (que termina em ~92mm do topo) nem no quarto roxo.
@@ -144,3 +144,6 @@ pequeno entre os dois, com qualquer nome de classe.
 - **2026-09-17 (IDV nova):** testadas 4 capas (peach, rosa, magenta, navy);
   o usuário escolheu a pêssego por ser a mais sóbria, depois pediu fundo
   branco. Parceiros ampliados de 22px para 34px ("estão muito pequenas").
+- **2026-09-30 (modo sóbrio):** pílula pêssego → `#F2F1F6`; título Oswald
+  uppercase 46px → Reddit Sans 800 44px em caixa alta e baixa, com
+  `max-width` de 14ch para 16ch porque a Reddit Sans é mais larga.

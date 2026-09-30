@@ -106,8 +106,8 @@ Caminhos são relativos ao próprio JSON. Ver `exemplo-config.json`.
   depois do CSS do script, então sobrescreve o que precisar.
 - `callout_icons` — mapa `"rótulo:" -> nome-do-ícone` para acrescentar rótulos
   ou trocar o ícone de um deles (nomes em `../references/icons-catalog.md`).
-  `icons_base` troca a CDN por uma pasta local; `icon_variant` troca a
-  variante (`default` sobre o chip navy, `purple` sobre fundo claro).
+  `icons_base` troca a CDN por uma pasta local. `icon_variant` existe por
+  compatibilidade, mas a única variante publicada é `sober` (o padrão).
 - `partners` — ordem fixa Lab Livre → UnB → Ipea → ministério
   (ver `references/partners.md`, inclusive a regra do defeso eleitoral).
   Aceita `"arquivo.svg"` ou `{"file": "...", "alt": "Nome"}`; prefira a forma

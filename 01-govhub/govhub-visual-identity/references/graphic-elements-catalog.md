@@ -1,64 +1,22 @@
-# Catálogo de elementos gráficos Gov Hub
+# Elementos gráficos Gov Hub (formas isoladas)
 
-Elementos gráficos propostos pela equipe de design para a identidade visual
-atual. Como os ícones, **não ficam nesta skill**: vivem no repo público
-[`GovHub-br/skills-assets`](https://github.com/GovHub-br/skills-assets),
-pasta `gov-hub/` (desde 2026-09-21 o repo tem uma pasta por marca; a do
-Lab Livre é `lablivre/`), e são servidos por CDN. Todos são SVG `1920×1080` (16:9), só formas vetoriais nas
-cores da paleta, sem imagem embutida.
+Os elementos de apoio da marca são formas geométricas simples, sempre
+**sólidas** e na paleta sóbria (`palette.md`): círculo, anel, semicírculo,
+quarto de círculo, pílula e suas derivadas (semi-pílula, meio-anel, quarto
+de anel). Nunca ilustração figurativa, gradiente ou forma translúcida.
 
-## URL
-
-```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/<nome>.svg
-```
-
-`@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
-exata, troque `@main` por uma tag ou pelo SHA do commit.
-
-Exemplo como fundo de slide:
-
-```css
-.gh-slide--content {
-  background: url("https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/graphic-elements/pagina-comum.svg") center / cover no-repeat;
-}
-```
-
-## Os elementos e quando usar cada um
-
-Três categorias: **template de slide** (fundo pronto, o texto vai por cima),
-**folha de formas** (referência para recompor em outros formatos) e
-**padrão** (textura). Só os templates viram fundo de slide.
-
-| Arquivo | O que tem | Categoria | Quando usar |
-|---|---|---|---|
-| `capa.svg` | Fundo navy; quarto de círculo roxo grande na direita; meio-anel magenta sangrando pelo topo; pílula pêssego sangrando pela direita no rodapé. Lado esquerdo livre. | template | **Slide 1** de toda apresentação. Título, subtítulo e logo na metade esquerda. |
-| `encerramento.svg` | Espelho da capa: formas na esquerda, lado direito livre. | template | **Último slide** (obrigado, contato, parceiros). Texto na metade direita. |
-| `capa-capitulo.svg` | Fundo roxo; moldura arredondada fina **magenta**; quarto de círculo navy no canto superior esquerdo; meio-anel pêssego no topo; quarto de anel magenta no canto inferior direito. | template | **Abertura de seção/capítulo.** Numeral + eyebrow + título dentro da moldura. |
-| `capa-capitulo-alternativa.svg` | Igual à anterior, com moldura e quarto de anel **pêssego** e meio-anel magenta. | template | Abertura de seção. **Alterne** com `capa-capitulo` a cada seção consecutiva para dar ritmo (1ª seção normal, 2ª alternativa, 3ª normal...). |
-| `pagina-comum.svg` | Fundo pêssego; pílula magenta no canto superior esquerdo. | template | **Slide de conteúdo padrão** (texto, bullets, tabela, imagem). O título vai **dentro** da pílula. |
-| `pagina-comum-com-enfase.svg` | Fundo pêssego; pílula magenta mais larga; quarto de anel roxo no canto superior direito; quarto de círculo navy e meio-anel magenta no canto inferior direito. | template | **Slide de destaque**: número-chave, citação, síntese de seção. No máximo 1 por seção. Conteúdo fica nos ~60 % da esquerda. |
-| `elementos-graficos.svg` | Folha com as formas isoladas (pílula, quarto de círculo, círculo, anel, semi-pílula, pílula rosa) sobre pêssego. | folha de formas | **Não é slide.** Referência de proporção e cor para recompor em Instagram, poster, banner. Os snippets prontos estão abaixo. |
-| `outros-elementos-graficos.svg` | Mosaico de ~100 formas pequenas (navy, roxo, magenta) sobre pêssego. | padrão | **Não é slide.** Textura de fundo ou faixa em materiais de comunicação. |
-
-Regras de composição e zonas seguras de texto por template: `slides.md`.
-
-## Sem internet no ambiente de geração
-
-Baixe a pasta e troque as URLs por caminho relativo (`graphic-elements/<nome>.svg`):
-
-```bash
-git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
-cp -r skills-assets/gov-hub/graphic-elements ./graphic-elements
-```
+Não há templates de fundo prontos: os templates de slide coloridos do MIV
+foram descontinuados em 2026-09-30. Monte a peça com os snippets abaixo:
+slides em `slides-sober.md`, posts em `social-posts.md` (58 templates
+prontos), capa de PDF em `print-cover.md`, marca d'água em
+`print-watermark.md`.
 
 ## Formas isoladas (snippets)
 
-As seis formas da folha `elementos-graficos.svg`, mais duas derivadas que
-aparecem nos templates (meio-anel e quarto de anel), reescritas como
-primitivas SVG limpas. Todas usam `fill="currentColor"`: defina `color` no
-CSS com uma cor da paleta. Proporções copiadas da folha (anel com furo de
-~49 % do raio; pílula 2,66:1; semi-pílula 1,97:1).
+As formas de apoio da marca, derivadas de "círculos, semicírculos e
+retângulos arredondados" do MIV, como primitivas SVG limpas. Todas usam `fill="currentColor"`: defina `color` no
+CSS com uma cor da paleta. Proporções: anel com furo de ~49 % do raio; pílula
+2,66:1; semi-pílula 1,97:1.
 
 Círculo:
 
@@ -118,8 +76,9 @@ Para virar a forma (sangrar por outra borda), use `transform: rotate(90deg)`
 
 ## Comunicação: Instagram, poster, banner
 
-Os templates 16:9 **não são esticados** para outras proporções. Recomponha
-com as formas isoladas acima.
+Post de feed parte dos templates prontos de `social-posts.md`. Para
+outras peças (stories, poster, banner), componha com as formas isoladas
+acima.
 
 Formatos canônicos:
 
@@ -132,42 +91,39 @@ Formatos canônicos:
 | Poster A3 retrato | 297×420 mm (3508×4961 px a 300 dpi) |
 | Banner web | 1920×600 px |
 
-Regras de recomposição (as mesmas proporções dos templates):
+Regras de composição:
 
-1. Fundo sólido em **navy**, **roxo** ou **pêssego**. Nunca gradiente, nunca branco puro como fundo de arte.
+1. Fundo sólido em **navy**, **roxo** ou **claro** (branco ou `#F2F1F6`). Nunca gradiente.
 2. De **2 a 4 formas**, sempre sangrando por pelo menos uma borda (nenhuma forma "flutuando" inteira no meio, exceto o anel pequeno como pontuação).
 3. Forma principal com **40 a 50 % do lado menor** do canvas; as demais entre 15 e 30 %.
-4. Cores só da paleta; cada forma numa cor diferente do fundo. Rosa `#F9006F` no máximo numa forma pequena ou num número.
-5. Texto na zona livre, oposta às formas. Chamada em **Oswald uppercase**; apoio em **Reddit Sans**. Sobre navy/roxo, texto branco; sobre pêssego, navy.
+4. Cores só da paleta sóbria, cada forma numa cor diferente do fundo: sobre navy, roxo ou `#F2F1F6`; sobre roxo, navy ou `#F2F1F6`; sobre claro, roxo e navy. `#BE006E` no máximo num detalhe pequeno, e nunca sobre roxo. Sem círculo "tonal" translúcido.
+5. Texto na zona livre, oposta às formas. Chamada em **Reddit Sans 800** (ou 400 misturado a 800), caixa alta e baixa; apoio em Reddit Sans 400. Sobre navy/roxo, texto branco; sobre claro, navy.
 6. Logo Gov Hub na zona livre, respeitando a área de não-interferência (`SKILL.md`). Nunca sobre uma forma da mesma cor.
 7. Rotação de formas só em múltiplos de 90°. Sem sombra, sem contorno, sem 3D.
-8. Mosaico `outros-elementos-graficos.svg`: como **faixa** (topo ou rodapé de stories/poster, cortado com `object-fit: cover`) ou como textura de fundo inteira com `opacity` ≤ 0.4 e um bloco sólido atrás do texto.
 
 Exemplo de feed quadrado (1080×1080):
 
 ```html
 <div class="gh-post" style="position:relative;width:1080px;height:1080px;overflow:hidden;background:#0A005A;color:#fff;font-family:'Reddit Sans',sans-serif">
   <svg class="gh-shape" viewBox="0 0 100 100" style="position:absolute;right:-10%;top:-10%;width:48%;color:#613EFF;transform:rotate(90deg)"><path fill="currentColor" d="M0 0h100a100 100 0 0 1-100 100z"/></svg>
-  <svg class="gh-shape" viewBox="0 0 100 50" style="position:absolute;left:8%;bottom:0;width:26%;color:#EF41FF;transform:rotate(180deg)"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a50 50 0 0 1-100 0zM25.6 0h48.8a24.4 24.4 0 0 1-48.8 0z"/></svg>
-  <svg class="gh-shape" viewBox="0 0 197 100" style="position:absolute;right:0;bottom:14%;width:22%;color:#FFE7E1"><path fill="currentColor" d="M197 0H50a50 50 0 0 0 0 100h147z"/></svg>
-  <div style="position:absolute;left:80px;top:120px;width:560px">
-    <h1 style="font:700 88px/1.05 'Oswald',sans-serif;text-transform:uppercase;margin:0 0 24px">Chamada da arte</h1>
+  <svg class="gh-shape" viewBox="0 0 100 50" style="position:absolute;left:8%;bottom:0;width:26%;color:#F2F1F6;transform:rotate(180deg)"><path fill="currentColor" fill-rule="evenodd" d="M0 0h100a50 50 0 0 1-100 0zM25.6 0h48.8a24.4 24.4 0 0 1-48.8 0z"/></svg>
+  <div style="position:absolute;left:80px;top:120px;width:600px">
+    <h1 style="font:800 84px/1.06 'Reddit Sans',sans-serif;letter-spacing:-0.025em;margin:0 0 24px">Chamada da arte</h1>
     <p style="font-size:30px;line-height:1.4;margin:0;opacity:.92">Texto de apoio curto, uma ou duas linhas.</p>
   </div>
   <img src="logo/logomarca-horizontal-white.svg" alt="Gov Hub" style="position:absolute;left:80px;bottom:80px;height:56px">
 </div>
 ```
 
-## Regras de uso (valem para todos os elementos)
+## Regras de uso (valem para todas as formas)
 
-- Não recolorir fora da paleta oficial; não aplicar sombra, contorno, 3D ou gradiente.
-- Não esticar nem distorcer a proporção de um template; rotação só em múltiplos de 90°.
-- Nunca usar `elementos-graficos.svg` ou `outros-elementos-graficos.svg` como fundo de slide.
-- Texto sempre na zona livre do template (`slides.md`), nunca sobre uma forma de cor próxima à do texto.
-- Em documentos (PDF/e-book), os elementos entram só como marca d'água **opcional**: `print-watermark.md`.
+- Só cores da paleta sóbria, sólidas; sem sombra, contorno, 3D ou gradiente.
+- Rotação só em múltiplos de 90°; não distorça a proporção.
+- Texto sempre na zona livre, nunca sobre uma forma de cor próxima à do texto.
+- Em documentos (PDF/e-book), as formas entram na capa (`print-cover.md`) e, opcionalmente, como marca d'água (`print-watermark.md`).
 
-## Como adicionar um elemento novo
+## Como adicionar uma forma nova
 
-1. Subir o SVG `1920×1080` (ou o formato da peça) em `skills-assets/gov-hub/graphic-elements/` e dar push.
-2. Acrescentar uma linha na tabela acima com categoria e "quando usar".
-3. Se for um template de slide novo, adicionar a zona segura e o código do tipo em `slides.md`.
+Acrescente o snippet SVG na seção "Formas isoladas", com `fill="currentColor"`
+e proporção derivada das formas-base, e registre aqui em que peça ela foi
+validada.

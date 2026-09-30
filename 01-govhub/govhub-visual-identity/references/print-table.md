@@ -79,7 +79,7 @@ mude num lugar só; mas o padrão, sem pedido em contrário, é navy em tudo.
 
 Sem borda ao redor da tabela inteira, sem `border-radius`, sem
 `box-shadow` — a única cor que a tabela carrega é o header (sólido, cor da
-seção) e a zebra sutil (`--bg-subtle`) nas linhas pares. A legenda sempre
+seção) e a zebra sutil (`--bg-subtle`, que no modo sóbrio é `#F2F1F6`) nas linhas pares. A legenda sempre
 vem **antes** da tabela, nunca dentro de uma barra de cabeçalho separada.
 
 ## Quando a tabela precisa de metadados extras (chave primária, join, etc.)

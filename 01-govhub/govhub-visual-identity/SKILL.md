@@ -15,30 +15,29 @@ description: >-
 
 # Gov Hub — Identidade Visual
 
-Aplique a identidade visual **oficial** do Gov Hub, definida no Manual de
-Identidade Visual (MIV) da marca, em qualquer artefato. A marca é definida
-por:
+Aplique a identidade visual do Gov Hub em qualquer artefato. O padrão é o
+**modo sóbrio** (2026-09-30), fechado pela equipe de design e comunicação
+a partir do MIV:
 
-- **Roxo `#613EFF` como cor primária/assinatura** (destaque principal).
-- **Rosa `#F9006F` como acento pontual** (só CTA/destaque — não abusar).
-- **Azul-marinho `#0A005A`** para contraste máximo (títulos grandes, fundos escuros).
-- **Magenta `#EF41FF`** como acento secundário (gradientes, rampa editorial).
-- **Fundos claros** (neutros ou pêssego `#FFE7E1`) e as fontes **Reddit Sans**
-  (principal — Open Sans no Canva gratuito) + **Oswald** (apoio, só títulos/
-  chamadas de impacto, uppercase + bold).
-- **Elementos gráficos de apoio:** círculo, anel/donut, semicírculo, quarto
-  de círculo e pílula (retângulo 100% arredondado), nunca ilustrações
-  figurativas. Os arquivos oficiais (6 templates de slide + folha de formas
-  + padrão) são servidos por CDN e catalogados em
+- **Roxo `#613EFF` como cor primária/assinatura.**
+- **Navy `#0A005A`** para títulos, fundos escuros e contraste máximo.
+- **Claro `#F2F1F6`** para blocos, cards, pílulas, faixas, zebra e fundo
+  claro (substitui o pêssego `#FFE7E1`).
+- **Acento `#BE006E`** só em detalhe: pílula, tag, pontinho, numeral, aspas,
+  seta, CTA (substitui o rosa `#F9006F`). Magenta `#EF41FF` não é usado.
+- **Reddit Sans em tudo** (Open Sans no Canva gratuito). Chamada em peso
+  800, ou 400 misturado a 800, em caixa alta e baixa. **Sem Oswald.**
+- **Elementos gráficos de apoio:** círculo, anel, semicírculo, quarto de
+  círculo e pílula, sempre sólidos e em cor da paleta, nunca ilustração
+  figurativa. Catálogo em
   [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md).
 
-> **Nota de versão:** esta é a paleta/tipografia atualizadas do MIV mais
-> recente, que **substituem totalmente** o roxo/laranja e a fonte Inter de
-> versões anteriores desta skill. Os arquivos de logo em `references/logo/`
-> já são a nova exportação (2026-09-16): `logomarca-horizontal-*`,
-> `logomarca-vertical-*`, `assinatura-*` (tipográfica) e `icone-none-*`,
-> cada um em `default`/`navy`/`peach`/`white`/`black`. Os ícones de produto
-> do CDN também já estão na paleta atual.
+> A paleta colorida anterior (pêssego, rosa `#F9006F`, magenta, Oswald nas
+> chamadas) foi **descontinuada** em 2026-09-30, junto com os posts
+> coloridos, os templates de slide coloridos do CDN e os ícones nessas
+> cores. Não há modo colorido. Logos em `references/logo/` (exportação de
+> 2026-09-16): `logomarca-*`, `assinatura-*`, `icone-none-*` em
+> `default`/`navy`/`white`/`black`.
 
 ## Antes de começar: pergunte pelo formato dos arquivos de origem
 
@@ -70,38 +69,41 @@ topo do CSS). O arquivo completo e comentado está em
 [`references/tokens.css`](references/tokens.css) — copie de lá quando quiser tudo.
 
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Paleta oficial (MIV) */
+  /* Paleta sóbria (padrão) */
   --primary-purple: #613EFF; /* ROXO — cor-assinatura */
-  --dark-navy:      #0A005A; /* contraste máximo, títulos grandes, fundos escuros */
-  --accent-magenta: #EF41FF; /* acento secundário */
-  --accent-pink:    #F9006F; /* acento pontual (CTA) */
-  --bg-peach:       #FFE7E1; /* fundo claro "de marca" */
+  --dark-navy:      #0A005A; /* títulos, fundos escuros, contraste máximo */
+  --bg-soft:        #F2F1F6; /* claro da marca: blocos, cards, pílulas, zebra */
+  --accent-rose:    #BE006E; /* acento pontual: detalhe e CTA */
   --text-white:     #FFFFFF;
+  --bg-peach:   var(--bg-soft);     /* apelido: era #FFE7E1 */
+  --accent-pink: var(--accent-rose); /* apelido: era #F9006F */
 
   /* Estados derivados do primário */
   --purple-600: #5235D9; /* hover/foco */
-  --purple-700: #3F28A6; /* active/pressionado */
+  --purple-700: #3F28A6; /* active; roxo de texto pequeno sobre branco */
 
   /* Neutros / texto */
   --text-strong: #202020;
   --text-body:   #2D3748;
   --text-muted:  #666666;
 
-  /* Fundos */
+  /* Fundos (sem cinza além de #F2F1F6) */
   --bg-white:  #FFFFFF;
-  --bg-light:  #F7F7F7;
-  --bg-subtle: #F8F9FA;
+  --bg-light:  var(--bg-soft);
+  --bg-subtle: var(--bg-soft);
+  --border-soft: #E9DFFF;
 
   /* Semânticas */
   --color-success:   #10B981;
   --color-highlight: #FFD700;
 
-  /* Tipografia: Reddit Sans (principal) + Oswald (apoio, só títulos/uppercase) */
+  /* Tipografia: Reddit Sans em tudo */
   --font-family-base:    'Reddit Sans', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family-heading: 'Oswald', 'Reddit Sans', 'Open Sans', sans-serif;
+  --font-family-heading: var(--font-family-base); /* compatibilidade: era Oswald */
+  --heading-weight: 800; --heading-tracking: -0.025em; --heading-leading: 1.06;
 
   /* Sombras */
   --shadow-md: 0 2px 10px rgba(10,0,90,0.10);
@@ -115,13 +117,16 @@ topo do CSS). O arquivo completo e comentado está em
 }
 ```
 
+Os nomes `--bg-peach` e `--accent-pink` continuam existindo para não
+quebrar receitas antigas, mas agora valem `#F2F1F6` e `#BE006E`.
+
 ### Cor primária e como derivar estados
 
 `--primary-purple` (`#613EFF`) é **sempre** a cor primária. Para estados:
 
 - **Hover/foco:** `--purple-600` (`#5235D9`).
 - **Active/pressionado:** `--purple-700` (`#3F28A6`).
-- **Gradiente da marca:** `linear-gradient(135deg, #613EFF, #0A005A)`.
+- **Sem gradiente** no modo sóbrio: formas e fundos são sólidos.
 
 ## Como aplicar por alvo
 
@@ -166,35 +171,27 @@ validada pra isso. Antes de gerar, pergunte também sobre a marca d'água
 
 1. Adicione o bloco `:root` (acima) dentro de um `<style>` no `<head>`.
 2. Aplique a fonte: `body { font-family: var(--font-family-base); color: var(--text-body); background: var(--bg-light); }`.
-3. Troque a cor de **títulos** (`h1..h3`) para `var(--primary-purple)`; para chamadas de grande impacto, use `var(--font-family-heading)` + uppercase + bold.
+3. Troque a cor de **títulos** (`h1..h3`) para `var(--primary-purple)` ou `var(--dark-navy)`; para chamadas de grande impacto, use a classe `.gh-heading-display` (Reddit Sans 800, caixa alta e baixa, `letter-spacing: -0.025em`).
 4. Em **tabelas**, pinte o `thead th` com `background: var(--primary-purple); color: var(--text-white);` e alterne linhas com `var(--bg-subtle)`.
 5. Em **badges/tags**, use `background: var(--primary-purple); color: var(--text-white);`.
 6. Em **cards**, aplique `box-shadow: var(--shadow-md)` e `border-radius: var(--radius-md)`.
-7. Use o **rosa** (`--accent-pink`) só em 1 CTA ou número-chave por seção.
+7. Use o acento `#BE006E` (`--accent-rose`) só em 1 CTA ou detalhe por seção, nunca em área grande.
 
 ### 2. CSS / tema novo (do zero)
 
 Comece copiando **todo** o `references/tokens.css` (já traz o `@import` da
-Reddit Sans + Oswald e o `body` base). Depois use as receitas de
+Reddit Sans e o `body` base). Depois use as receitas de
 `references/component-recipes.md`.
 
 ### 3. Slides / e-mail / dashboard
 
-- **Slides:** há duas variantes, e as duas são HTML 1920×1080 por slide
-  → PDF, com conferência visual de todas as páginas. **Pergunte qual**
-  quando o pedido não deixar claro; não misture as duas no mesmo deck.
-  - **Sóbria** ([`references/slides-sober.md`](references/slides-sober.md)):
-    fundo branco, navy + roxo + pêssego, cabeçalho e tabela iguais aos do
-    relatório em PDF, formas oficiais só na capa/seção/encerramento. Para
-    apresentação institucional (ministério, banca, comitê) ou que
-    acompanha um relatório de entrega. Validada em 2026-09-18.
-  - **Colorida** ([`references/slides.md`](references/slides.md)): **todo
-    slide usa um dos 6 templates oficiais** do CDN como fundo (`capa`,
-    `capa-capitulo`, `capa-capitulo-alternativa`, `pagina-comum`,
-    `pagina-comum-com-enfase`, `encerramento`); o nome diz o papel. Sem
-    gradiente, sem fundo inventado. Para evento, divulgação, aula.
-- **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS): use os hexadecimais literais: cabeçalho `#613EFF`, texto `#2D3748`, botão CTA `#F9006F`.
-- **Dashboard:** roxo nos headers/KPIs principais; verde `#10B981` para positivo; fundos `#F7F7F7`/`#F8F9FA`/`#FFE7E1`.
+- **Slides** ([`references/slides-sober.md`](references/slides-sober.md)):
+  HTML 1920×1080 por slide → PDF, com conferência visual de todas as
+  páginas. Fundo branco, navy + roxo + `#F2F1F6`, Reddit Sans, cabeçalho
+  e tabela iguais aos do relatório em PDF, formas oficiais só na
+  capa/seção/encerramento.
+- **E-mail:** cores inline (clientes de e-mail ignoram variáveis CSS): use os hexadecimais literais: cabeçalho `#613EFF`, texto `#2D3748`, botão CTA `#BE006E`, blocos `#F2F1F6`.
+- **Dashboard:** roxo e navy nos headers/KPIs principais; verde `#10B981` para positivo; fundos branco e `#F2F1F6`; `#BE006E` só em destaque pontual.
 
 ### 4. Relatório longo / e-book / framework numerado (estilo do livro Gov Hub)
 
@@ -219,9 +216,9 @@ na prática com o Framework de Briefing:
      aplique com "sim" explícito; código, opacidade e restrições em
      [`references/print-watermark.md`](references/print-watermark.md).
 1. Capa **branca** (`print-cover.md`, validada em 2026-09-17): logo navy
-   no alto à esquerda, título em Oswald uppercase navy, três elementos
-   gráficos oficiais sangrando pelas bordas (quarto roxo, pílula pêssego,
-   anel navy), parceiros pretos (Lab Livre + UnB outlined, 34px) no rodapé.
+   no alto à esquerda, título em Reddit Sans 800 navy (caixa alta e
+   baixa), três elementos gráficos oficiais sangrando pelas bordas (quarto
+   roxo, pílula `#F2F1F6`, anel navy), parceiros pretos (Lab Livre + UnB outlined, 34px) no rodapé.
    Sem moldura, sem gradiente, sem kicker.
 2. Cabeçalho de capítulo **sóbrio** (`print-header.md`): sobre o branco da
    página, numeral e eyebrow em navy, **título em roxo**, barra de 2px
@@ -229,8 +226,8 @@ na prática com o Framework de Briefing:
    sem chip de ícone. Corpo começa 12mm abaixo da barra; `h3` em navy.
 3. Cor de seção (`--section-color`) **sempre navy**, em todos os capítulos
    (`palette.md`). Ela pinta header e legenda de tabela (`print-table.md`)
-   e o contorno dos callouts; magenta e rosa não entram em texto nem
-   tabela de PDF, e o roxo fica só no título do capítulo, capa e índice.
+   e o contorno dos callouts; `#BE006E` não entra em texto nem tabela de
+   PDF, e o roxo fica só no título do capítulo, capa e índice.
 4. Rodapé em toda página de conteúdo com símbolo `icone-none-navy.svg`
    (`print-footer.md`); em relatório de entrega, folha de identificação
    com hierarquia por recuo (`print-frontmatter.md`).
@@ -239,42 +236,40 @@ na prática com o Framework de Briefing:
 6. Sem travessão (—) no texto corrido — troque por dois-pontos, vírgula ou
    ponto final.
 
-Em PDF o documento inteiro fica em navy + roxo + pêssego. Produto, site e
-dashboard continuam só com roxo+rosa (`--primary-purple` + `--accent-pink`).
+Em PDF o documento inteiro fica em navy + roxo + `#F2F1F6`. Produto, site
+e dashboard usam roxo como assinatura e `#BE006E` só como acento pontual.
 
 ### 5. Comunicação: Instagram, poster, banner
 
-Peças fora do 16:9 **não esticam** os templates de slide: recomponha com as
-formas isoladas (snippets prontos) e as regras de composição da seção
-"Comunicação" de
-[`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md):
-fundo sólido navy/roxo/pêssego, 2 a 4 formas sangrando pelas bordas, forma
-principal com 40 a 50 % do lado menor, texto na zona livre, Oswald na
-chamada e Reddit Sans no apoio.
+**Post ou carrossel de feed (1080×1350):** não componha do zero. Parta
+dos **58 templates prontos no CDN** (`post-templates-sobrio/` do
+`skills-assets`), catalogados por tipo e fundo em
+[`references/social-posts.md`](references/social-posts.md):
 
-**Post ou carrossel de feed (1080×1350):** não componha do zero. Use uma
-das **5 estruturas de quadro validadas** em
-[`references/social-posts.md`](references/social-posts.md) (capa,
-conteúdo com 3 variantes de bloco, ênfase, convite, fechamento), na ordem
-canônica `capa → conteúdo → ênfase → conteúdo → convite → fechamento`.
-Texto corrido justificado, sem travessão e sem traço decorativo; cards
-no padrão "título forte + descrição discreta + ícone de produto em chip".
+- Um carrossel usa **um fundo só**: navy, roxo ou claro. A capa pode
+  inverter.
+- Ordem: **capa → conteúdo × N → dados ou ênfase → convite**. Não há
+  template de fechamento: quando for preciso, a equipe de design cria a
+  partir dos modelos; não componha um.
+- Baixe o HTML de cada quadro, troque só textos, números e ícone, mantenha
+  formas e posições, e diga ao usuário quais arquivos usou.
+- Reddit Sans com peso 400 misturado a 800, um objeto por quadro (mockup
+  de UI, círculo ou bloco), sem fotos, sem travessão, sem traço
+  decorativo.
 
-Cada estrutura existe em **4 composições de formas (A-D) × 5 fundos = 100
-HTMLs prontos no CDN** (`post-templates/` do `skills-assets`, seção
-"Variações" de `social-posts.md`), todos aprovados. **Escolha a
-composição antes de escrever HTML**: fixe uma (A, B, C ou D) para o
-carrossel inteiro, parta do arquivo do CDN e diga ao usuário qual
-combinação usou. A composição A é a que está transcrita inline no
-`social-posts.md`; ela **não** é o padrão, é só a mais à mão, e usá-la
-sempre faz todas as peças saírem iguais.
+**Poster, banner e outras peças** que não são post de feed: componha com
+as formas isoladas e as regras da seção "Comunicação" de
+[`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md),
+com fundo sólido navy, roxo ou claro, formas sólidas da paleta, chamada em
+Reddit Sans 800 e as regras de cor por fundo de `palette.md`.
 
 ## Acessibilidade (obrigatório)
 
-- Texto **branco sobre `#613EFF`**: OK.
-- Texto **roxo sobre branco**: para textos pequenos, use `--purple-700` (`#3F28A6`) para garantir contraste AA.
-- Rosa (`--accent-pink`) em áreas grandes: prefira texto escuro; se usar texto branco, `font-weight >= 600`.
-- Magenta (`--accent-magenta`) e pêssego (`--bg-peach`) são claros/vibrantes demais para texto branco pequeno em cima — use `--dark-navy` nesses casos (ver `palette.md`).
+- Texto **branco** sobre roxo, navy ou `#BE006E`: OK.
+- Texto **navy** sobre branco ou `#F2F1F6`: OK. **Nunca** texto branco sobre fundo claro.
+- **Nunca texto roxo sobre navy** (cerca de 2,6:1).
+- `#BE006E` sobre claro (cerca de 5:1) serve para texto de detalhe e CTA; sobre navy (cerca de 3:1) só em forma, nunca em texto; sobre roxo, não use.
+- Texto **roxo sobre branco** em tamanho pequeno: use `--purple-700` (`#3F28A6`).
 
 ## Redução mínima e área de não-interferência (MIV)
 
@@ -295,22 +290,23 @@ sempre faz todas as peças saírem iguais.
   viável: **branco** sobre fundo escuro, **preto** sobre fundo claro.
 - **Nunca:** distorcer/esticar a proporção da logo, girar fora do eixo,
   adicionar contorno/stroke não previsto, aplicar sombra/efeito 3D/glow, ou
-  recolorir fora da paleta oficial (gradiente não documentado, cor sólida
-  fora das 5 listadas). Ver exemplos em `palette.md`.
+  recolorir fora da paleta (gradiente, cor sólida fora de roxo, navy,
+  `#F2F1F6`, `#BE006E`, branco e preto). Ver exemplos em `palette.md`.
 
 ## Diretrizes de marca
 
-- **Roxo (`#613EFF`) = assinatura** (domina a identidade). **Rosa (`#F9006F`) = acento** (~10%, só CTA/destaque; **não abusar**). Magenta e navy são acentos secundários.
-- **Fundos claros** (neutros ou pêssego `#FFE7E1`) para respiro. **Reddit Sans** no corpo/logotipo; **Oswald** só em títulos/chamadas de impacto (uppercase + bold).
+- **Roxo (`#613EFF`) = assinatura** e **navy (`#0A005A`)** dominam. **`#BE006E` = acento** de detalhe e CTA, bem menos de 10 % da peça, nunca em área grande nem sobre roxo.
+- **`#F2F1F6`** é o claro da marca (blocos, cards, zebra, fundo claro). Sem pêssego, sem magenta, sem cinza além dele.
+- **Reddit Sans em tudo**; chamada em 800 (ou 400 misturado a 800), caixa alta e baixa. Sem Oswald.
 - Verde/amarelo apenas como status semântico, nunca como cor de marca.
 - Elementos gráficos de apoio: círculo, anel/donut, semicírculo, quarto de círculo e pílula, derivados de "círculos, semicírculos e retângulos arredondados" (ver `component-recipes.md`). Arquivos oficiais e snippets em `graphic-elements-catalog.md`; em documento, só como marca d'água opcional (`print-watermark.md`).
 
 ## Referências (progressive disclosure)
 
 - [`scripts/build_doc.py`](scripts/README.md) — **comece por aqui para um markdown longo que vira PDF**: script pronto (Python + WeasyPrint) que monta capa, faixa de capítulo, rodapé e tabelas numeradas a partir de um `.md` com um capítulo por `## N. Título`, configurado por um JSON pequeno. Também trata imagem solta como `<figure>`, `**Limitações:**` como bloco de destaque, e evita título órfão no fim da página. Validado no Dicionário de Dados do MIR (129 páginas, 91 tabelas, 7 figuras).
-- [`references/tokens.css`](references/tokens.css) — tokens completos e comentados, prontos para copiar.
+- [`references/tokens.css`](references/tokens.css) — tokens completos e comentados, prontos para copiar, com os apelidos de compatibilidade (`--bg-peach` → `#F2F1F6`, `--accent-pink` → `#BE006E`).
 - [`references/partners.md`](references/partners.md) — logos dos parceiros institucionais: catálogo por fundo claro/escuro, quem entra em cada peça e em que ordem, e o ciclo eleitoral (arquivos `-defeso` valem no defeso; sem sufixo, no governo em exercício).
-- [`references/palette.md`](references/palette.md) — paleta detalhada, quando usar cada cor, regras de contraste e a rampa editorial (em PDF: tabelas navy, título de capítulo roxo, desde 2026-09-18).
+- [`references/palette.md`](references/palette.md) — paleta sóbria detalhada: quando usar cada cor, **o que vai sobre cada um dos três fundos** (navy, roxo, claro), contraste, rampa editorial de PDF (tabelas navy, título de capítulo roxo).
 - [`references/component-recipes.md`](references/component-recipes.md) — receitas prontas: botão, card, navbar, tabela zebrada, badge, capa de relatório, gradiente.
 - [`references/editorial-report.md`](references/editorial-report.md) — estilo editorial geral (ícones de produto, callouts outline, convenção de escrita sem travessão) para relatórios/e-books longos no estilo do livro Gov Hub. Para capa, cabeçalho de capítulo e rodapé em **PDF**, vá direto aos 4 arquivos abaixo.
 - [`references/print-pages.md`](references/print-pages.md) — **comece por aqui para qualquer PDF gerado via Chrome headless**: a arquitetura de página (`.gh-page` fixa 210×297mm, `@page { margin: 0 }`) que evita um bug real de paginação do Chrome (margem negativa + quebra de página forçada pinta uma barra fantasma da cor errada na página anterior). Também traz o procedimento **obrigatório** de conferir visualmente todas as páginas do PDF gerado (rasterizar + inspecionar) atrás de dois erros opostos: overflow silencioso (conteúdo cortado sem aviso) e espaço desperdiçado (quebras de página desnecessárias) — a paginação manual não avisa de nenhum dos dois sozinha.
@@ -320,9 +316,8 @@ sempre faz todas as peças saírem iguais.
 - [`references/print-footer.md`](references/print-footer.md) — rodapé de PDF (repete em toda página, barra alinhada à margem do conteúdo, não à borda física), código exato validado, com os erros já cometidos documentados (barra até a borda física em vez da margem, logo grande demais, barra colada no texto).
 - [`references/print-table.md`](references/print-table.md) — tabela de dados em PDF: legenda numerada + header sólido navy + linhas com zebra sutil, sem cartão/sombra ao redor. Use sempre que o PDF tiver uma tabela de dados — não invente um componente "cartão de tabela" novo.
 - [`references/print-watermark.md`](references/print-watermark.md) — marca d'água **opcional** em páginas de conteúdo de PDF (uma forma isolada no canto, roxo a 7 %). Pergunte antes; padrão sem. Nunca em capa, folha de identificação, índice ou encerramento.
-- [`references/slides.md`](references/slides.md) — **variante colorida** de apresentação: arquitetura HTML 1920×1080 → PDF, os 6 templates oficiais como fundo (um por tipo de slide, ordem canônica capa → seção/seção-alt → conteúdo → ênfase → encerramento), zonas seguras de texto de cada template, código exato de cada tipo, exportação e conferência visual.
-- [`references/slides-sober.md`](references/slides-sober.md) — **variante sóbria** de apresentação (branca, navy + roxo + pêssego, a linguagem do relatório em PDF no canvas 16:9): código exato validado em 2026-09-18 de capa, seção, conteúdo (tópicos, duas colunas, cards, tabela), ênfase (número-chave, citação) e encerramento, rodapé só com número + símbolo, e as armadilhas do WeasyPrint com SVG inline (`currentColor`/`transform` não funcionam).
-- [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: as 100 variações prontas no CDN (4 composições × 5 fundos por estrutura) e como escolher uma, seguido das 5 estruturas de quadro 1080×1350 (capa, conteúdo, ênfase, convite, fechamento) com código exato validado, posições das formas, zonas de texto, limites de linhas, mapeamento ícone↔chip e a lista de erros já cometidos.
-- [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — os 8 elementos gráficos oficiais (**servidos por CDN** a partir de `GovHub-br/skills-assets`, não são arquivos locais): tabela de quando usar cada um, snippets SVG das formas isoladas, formatos e regras de recomposição para Instagram/poster/banner, e como adicionar um elemento novo.
-- [`references/logo/`](references/logo/) — logo oficial Gov Hub (nova exportação do MIV): `logomarca-horizontal-*`, `logomarca-vertical-*`, `assinatura-horizontal-*`/`assinatura-vertical-*` (só o nome) e `icone-none-*` (só o ícone), cada uma em `default`/`navy`/`peach`/`white`/`black`, SVG. Tabela de qual arquivo usar onde em `editorial-report.md` seção 1. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre e UnB, que andam sempre juntas e nessa ordem porque o Lab Livre é o dono dos projetos e fica dentro da UnB; Ipea; e os ministérios MGI, MIR, Cidades e Cultura), usadas no rodapé da capa, no encerramento de slides e no fechamento de carrossel — ordem fixa: Lab Livre → UnB → Ipea (se houver) → ministério do projeto (se houver). Qual arquivo usar em cada fundo (`positivo`/`negativo`), quais faltam, e a regra do **período de defeso eleitoral** (sufixo `-defeso`) estão em [`references/partners.md`](references/partners.md).
-- [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca completa de ícones de produto Gov Hub (332 nomes × variantes `default`/`orange`/`purple`, regeradas na paleta atual em 2026-09-16), **servida por CDN** a partir do repo `GovHub-br/skills-assets` — não são arquivos locais. O catálogo traz a URL-base jsDelivr, o padrão `<nome>-<variante>.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Para capas/callouts de relatório use a variante `default`. Escolha o ícone **pelo nome** (são descritivos, ex.: `document-check`, `shield-check`, `chart-bar`) — a biblioteca é grande demais pra um mapeamento fixo; há um subconjunto curado só para os callouts do Framework de Briefing em `editorial-report.md` seção 5. Cada variante traz o fundo embutido na paleta atual (`default` pêssego, `purple` navy, `orange` rosa); **nunca** use um ícone sobre fundo diferente do da sua variante — ver regra completa em `editorial-report.md` seção 5.
+- [`references/slides-sober.md`](references/slides-sober.md) — apresentação (branca, navy + roxo + `#F2F1F6`, Reddit Sans, a linguagem do relatório em PDF no canvas 16:9): código exato de capa, seção, conteúdo (tópicos, duas colunas, cards, tabela), ênfase (número-chave, citação) e encerramento, rodapé só com número + símbolo, e as armadilhas do WeasyPrint com SVG inline (`currentColor`/`transform` não funcionam).
+- [`references/social-posts.md`](references/social-posts.md) — **comece por aqui para post ou carrossel de Instagram/LinkedIn**: os 58 templates prontos no CDN catalogados por tipo × fundo (navy, roxo, claro), a regra de um fundo por carrossel, cor por fundo, tipografia, texto, exportação e como derivar variação nova.
+- [`references/graphic-elements-catalog.md`](references/graphic-elements-catalog.md) — as formas de apoio da marca (círculo, anel, semicírculo, quarto de círculo, pílula e derivadas) como snippets SVG inline, regras de composição para stories, poster e banner, e formatos canônicos. Não há templates de fundo prontos.
+- [`references/logo/`](references/logo/) — logo oficial Gov Hub (nova exportação do MIV): `logomarca-horizontal-*`, `logomarca-vertical-*`, `assinatura-horizontal-*`/`assinatura-vertical-*` (só o nome) e `icone-none-*` (só o ícone), cada uma em `default`/`navy`/`white`/`black`, SVG (navy ou default sobre claro, white sobre navy/roxo). Tabela de qual arquivo usar onde em `editorial-report.md` seção 1. Em `references/logo/parceiros/` ficam as logos institucionais dos parceiros (Lab Livre e UnB, que andam sempre juntas e nessa ordem porque o Lab Livre é o dono dos projetos e fica dentro da UnB; Ipea; e os ministérios MGI, MIR, Cidades e Cultura), usadas no rodapé da capa, no encerramento de slides e no fechamento de carrossel — ordem fixa: Lab Livre → UnB → Ipea (se houver) → ministério do projeto (se houver). Qual arquivo usar em cada fundo (`positivo`/`negativo`), quais faltam, e a regra do **período de defeso eleitoral** (sufixo `-defeso`) estão em [`references/partners.md`](references/partners.md).
+- [`references/icons-catalog.md`](references/icons-catalog.md) — biblioteca de ícones de produto Gov Hub (332 nomes, variante única `-sober`: preenchimento `#F2F1F6`, contorno navy, sombra `#BE006E`), **servida por CDN** a partir do repo `GovHub-br/skills-assets`. Traz a URL-base jsDelivr, o padrão `<nome>-sober.svg`, a lista dos 332 nomes e o comando para baixar tudo local em ambiente sem internet. Escolha o ícone **pelo nome** (ex.: `document-check`, `shield-check`, `chart-bar`); há um subconjunto curado para os callouts do Framework de Briefing em `editorial-report.md` seção 5.

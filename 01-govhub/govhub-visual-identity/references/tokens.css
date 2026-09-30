@@ -1,64 +1,74 @@
 /* ============================================================
-   Gov Hub — Design Tokens (identidade visual oficial)
-   Fonte: Manual de Identidade Visual (MIV) Gov Hub — versão atual.
+   Gov Hub — Design Tokens (identidade visual, modo sóbrio)
    Cole este bloco no <head> (dentro de <style>) ou no topo do
    seu arquivo CSS. Depois use as variáveis com var(--nome).
 
-   ATUALIZAÇÃO: paleta e tipografia trocadas para os valores oficiais
-   do MIV. O roxo/laranja antigo (#7A34F3 / #F97316) foi DESCONTINUADO
-   — substituição total, não uso em paralelo. Os arquivos de logo em
-   references/logo/ já são a nova exportação (2026-09-16): o fill da
-   variante `default` é #613EFF, o mesmo do --primary-purple.
+   MODO SÓBRIO (padrão desde 2026-09-30, decisão da equipe de design e
+   comunicação, validada no pacote de 58 posts da v22):
+   - #F2F1F6 no lugar do pêssego #FFE7E1 (blocos, cards, pílulas, faixas, zebra);
+   - #BE006E no lugar do rosa #F9006F (mais escuro e frio, só em detalhe/CTA);
+   - magenta #EF41FF fora da paleta ativa;
+   - Reddit Sans em tudo: sem Oswald e sem caixa alta nas chamadas.
+   Os NOMES dos tokens foram mantidos para não quebrar receitas antigas
+   (--bg-peach e --accent-pink continuam existindo, com os valores novos).
+   A paleta colorida anterior foi descontinuada: não há mais pêssego,
+   rosa #F9006F nem magenta em nenhuma peça.
    ============================================================ */
 
-/* Fontes da marca: Reddit Sans (principal) + Oswald (apoio, títulos) */
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
+/* Fonte da marca: Reddit Sans (única) */
+@import url('https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* ---------- Paleta oficial (MIV Gov Hub) ---------- */
-  --primary-purple:  #613EFF; /* ROXO VIBRANTE — cor-assinatura / destaque primário */
-  --dark-navy:       #0A005A; /* AZUL-MARINHO ESCURO — texto forte, fundos escuros, contraste máximo */
-  --accent-magenta:  #EF41FF; /* acento secundário — gradientes, destaques, rampa editorial */
-  --accent-pink:     #F9006F; /* acento pontual — CTA / destaque-chave (papel que o laranja tinha antes) */
-  --bg-peach:        #FFE7E1; /* fundo claro com tom da marca — alternativa aos neutros cinza */
+  /* ---------- Paleta sóbria (ativa) ---------- */
+  --primary-purple:  #613EFF; /* ROXO — cor-assinatura / destaque primário */
+  --dark-navy:       #0A005A; /* NAVY — títulos, fundos escuros, contraste máximo */
+  --bg-soft:         #F2F1F6; /* claro da marca: blocos, cards, pílulas, faixas, zebra, fundo claro */
+  --accent-rose:     #BE006E; /* acento pontual — CTA, pílula, tag, pontinho, numeral, aspas, seta */
   --text-white:      #FFFFFF;
 
+  /* Apelidos de compatibilidade (receitas antigas usam estes nomes) */
+  --bg-peach:     var(--bg-soft);     /* era #FFE7E1 */
+  --accent-pink:  var(--accent-rose); /* era #F9006F */
+
   /* ---------- Estados derivados do primário ----------
-     Aproximados por escurecimento do --primary-purple para hover/active,
-     já que o MIV não define shades intermediários. Ajuste se o time de
-     design fornecer valores exatos. */
+     Aproximados por escurecimento do --primary-purple; o MIV não define
+     shades intermediários. */
   --purple-600: #5235D9; /* hover/foco do primário */
-  --purple-700: #3F28A6; /* active/pressionado (mais escuro) */
+  --purple-700: #3F28A6; /* active/pressionado; roxo de texto pequeno sobre branco */
 
   /* ---------- Neutros / texto ----------
-     Mantidos neutros (não tingidos de roxo) para legibilidade em texto
-     corrido longo — ver nota de acessibilidade em palette.md. Títulos e
-     destaques de marca usam --dark-navy ou --primary-purple, não estes. */
-  --text-strong: #202020; /* títulos neutros, texto forte quando não é "de marca" */
+     Mantidos neutros para legibilidade em texto corrido longo. Títulos e
+     destaques de marca usam --dark-navy ou --primary-purple. */
+  --text-strong: #202020;
   --text-body:   #2D3748; /* corpo de texto padrão */
-  --text-muted:  #666666; /* texto secundário / legendas */
+  --text-muted:  #666666; /* legendas, metadados */
 
-  /* ---------- Fundos ---------- */
+  /* ---------- Fundos ----------
+     No modo sóbrio não há cinza fora de #F2F1F6: os antigos #F7F7F7 e
+     #F8F9FA passam a ser o próprio --bg-soft. */
   --bg-white:  #FFFFFF;
-  --bg-light:  #F7F7F7; /* fundo neutro claro, uso geral */
-  --bg-subtle: #F8F9FA; /* fundo alternado (zebra, seções) */
-  /* --bg-peach (acima) é a alternativa "de marca" a estes dois neutros */
+  --bg-light:  var(--bg-soft); /* fundo claro da página */
+  --bg-subtle: var(--bg-soft); /* zebra de tabela, seções alternadas */
 
   /* ---------- Bordas / divisores ---------- */
-  --border-soft: #E9DFFF; /* linha divisória sutil — lilás bem claro, tom do novo primário */
+  --border-soft: #E9DFFF; /* linha sutil lilás (barra do cabeçalho de capítulo, divisória de tabela) */
 
   /* ---------- Cores de estado / semânticas (não são cor de marca) ---------- */
-  --color-success:   #10B981; /* verde — sucesso */
-  --color-highlight: #FFD700; /* amarelo — destaque */
+  --color-success:   #10B981;
+  --color-highlight: #FFD700;
 
   /* ---------- Tipografia ----------
-     Reddit Sans: fonte principal (logotipo em Black caps, tagline Medium,
-     texto corrido em Regular, Bold para ênfase). No Canva gratuito, usar
-     Open Sans no lugar (mantém proporções parecidas).
-     Oswald: fonte de apoio, só para títulos/chamadas de impacto, sempre
-     uppercase + Bold — nunca em texto corrido. */
+     Reddit Sans em tudo. Chamada: peso 800 (ou 400 misturado a 800 em
+     posts), caixa alta e baixa, letter-spacing -0.025em, line-height 1.06.
+     Numeral grande: 800, letter-spacing -0.05em. Eyebrow pequeno pode ser
+     uppercase com letter-spacing largo (é rótulo, não chamada).
+     --font-family-heading continua existindo por compatibilidade, mas
+     aponta para a Reddit Sans. No Canva gratuito, Open Sans. */
   --font-family-base:    'Reddit Sans', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family-heading: 'Oswald', 'Reddit Sans', 'Open Sans', sans-serif;
+  --font-family-heading: var(--font-family-base);
+  --heading-weight:   800;
+  --heading-tracking: -0.025em;
+  --heading-leading:  1.06;
 
   /* ---------- Sombras ---------- */
   --shadow-md: 0 2px 10px rgba(10, 0, 90, 0.10);
@@ -74,36 +84,30 @@
   --radius-lg: 16px;
   --grid-gutter: 20px;
 
-  /* ---------- Rampa editorial (relatórios longos / capítulos) ----------
-     Progressão oficial do MIV: azul-marinho -> roxo -> magenta -> rosa ->
-     pêssego claro. Substitui a rampa aproximada da versão anterior desta
-     skill (que usava tons "harmonizados", não oficiais). Uso: capa/numeral
-     de capítulo, tarja full-bleed de seção — nunca em UI de produto, onde
-     o roxo (--primary-purple) segue como cor única de assinatura. */
-  --editorial-00-navy:    #0A005A; /* em PDF: cor de seção (tabela/callout) em todos os capítulos */
-  --editorial-01-purple:  #613EFF; /* em PDF: título do capítulo; mesmo tom do primário */
-  --editorial-02-magenta: #EF41FF; /* fora de texto/tabela em PDF desde 2026-09-17 (palette.md); só elemento gráfico */
-  --editorial-03-pink:    #F9006F; /* idem */
-  --editorial-04-peach:   #FFE7E1; /* fechamento — claro, precisa de texto escuro (--dark-navy) em cima */
-  --editorial-grid-line: rgba(255, 255, 255, 0.08); /* linha de grade sutil sobre capas coloridas */
-  --editorial-ring: rgba(255, 255, 255, 0.12); /* anéis/círculos decorativos translúcidos */
+  /* ---------- Rampa editorial (relatórios longos) ----------
+     No modo sóbrio a rampa é só navy → roxo → claro. Em PDF, navy é a cor
+     de seção (tabela, callout) e roxo é o título do capítulo. */
+  --editorial-00-navy:   #0A005A;
+  --editorial-01-purple: #613EFF;
+  --editorial-04-soft:   #F2F1F6; /* fundo de forma/chip; texto por cima em --dark-navy */
+  --editorial-04-peach:  var(--editorial-04-soft); /* apelido de compatibilidade */
 
-  /* ---------- Roxo exato da logo (capas de documento) ----------
-     Confirmado na nova exportação (logomarca-*-default.svg usa
-     fill="#613EFF"): igual ao --primary-purple. */
+  /* ---------- Roxo exato da logo ---------- */
   --logo-purple: #613EFF;
+
 }
 
 /* Base recomendada — aplique no body do artefato */
 body {
   font-family: var(--font-family-base);
   color: var(--text-body);
-  background: var(--bg-light);
+  background: var(--bg-white);
 }
 
-/* Títulos/chamadas de impacto — fonte de apoio Oswald, sempre uppercase + bold */
+/* Chamada/título de impacto: Reddit Sans 800, caixa alta e baixa */
 .gh-heading-display {
   font-family: var(--font-family-heading);
-  text-transform: uppercase;
-  font-weight: 700;
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-tracking);
+  line-height: var(--heading-leading);
 }

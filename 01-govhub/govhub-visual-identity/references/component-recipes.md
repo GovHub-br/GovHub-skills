@@ -28,8 +28,8 @@ Copie o componente desejado e ajuste o conteúdo. Nomes de classe em inglês.
 .gh-btn--primary:active { background: var(--purple-700); }
 
 /* Variante de acento — usar só em CTA pontual */
-.gh-btn--accent { background: var(--accent-pink); color: var(--text-white); font-weight: 600; }
-.gh-btn--accent:hover { background: #D40060; }
+.gh-btn--accent { background: var(--accent-rose); color: var(--text-white); font-weight: 600; }
+.gh-btn--accent:hover { background: #9E005B; }
 ```
 
 ## Card com sombra
@@ -111,7 +111,7 @@ Copie o componente desejado e ajuste o conteúdo. Nomes de classe em inglês.
   font-size: 0.75rem; font-weight: 600;
   padding: 4px 10px; border-radius: 999px;
 }
-.gh-badge--accent  { background: var(--accent-pink); }
+.gh-badge--accent  { background: var(--accent-rose); }
 .gh-badge--success { background: var(--color-success); }
 ```
 
@@ -128,18 +128,16 @@ Copie o componente desejado e ajuste o conteúdo. Nomes de classe em inglês.
 
 ```css
 .gh-report-cover {
-  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-navy) 100%);
+  background: var(--dark-navy); /* sólido: sem gradiente no modo sóbrio */
   color: var(--text-white);
   padding: 80px 48px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
 }
 .gh-report-cover__kicker { text-transform: uppercase; letter-spacing: 2px; font-weight: 600; font-size: 0.85rem; opacity: 0.9; }
-.gh-report-cover__title { font-size: 2.75rem; font-weight: 800; margin: 12px 0; line-height: 1.1; }
+.gh-report-cover__title { font-size: 2.75rem; font-weight: 800; margin: 12px 0; line-height: 1.06; letter-spacing: -0.025em; }
 .gh-report-cover__subtitle { font-size: 1.25rem; opacity: 0.95; margin: 0; }
 .gh-report-cover__meta { margin-top: 32px; font-size: 0.9rem; opacity: 0.8; }
-/* Acento pontual opcional: uma faixa rosa fina */
-.gh-report-cover::after { content: ""; display: block; width: 64px; height: 4px; background: var(--accent-pink); margin-top: 24px; border-radius: 999px; }
 ```
 
 ## Padronagem e elementos gráficos (MIV)
@@ -154,9 +152,9 @@ O manual define três formas geométricas simples como recursos de apoio da
 marca — **círculos, semicírculos e retângulos arredondados** — usados como
 fundo, divisor, moldura ou detalhe decorativo. Nunca ilustrações
 figurativas, ícones de linha genéricos ou formas livres: só essas três,
-soltas ou repetidas em padronagem, sempre na paleta oficial (`--primary-purple`,
-`--dark-navy`, `--accent-magenta`, `--accent-pink`, `--bg-peach`, ou brancos/
-pretos translúcidos sobre fundo colorido).
+soltas ou repetidas em padronagem, sempre sólidas e na paleta sóbria
+(`--primary-purple`, `--dark-navy`, `--bg-soft` `#F2F1F6`; `--accent-rose`
+`#BE006E` só em detalhe pequeno). Sem formas translúcidas "tonais".
 
 Com base nas páginas do MIV enviadas pelo usuário (a legenda do manual diz
 "círculos, semicírculos e retângulos arredondados", mas as duas páginas de
@@ -172,9 +170,9 @@ uso abaixo são válidos, escolha pelo contexto.
 
 Formas grandes, cor sólida (sem opacidade reduzida), uma cor diferente por
 forma, se sobrepondo/saindo da borda do frame — é assim que a página de
-exemplo do MIV usa os elementos (círculo roxo ocupando um canto inteiro,
-círculo navy grande no centro, anel magenta, pílula rosa). Fundo geralmente
-`--bg-peach`.
+exemplo do MIV usa os elementos. No modo sóbrio: roxo, navy e `#F2F1F6`
+sobre fundo branco, navy ou roxo, seguindo a tabela de cor por fundo de
+`palette.md`.
 
 **Círculo:**
 ```css
@@ -189,7 +187,7 @@ círculo navy grande no centro, anel magenta, pílula rosa). Fundo geralmente
 .gh-shape-ring {
   width: 210px; height: 210px;
   border-radius: 50%;
-  border: 52px solid var(--accent-magenta); /* espessura do anel */
+  border: 52px solid var(--dark-navy); /* espessura do anel; qualquer cor sólida da paleta */
   background: transparent;
 }
 ```
@@ -199,7 +197,7 @@ círculo navy grande no centro, anel magenta, pílula rosa). Fundo geralmente
 .gh-shape-semicircle {
   width: 300px; height: 150px; /* largura = 2x altura, sempre */
   border-radius: 300px 300px 0 0;
-  background: var(--accent-pink);
+  background: var(--primary-purple);
 }
 /* Virado para outro lado: gire com transform: rotate(90deg/180deg/270deg) */
 ```
@@ -235,22 +233,22 @@ cantos do contêiner. Testado nas 4 orientações — copie a que precisar:**
 .gh-shape-pill {
   height: 90px; /* altura define o raio */
   border-radius: 999px;
-  background: var(--accent-pink);
+  background: var(--bg-soft);
 }
 ```
 
-### Modo 2 — Textura de fundo: formas pequenas, translúcidas, repetidas
+### Modo 2 — Fundo discreto atrás de conteúdo
 
-Para fundos que precisam de conteúdo/texto legível em cima (cards, capas
-com título), reduza opacidade e/ou desature: `rgba(255,255,255,0.08)` sobre
-fundo colorido, ou a cor sólida em opacidade 10–18% sobre fundo claro. Uma
-cor por elemento, sem misturar as 5 cores no mesmo fundo.
+No modo sóbrio não há forma translúcida (o círculo "tonal" de branco a 8 %
+saiu da paleta). Para um fundo discreto atrás de texto, use uma forma
+**sólida clara**: `#F2F1F6` sobre branco. Sobre navy ou roxo, prefira não
+pôr forma atrás do texto.
 
 ```css
 .gh-deco-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-soft); /* sólido, sobre fundo branco */
 }
 .gh-deco-circle--corner { width: 480px; height: 480px; top: -180px; right: -180px; }
 ```
@@ -268,7 +266,7 @@ cor por elemento, sem misturar as 5 cores no mesmo fundo.
 Para um fundo decorativo cobrindo toda a área (capa cheia, header grande),
 espalhe várias instâncias das formas acima (círculo, anel, semicírculo,
 quarto de círculo, pílula) em tamanhos variados, cor sólida alternando
-entre as 4 cores de acento sobre fundo `--bg-peach`, encostando ou se
+entre roxo, navy e `#F2F1F6` sobre fundo branco, encostando ou se
 sobrepondo levemente — sem grade rígida, mas também sem espaço vazio
 sobrando entre as formas (o efeito é de mosaico denso, não de elementos
 soltos). Construa isso como SVG ou um grid CSS com posições levemente
@@ -279,10 +277,8 @@ Regra geral: elementos gráficos são **recursos de apoio**, seja no modo 1
 discreta atrás de conteúdo) — nunca competem com o título, a logo, ou o
 texto principal quando estes estão presentes na mesma peça.
 
-## Gradiente da marca (uso em heros / capas)
+## Gradiente (fora do modo sóbrio)
 
-```css
-.gh-gradient { background: linear-gradient(135deg, var(--primary-purple), var(--dark-navy)); }
-/* Variante mais vibrante, para capas de destaque/editorial */
-.gh-gradient--vivid { background: linear-gradient(135deg, var(--primary-purple), var(--accent-magenta)); }
-```
+O modo sóbrio não usa gradiente: heros e capas têm fundo sólido navy,
+roxo ou claro. O antigo `linear-gradient(135deg, #613EFF, #0A005A)` só
+entra se o usuário pedir explicitamente.

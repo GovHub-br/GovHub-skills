@@ -31,7 +31,7 @@ em 3 assinaturas × 5 cores, padrão `<assinatura>-<orientacao>-<cor>.svg`:
 Cores: `default` = roxo `#613EFF` no nome e ícone colorido (o ícone da
 variante `default` embute 3 PNGs pequenos; evite `default` acima de ~200px
 de altura, use `navy`/`white` em tamanhos grandes); `navy` `#0A005A` e
-`black` para fundo claro; `white` e `peach` `#FFE7E1` para fundo escuro.
+`black` para fundo claro; `white` para fundo escuro (`peach` fica sem uso no modo sóbrio).
 Regra prática:
 
 | Contexto | Arquivo | Tamanho de referência |
@@ -40,7 +40,7 @@ Regra prática:
 | Capa/slide com fundo colorido/escuro | `logomarca-horizontal-white.svg` | ~64px de altura |
 | Rodapé de página de PDF, fundo branco | `icone-none-navy.svg` (ver `print-footer.md`) | 9.5mm de altura |
 | Rodapé sobre fundo colorido | `icone-none-white.svg` | ~45px de altura |
-| Barra inferior de post sobre pêssego | `logomarca-horizontal-navy.svg` | 44px de altura |
+| Post sobre fundo claro | `logomarca-horizontal-navy.svg` | 40 a 56px de altura |
 
 Os arquivos atuais já vêm com o *viewBox* ajustado rente ao desenho (sem
 sobra de espaço em branco nas bordas) — é seguro colocar `height` direto no
@@ -71,8 +71,8 @@ cabeçalho, só o nome do documento no rodapé):
   Chrome) de por que essa é a versão certa e não a de margem
   negativa/sangria que um relatório antigo desta skill usava.
 - [`print-cover.md`](print-cover.md) — capa: fundo branco, logo navy no
-  alto à esquerda, título Oswald uppercase navy, três formas oficiais
-  sangrando (quarto roxo, pílula pêssego, anel navy), parceiros pretos no
+  alto à esquerda, título Reddit Sans 800 navy, três formas oficiais
+  sangrando (quarto roxo, pílula `#F2F1F6`, anel navy), parceiros pretos no
   rodapé da capa.
 - [`print-header.md`](print-header.md) — cabeçalho de capítulo: sobre o
   branco da página, numeral (sempre começando em 01, não 00) + eyebrow +
@@ -102,24 +102,21 @@ continuam normais — a regra é só sobre o travessão longo usado como pausa.
 ## 5. Ícones de produto Gov Hub (não são os ícones de linha genéricos)
 
 Os ícones oficiais reais do Gov Hub são ilustrações "duotone": contorno
-numa cor da paleta e uma sombra/silhueta deslocada em outra, sobre um
-fundo embutido no próprio SVG (variante `default`: contorno navy, sombra
-rosa, fundo pêssego). Use estes, não ícones de linha genéricos desenhados
+numa cor da paleta e uma sombra/silhueta deslocada em outra (variante
+única `-sober`: preenchimento `#F2F1F6`, contorno navy, sombra `#BE006E`).
+Use estes, não ícones de linha genéricos desenhados
 à mão — o efeito de marca é bem mais forte.
-
-> O repositório `GovHub-br/skills-assets` foi regerado na paleta atual em
-> 2026-09-16, mantendo os nomes de variante antigos (`default`, `purple`,
-> `orange`). O nome não descreve mais a cor: veja a tabela de fundos abaixo.
 
 Os SVGs **não ficam nesta skill** — são servidos por CDN a partir do repo
 `GovHub-br/skills-assets`. Ver [`icons-catalog.md`](icons-catalog.md) para a
 URL-base, o padrão de nome e a lista completa dos 332 nomes. Resumo:
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-sober.svg
 ```
 
-São 332 nomes de ícone, cada um em 3 variantes (`default`, `orange`, `purple`).
+São 332 nomes de ícone, todos na variante `-sober` (as variantes nas
+cores descontinuadas foram removidas em 2026-09-30).
 **Escolha pelo nome**: os nomes são descritivos do conceito (ex.:
 `document-check`, `shield-check`, `chart-bar`, `folder-open`,
 `user-group`), então procure na lista de `icons-catalog.md` o nome mais
@@ -135,28 +132,10 @@ nome em todas as ocorrências desse conceito no documento — não alterne
 entre sinônimos próximos (`folder` num capítulo, `folder-open` noutro)
 para a mesma ideia.
 
-**Os SVGs atuais têm fundo transparente** (conferido nos arquivos servidos em
-2026-09-22; a descrição de "fundo embutido" valia para a exportação anterior).
-Cada ícone é duotone: preenchimento, contorno e, em duas variantes, sombra.
-
-| Variante | Preenchimento | Contorno | Sombra |
-|---|---|---|---|
-| `-default.svg` | pêssego | navy | rosa |
-| `-purple.svg` | navy | pêssego | rosa |
-| `-orange.svg` | pêssego | navy | pêssego |
-
-**O contorno mantém as três legíveis sobre qualquer cor da paleta.** Não existe
-combinação proibida por legibilidade: o chip/fundo ao redor não precisa casar
-com nada. A escolha é de peso, pelo preenchimento:
-
-| Fundo | Variante | Como lê |
-|---|---|---|
-| Branco, pêssego | `-purple` | forma cheia navy, leitura mais firme |
-| Navy, roxo, magenta | `-default` | forma cheia pêssego sobre o escuro |
-| Qualquer um, versão discreta | `-orange` | sombra pêssego em vez de rosa, mais silenciosa |
-
-Usar a variante "errada" não quebra nada: o ícone passa a ler como desenho de
-linha em vez de forma cheia.
+**Os SVGs têm fundo transparente.** O contorno navy mantém o ícone legível
+sobre qualquer fundo da paleta: sobre navy e roxo ele lê como forma cheia
+clara; sobre branco e `#F2F1F6`, como desenho leve. O chip ao redor não
+precisa casar com nada.
 
 Para **criar um ícone novo** que ainda não existe na biblioteca, esta skill
 não cobre isso — use a skill separada `govhub-icon-creation`, dedicada à
@@ -166,13 +145,13 @@ de construção no Figma.
 Duas formas válidas de badge em PDF, as duas com a cor de seção (navy fixo
 desde 2026-09-18, ver `palette.md`):
 
-- **Chip branco com contorno navy** e ícone `-purple` (`.gh-icon-badge`,
+- **Chip branco com contorno navy** e ícone `-sober` (`.gh-icon-badge`,
   seção 6): mais discreto, para callout no meio do texto.
-- **Chip navy preenchido** e ícone `-default`: mais evidente, para callout
+- **Chip navy preenchido** e ícone `-sober`: mais evidente, para callout
   que precisa saltar aos olhos (limitação, ressalva). É o que
   `scripts/build_doc.py` gera.
 
-Roxo e magenta aceitam ícone normalmente, com a `-default`. (O chip de ícone
+Roxo e navy aceitam ícone normalmente, com a `-sober`. (O chip de ícone
 do cabeçalho de capítulo saiu em 2026-09-17, ver `print-header.md`.)
 
 Mapeamento usado no Framework de Briefing (adapte os nomes ao conteúdo real):
@@ -219,7 +198,7 @@ título em uppercase pequeno, corpo de texto normal.
 
 ```html
 <div class="gh-callout-box">
-  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/paper-default.svg" alt=""></div>
+  <div class="gh-icon-badge"><img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/paper-sober.svg" alt=""></div>
   <div>
     <div class="gh-callout-box__title">O que é</div>
     <div class="gh-callout-box__body">Texto explicativo do callout.</div>
@@ -245,10 +224,10 @@ container pai.
 ## 7. Quando NÃO usar este estilo
 
 - Dashboards, telas de app, e-mails → use `component-recipes.md`
-  (roxo+rosa, cards sólidos, tabela zebrada).
-- Slides → `slides.md` (templates oficiais do CDN, um por slide).
+  (roxo + acento `#BE006E`, cards sólidos, tabela zebrada).
+- Slides → `slides-sober.md`.
 - Documentos de 1–3 páginas sem seções numeradas → a rampa editorial é
-  exagero; um único acento roxo+rosa já resolve.
+  exagero; um único acento roxo já resolve.
 - Qualquer contexto onde a marca precisa ser reconhecida instantaneamente
   como "produto Gov Hub" (não como "publicação/relatório Gov Hub") → prefira
   roxo puro (`--primary-purple`, não `--logo-purple`).

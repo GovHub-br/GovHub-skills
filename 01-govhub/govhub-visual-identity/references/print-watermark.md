@@ -38,13 +38,13 @@ leitura: é um leve relevo de marca, não uma ilustração.
 }
 .gh-watermark--topo { bottom: auto; top: -7%; transform: rotate(90deg); }    /* página só de tabela larga: canto reto no superior direito */
 .gh-watermark--navy { color: var(--dark-navy); }
-.gh-page--peach .gh-watermark { opacity: .05; }                               /* sobre fundo pêssego */
+.gh-page--soft .gh-watermark { opacity: .05; }                                /* sobre fundo #F2F1F6 */
 ```
 
-`.gh-page--peach` é um hook: acrescente essa classe na `.gh-page` específica
-cuja página tem fundo pêssego. Nenhum arquivo desta skill declara
-`.gh-page--peach` sozinho, é o autor do documento que soma essa classe à
-página quando o fundo for pêssego.
+`.gh-page--soft` é um hook: acrescente essa classe na `.gh-page` específica
+cuja página tem fundo `#F2F1F6`. Nenhum arquivo desta skill declara
+`.gh-page--soft` sozinho, é o autor do documento que soma essa classe à
+página quando o fundo for `#F2F1F6`.
 
 ## HTML (por página de conteúdo)
 
@@ -76,7 +76,7 @@ troque o `d` por `M0 0h100a100 100 0 0 1-100 100z` (sem `fill-rule`).
   encerramento; só em páginas de conteúdo.
 - **Uma** forma por página, sempre a mesma ao longo do documento (não
   alterne formas página a página).
-- Opacidade máxima `.10`; sobre pêssego, `.05`. Cor: roxo ou navy, nada
+- Opacidade máxima `.10`; sobre `#F2F1F6`, `.05`. Cor: roxo ou navy, nada
   além.
 - Página que é só uma tabela larga: use `gh-watermark--topo` (canto superior
   direito) para não competir com as últimas linhas; a tabela cobrindo parte

@@ -10,29 +10,18 @@ não misture os dois conjuntos.
 ## URL
 
 ```
-https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<variante>.svg
+https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-sober.svg
 ```
 
 - `<nome>` — um dos 332 nomes listados abaixo (descritivos do conceito).
-- `<variante>` — os nomes são históricos e **não descrevem a cor**. Os SVGs
-  atuais (repo regerado em 2026-09-16) têm **fundo transparente**, não fundo
-  embutido. Cada um é um desenho duotone com preenchimento, contorno e, em
-  duas variantes, uma sombra deslocada. Verificado nos arquivos servidos em
-  2026-09-22:
+- Variante única **`-sober`** (desde 2026-09-30; as antigas `default`,
+  `purple` e `orange`, nas cores descontinuadas, foram removidas). Fundo
+  transparente; desenho duotone com preenchimento `#F2F1F6`, contorno navy
+  `#0A005A` e sombra deslocada `#BE006E`.
 
-  | Variante | Preenchimento | Contorno | Sombra |
-  |---|---|---|---|
-  | `default` | pêssego `#FFE7E1` | navy `#0A005A` | rosa `#F9006F` |
-  | `purple` | navy `#0A005A` | pêssego `#FFE7E1` | rosa `#F9006F` |
-  | `orange` | pêssego `#FFE7E1` | navy `#0A005A` | pêssego `#FFE7E1` |
-
-  **Por causa do contorno, as três continuam legíveis sobre qualquer cor da
-  paleta**, inclusive branco, pêssego, navy, roxo, magenta e rosa: nenhuma
-  combinação faz o ícone sumir. O que muda é o peso. Escolha pelo
-  preenchimento: se ele contrastar com o fundo, o ícone lê como forma cheia;
-  se coincidir, lê como desenho de linha. Em corpo de relatório (branco) a
-  leitura cheia é `purple`; dentro de um chip navy é `default`. A `orange`,
-  com a sombra em pêssego em vez de rosa, é a mais discreta. Ver `editorial-report.md` seção 5.
+  O contorno navy mantém o ícone legível sobre qualquer fundo da paleta:
+  sobre navy e roxo ele lê como forma cheia clara; sobre branco e
+  `#F2F1F6`, como desenho leve. Ver `editorial-report.md` seção 5.
 
   > A CDN (`@main`) guarda cache de ~12 h; logo após uma regeração, baixe
   > pelo `raw.githubusercontent.com` ou fixe o SHA do commit na URL.
@@ -40,7 +29,7 @@ https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/<nome>-<v
 Exemplo:
 
 ```html
-<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-default.svg" alt="">
+<img src="https://cdn.jsdelivr.net/gh/GovHub-br/skills-assets@main/gov-hub/icons/document-check-sober.svg" alt="">
 ```
 
 `@main` acompanha o repo (cache CDN de ~12 h). Para congelar uma versão
@@ -48,7 +37,7 @@ exata, troque `@main` por uma tag (`@v1`) ou pelo SHA do commit.
 
 ## Sem internet no ambiente de geração do PDF
 
-Baixe a pasta e troque os `src=` para caminho relativo (`icons/<nome>-<variante>.svg`):
+Baixe a pasta e troque os `src=` para caminho relativo (`icons/<nome>-sober.svg`):
 
 ```bash
 git clone --depth 1 https://github.com/GovHub-br/skills-assets.git
