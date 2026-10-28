@@ -51,8 +51,8 @@ claude plugin install govhub-core@govhub
 
 | Plugin | O que traz | Skills |
 |--------|-----------|--------|
-| `govhub-skills` | **Tudo** — as 53 skills de todas as categorias | 53 |
-| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, diagramas técnicos, prestação de contas | 4 |
+| `govhub-skills` | **Tudo** — as 54 skills de todas as categorias | 54 |
+| `govhub-core` | [01 · Específicas do GovHub](#01--específicas-do-govhub) — pipelines, identidade visual, diagramas técnicos, prestação de contas, páginas especiais do site | 5 |
 | `govhub-dados` | [02 · Dados & Bancos](#02--dados--bancos) — Postgres, SQL, BigQuery, Jupyter | 9 |
 | `govhub-backend` | [03 · Backend / Python / APIs](#03--backend--python--apis) — Python, FastAPI, design e segurança de API | 6 |
 | `govhub-infra` | [04 · Infra / DevOps](#04--infra--devops--observabilidade) — Docker, CI/CD, Prometheus, Grafana | 8 |
@@ -146,6 +146,7 @@ As skills abaixo estão organizadas em pastas por categoria.
 | [`govhub-visual-identity`](01-govhub/govhub-visual-identity/) | Aplica a identidade visual oficial do Gov Hub (gov-hub.io) em relatórios e PDFs, slides, posts, dashboards e temas CSS. Roxo `#613EFF`, navy `#0A005A`. |
 | [`govhub-diagramas`](01-govhub/govhub-diagramas/) | Diagramas técnicos com a IDV: arquitetura em blocos, mapa de schemas, fluxo de processo com raias e pipeline de dados. HTML editável + PNG via Chromium; lê o lineage do dbt. |
 | [`accountability-report`](01-govhub/accountability-report/) | Relatório de prestação de contas de um repositório a partir do git. Saída em Markdown, HTML e PDF A4 pronto para entrega oficial. |
+| [`govhub-post-especial`](01-govhub/govhub-post-especial/) | Monta a "página especial" de uma publicação do gov-hub.io: o HTML de layout próprio (evento, datathon, oficina) que a comunicação cola no painel do site, com a IDV, e um validador que barra o que já quebrou no site (caminho de foto, classe que colide, página inteira colada). |
 
 ## 02 · Dados & Bancos
 
