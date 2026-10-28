@@ -30,9 +30,13 @@ Peça, e não invente:
 2. **As fotos já enviadas pelo painel e os nomes que elas ganharam.** O painel
    converte tudo em `.webp`, põe o nome em minúsculas sem acento e acrescenta
    `-1` quando o nome já existe (`VEC_09521.JPG` → `vec-09521-1.webp`). Se as
-   fotos ainda não subiram, oriente: no painel, na área de imagens (Assets),
-   enviar as fotos, depois copiar a lista de nomes. Peça nomes descritivos antes
-   do envio (`oficina-mir-01.jpg`), que ficam fáceis de achar depois.
+   fotos ainda não subiram, oriente: no post, no campo **Fotos da página
+   especial**, selecionar ou arrastar todas de uma vez, salvar e copiar a lista
+   que o campo mostra (`images/oficina-mir-01.webp` vira
+   `/blog/images/oficina-mir-01.webp` no HTML). Não suba pelo botão de imagem do
+   editor de texto: a foto entra no corpo do post, que o HTML substitui. Peça
+   nomes descritivos antes do envio (`oficina-mir-01.jpg`), que ficam fáceis de
+   achar depois.
 3. **O que aparece em cada foto**, para o texto alternativo (`alt`), que leitores de
    tela leem em voz alta. Se você consegue ver as fotos anexadas, descreva-as você
    mesmo. Se não, peça uma frase por foto; sem ela, use o nome do evento com o
